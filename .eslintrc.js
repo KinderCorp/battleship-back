@@ -29,6 +29,10 @@ module.exports = {
         'sort-class-members/sort-class-members': [
             'error',
             {
+                accessorPairPositioning: 'getThenSet',
+                groups: {
+                    'event-handler': [{ sort: 'alphabetical', static: false, type: 'method' }],
+                },
                 order: [
                     '[static-properties]',
                     '[properties]',
@@ -41,10 +45,6 @@ module.exports = {
                     '[event-handler]',
                     '[everything-else]',
                 ],
-                groups: {
-                    'event-handler': [{ type: 'method', sort: 'alphabetical', static: false }],
-                },
-                accessorPairPositioning: 'getThenSet',
             },
         ],
         'sort-imports': [
@@ -54,5 +54,6 @@ module.exports = {
                 ignoreCase: true,
             },
         ],  
+        'sort-keys': ['error', 'asc', { natural: true }],
     },
 }
