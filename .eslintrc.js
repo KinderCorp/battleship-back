@@ -15,7 +15,7 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint", "sort-class-members", "import"
     ],
     "rules": {
         'default-param-last': ['warn'],

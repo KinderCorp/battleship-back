@@ -1,6 +1,7 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ESNext",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -13,9 +14,15 @@
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "strict": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
+    "paths": {
+      // e.g ↓
+      // "@datasets/*": ["src/tests/datasets/*"],
+  },
   }
 }

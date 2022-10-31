@@ -140,6 +140,7 @@ dist
 
 ### VisualStudioCode ###
 .vscode
+.idea
 
 # Local History for Visual Studio Code
 .history/
