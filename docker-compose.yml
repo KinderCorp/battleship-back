@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgresql: 
+      container_name: postgressql
+      environment:
+        - POSTGRES_USER=admin
+        - POSTGRES_PASSWORD=rNzLhz4s3Qp4586Frpgq
+      image: postgres:bullseye
+      ports:
+        - '5432:5432'
+      restart: always
+      volumes:
+        - battleship-db:/var/lib/postgresql/data
+
+volumes:
+  battleship-db:
+    driver: local
