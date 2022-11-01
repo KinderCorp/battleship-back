@@ -1,23 +1,17 @@
 module.exports = {
-    "env": {
-        "es2021": true,
-        "node": true
+    env: {
+        es2021: true,
+        node: true,
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "overrides": [
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
+    extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+    overrides: [],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
     },
-    "plugins": [
-        "@typescript-eslint", "sort-class-members", "import"
-    ],
-    "rules": {
+    plugins: ['@typescript-eslint', 'sort-class-members', 'import'],
+    rules: {
         'default-param-last': ['warn'],
         'import/no-cycle': 0,
         'import/no-import-module-exports': 'warn',
@@ -31,7 +25,9 @@ module.exports = {
             {
                 accessorPairPositioning: 'getThenSet',
                 groups: {
-                    'event-handler': [{ sort: 'alphabetical', static: false, type: 'method' }],
+                    'event-handler': [
+                        { sort: 'alphabetical', static: false, type: 'method' },
+                    ],
                 },
                 order: [
                     '[static-properties]',
@@ -53,7 +49,7 @@ module.exports = {
                 allowSeparatedGroups: true,
                 ignoreCase: true,
             },
-        ],  
+        ],
         'sort-keys': ['error', 'asc', { natural: true }],
     },
-}
+};
