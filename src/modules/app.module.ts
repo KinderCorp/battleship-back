@@ -5,7 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from '@controllers/app.controller';
 import { AppService } from '@services/app.service';
-import { Pizza } from 'src/entities/pizza.entity';
+import { Pizza } from '@entities/pizza.entity';
+
 @Module({
     controllers: [AppController],
     imports: [
