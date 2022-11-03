@@ -9,15 +9,16 @@ import { Pizza } from 'src/entities/pizza.entity';
 @Module({
     controllers: [AppController],
     imports: [
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot({
+            envFilePath: ['.env.local', '.env', '.env.production'],
+        }),
         TypeOrmModule.forRoot({
             database: process.env.POSTGRESQL_DATABASE,
             entities: [Pizza],
-            host: 'localhost',
+            host: process.env.POSTGRESQL_HOST,
             password: process.env.POSTGRESQL_PASSWORD,
-            port: 5432,
-            // TASK Below should be set to false in production
-            synchronize: true,
+            port: Number(process.env.POSTGRESQL_PORT),
+            synchronize: process.env.POSTGRESQL_HOST === 'localhost',
             type: 'postgres',
             username: process.env.POSTGRESQL_USER,
         }),
