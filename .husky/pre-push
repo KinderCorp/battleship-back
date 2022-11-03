@@ -2,7 +2,7 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm run build
-npm run format
+npm run format:check
 npm run lint
 npm run test
 npm run test:e2e
