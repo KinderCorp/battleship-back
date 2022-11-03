@@ -1,17 +1,18 @@
 version: '3.8'
 
 services:
-    postgresql:
+    postgressql:
         container_name: postgressql
         environment:
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-        image: postgres:bullseye
+            - POSTGRESQL_USER=${POSTGRESQL_USER}
+            - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+            - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+        image: bitnami/postgresql:latest
         ports:
             - '5432:5432'
         restart: always
         volumes:
-            - battleship-db:/var/lib/postgresql/data
+            - battleship-db:/bitnami/postgresql
 
 volumes:
     battleship-db:
