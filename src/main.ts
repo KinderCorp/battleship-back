@@ -1,12 +1,8 @@
-import { NestFactory } from '@nestjs/core';
 import {
     FastifyAdapter,
     NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-
-import { AppModule } from './app.module';
-
-console.log('ICI', process.env.NODE_ENV);
+import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from '@modules/app.module';
 
