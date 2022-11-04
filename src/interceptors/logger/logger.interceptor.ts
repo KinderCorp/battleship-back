@@ -19,8 +19,8 @@ export class LoggerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() =>
         this.logger.log(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          `${args[1].statusCode} - ${args[0].method} - ${args[0].url} - ${args[0].method} - ${Date.now() - now}ms`,
+          //prettier-ignore
+          `${args[1].statusCode} - ${args[0].method} - ${args[0].url} - ${Date.now() - now}ms`,
         ),
       ),
     );
