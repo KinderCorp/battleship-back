@@ -8,24 +8,24 @@ import { AppService } from '@services/app.service';
 import { Pizza } from '@entities/pizza.entity';
 
 @Module({
-    controllers: [AppController],
-    imports: [
-        ConfigModule.forRoot({
-            envFilePath: ['.env.local', '.env', '.env.production'],
-        }),
-        TypeOrmModule.forRoot({
-            database: process.env.POSTGRESQL_DATABASE,
-            entities: [Pizza],
-            host: process.env.POSTGRESQL_HOST,
-            password: process.env.POSTGRESQL_PASSWORD,
-            port: Number(process.env.POSTGRESQL_PORT),
-            synchronize: process.env.POSTGRESQL_HOST === 'localhost',
-            type: 'postgres',
-            username: process.env.POSTGRESQL_USER,
-        }),
-    ],
-    providers: [AppService],
+  controllers: [AppController],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env.local', '.env', '.env.production'],
+    }),
+    TypeOrmModule.forRoot({
+      database: process.env.POSTGRESQL_DATABASE,
+      entities: [Pizza],
+      host: process.env.POSTGRESQL_HOST,
+      password: process.env.POSTGRESQL_PASSWORD,
+      port: Number(process.env.POSTGRESQL_PORT),
+      synchronize: process.env.POSTGRESQL_HOST === 'localhost',
+      type: 'postgres',
+      username: process.env.POSTGRESQL_USER,
+    }),
+  ],
+  providers: [AppService],
 })
 export class AppModule {
-    constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) {}
 }

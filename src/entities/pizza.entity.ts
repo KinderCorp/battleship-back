@@ -2,18 +2,18 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Pizza {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    description: string;
+  @Column()
+  description: string;
 
-    @Column('text', { array: true })
-    ingredient: string[];
+  @Column('text', { array: true })
+  ingredient: string[];
 
-    @Column()
-    isVegetarian: boolean;
+  @Column()
+  isVegetarian: boolean;
 }
