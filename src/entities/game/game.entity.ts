@@ -9,13 +9,13 @@ import { Type } from 'class-transformer';
 @Entity()
 export class GameEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   // TASK Add ref to USER
   @Column('text')
-  winner: string;
+  winner!: string;
 
   @CreateDateColumn()
   @Type(() => Date)
-  createdAt: Date;
+  createdAt!: Date;
 }

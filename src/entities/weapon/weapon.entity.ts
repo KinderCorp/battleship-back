@@ -3,22 +3,22 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class WeaponEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column('text')
-  name: string;
+  name!: string;
 
   // TASK Add ref to Level
   @Column('text')
-  requiredLevel: string;
+  requiredLevel!: string;
 
   // TASK Add ref to Media
   @Column('text')
-  media: string;
+  media!: string;
 
   @Column({ nullable: true, type: 'integer' })
   maxAmmunition: null | number;
 
   @Column('array')
-  damage: number[][];
+  damage!: number[][];
 }

@@ -3,18 +3,18 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class BoatEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column('text')
-  name: string;
+  name!: string;
 
   // TASK Add ref to mediaWithTheme entity
   @Column('array')
-  images: string[];
+  images!: string[];
 
   @Column('integer')
-  width: number;
+  width!: number;
 
   @Column('integer')
-  length: number;
+  length!: number;
 }

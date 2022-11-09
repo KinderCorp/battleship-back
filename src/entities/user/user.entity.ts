@@ -13,37 +13,37 @@ import { IsEmail, Length } from 'class-validator';
 @Entity()
 export default class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id!: number;
 
   @Column('varchar', { length: 30 })
   @Length(2, 30)
-  pseudo: string;
+  pseudo!: string;
 
   @Column('varchar', { unique: true })
   @IsEmail()
-  email: string;
+  email!: string;
 
   @Column('text', { array: true })
   @Exclude()
-  password: string;
+  password!: string;
 
   @Column('boolean')
-  hasBeenConfirmed: boolean;
+  hasBeenConfirmed!: boolean;
 
   // TASK Add ref to LEVEL
   @Column('string')
-  level: string;
+  level!: string;
 
   @Column('integer')
-  xp: boolean;
+  xp!: boolean;
 
   // TASK Add ref to CHARACTER
   @Column('string')
-  character: string;
+  character!: string;
 
   @CreateDateColumn()
   @Type(() => Date)
-  createdAt: Date;
+  createdAt!: Date;
 
   public async setPassword(password: string): Promise<User> {
     this.password = await argon2.hash(password);
