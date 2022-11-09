@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from '@controllers/app.controller';
 import { AppService } from '@services/app.service';
-import { Pizza } from '@entities/pizza.entity';
 
 @Module({
   controllers: [AppController],
@@ -17,7 +16,7 @@ import { Pizza } from '@entities/pizza.entity';
     }),
     TypeOrmModule.forRoot({
       database: process.env.POSTGRESQL_DATABASE,
-      entities: [Pizza],
+      entities: ['@entities'],
       host: process.env.POSTGRESQL_HOST,
       password: process.env.POSTGRESQL_PASSWORD,
       port: Number(process.env.POSTGRESQL_PORT),
