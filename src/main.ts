@@ -12,6 +12,9 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('BattleShip')
     .setDescription('The BattleShip game API description')
@@ -22,7 +25,7 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(3000);
 }
