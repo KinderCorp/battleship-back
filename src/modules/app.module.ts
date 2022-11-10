@@ -1,8 +1,10 @@
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { Module } from '@nestjs/common';
+import { LoggerInterceptor } from './../interceptors/logger/logger.interceptor';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from '@controllers/app.controller';
 import { AppService } from '@services/app.service';
 import { Pizza } from '@entities/pizza.entity';
@@ -24,7 +26,11 @@ import { Pizza } from '@entities/pizza.entity';
       username: process.env.POSTGRESQL_USER,
     }),
   ],
-  providers: [AppService],
+  providers: [
+    AppService,
+    Logger,
+    { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },
+  ],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
