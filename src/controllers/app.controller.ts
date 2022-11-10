@@ -10,7 +10,7 @@ export class AppController {
   @Get('hello')
   @ApiOperation({ summary: 'Test routing with an "Hello World"' })
   @ApiResponse({ description: 'OK', status: 200 })
-  getHello(): string {
+  getHello(): Record<string, Record<string, string>> {
     return this.appService.getHello();
   }
 }
