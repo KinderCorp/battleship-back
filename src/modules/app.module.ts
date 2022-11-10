@@ -7,7 +7,27 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from '@controllers/app.controller';
 import { AppService } from '@services/app.service';
-import { Pizza } from '@entities/pizza.entity';
+import Boat from '@entities/boat.entity';
+import Character from '@entities/character.entity';
+import Game from '@entities/game.entity';
+import Level from '@entities/level.entity';
+import Media from '@entities/media.entity';
+import MediaWithTheme from '@entities/media-with-theme.entity';
+import Theme from '@entities/theme.entity';
+import User from '@entities/user.entity';
+import Weapon from '@entities/weapon.entity';
+
+const entities = [
+  Boat,
+  Character,
+  Game,
+  Level,
+  Media,
+  MediaWithTheme,
+  Theme,
+  User,
+  Weapon,
+];
 
 @Module({
   controllers: [AppController],
@@ -17,7 +37,7 @@ import { Pizza } from '@entities/pizza.entity';
     }),
     TypeOrmModule.forRoot({
       database: process.env.POSTGRESQL_DATABASE,
-      entities: [Pizza],
+      entities: entities,
       host: process.env.POSTGRESQL_HOST,
       password: process.env.POSTGRESQL_PASSWORD,
       port: Number(process.env.POSTGRESQL_PORT),
