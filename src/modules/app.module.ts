@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { LoggerInterceptor } from '../interceptors/logger/logger.interceptor';
+import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { APP_INTERCEPTOR } from '@nestjs/core';
