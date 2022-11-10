@@ -1,10 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export default class MediaEntity {
+export default class Theme {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column('text')
-  image!: string;
+  name!: string;
 }

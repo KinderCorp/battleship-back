@@ -3,12 +3,18 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, Length } from 'class-validator';
 
-// TASK Create a base entity to extend
+import Character from '@entities/character.entity';
+import Game from '@entities/game.entity';
+import Level from '@entities/level.entity';
 
 @Entity()
 export default class User {
@@ -23,23 +29,27 @@ export default class User {
   @IsEmail()
   email!: string;
 
-  @Column('text', { array: true })
+  @Column('text')
   @Exclude()
   password!: string;
 
   @Column('boolean')
   hasBeenConfirmed!: boolean;
 
-  // TASK Add ref to LEVEL
-  @Column('string')
+  @OneToOne(() => Level, (level: Level) => level.id)
+  @JoinColumn()
   level!: string;
 
   @Column('integer')
   xp!: boolean;
 
-  // TASK Add ref to CHARACTER
-  @Column('string')
+  @OneToOne(() => Character, (character: Character) => character.id)
+  @JoinColumn()
   character!: string;
+
+  @JoinTable({ name: 'user_game' })
+  @ManyToMany(() => Game, (game: Game) => game.id)
+  games: Game[];
 
   @CreateDateColumn()
   @Type(() => Date)
