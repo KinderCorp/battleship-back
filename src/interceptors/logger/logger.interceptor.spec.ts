@@ -1,7 +1,4 @@
-import {
-  Logger,
-  LoggerService,
-} from '@nestjs/common';
+import { Logger, LoggerService } from '@nestjs/common';
 import { LoggerInterceptor } from './logger.interceptor';
 
 describe('LoggerInterceptor', () => {
