@@ -33,19 +33,19 @@ export default class User {
   @Exclude()
   password!: string;
 
-  @Column('boolean')
+  @Column('boolean', { default: false })
   hasBeenConfirmed!: boolean;
 
   @OneToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
-  level!: string;
+  level!: number;
 
   @Column('integer')
-  xp!: boolean;
+  xp!: number;
 
   @OneToOne(() => Character, (character: Character) => character.id)
   @JoinColumn()
-  character!: string;
+  character!: number;
 
   @JoinTable({ name: 'user_game' })
   @ManyToMany(() => Game, (game: Game) => game.id)

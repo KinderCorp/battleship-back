@@ -8,8 +8,6 @@ import {
 
 import Media from '@entities/media.entity';
 
-// FIXME
-
 @Entity()
 export default class Level {
   @PrimaryGeneratedColumn()

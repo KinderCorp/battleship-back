@@ -12,9 +12,9 @@ export default class MediaWithTheme {
 
   @OneToOne(() => Media, (media: Media) => media.id)
   @JoinColumn()
-  image!: string;
+  image!: number;
 
   @OneToOne(() => Theme, (theme: Theme) => theme.id)
   @JoinColumn()
-  theme!: string;
+  theme!: number;
 }

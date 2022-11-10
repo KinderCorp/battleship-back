@@ -11,8 +11,8 @@ import User from '@entities/user.entity';
 
 @Entity()
 export default class Game {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @OneToOne(() => User, (user: User) => user.id)
   @JoinColumn()

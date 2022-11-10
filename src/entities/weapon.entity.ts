@@ -19,11 +19,11 @@ export default class Weapon {
 
   @OneToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
-  requiredLevel!: string;
+  requiredLevel!: number;
 
   @OneToOne(() => Media, (media: Media) => media.id)
   @JoinColumn()
-  media!: string;
+  media!: number;
 
   @Column({ nullable: true, type: 'integer' })
   maxAmmunition: null | number;
