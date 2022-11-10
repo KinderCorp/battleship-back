@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-    postgressql:
-        container_name: postgressql
+    postgresql:
+        container_name: postgresql
         environment:
             - POSTGRESQL_USER=${POSTGRESQL_USER}
             - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
