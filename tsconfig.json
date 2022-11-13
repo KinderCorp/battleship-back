@@ -1,32 +1,34 @@
 {
-    "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "baseUrl": "./",
-        "declaration": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "forceConsistentCasingInFileNames": true,
-        "incremental": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "noFallthroughCasesInSwitch": false,
-        "noImplicitAny": true,
-        "outDir": "./dist",
-        "removeComments": true,
-        "skipLibCheck": true,
-        "sourceMap": true,
-        "strict": true,
-        "strictBindCallApply": false,
-        "strictNullChecks": false,
-        "target": "ES2022",
-        "paths": {
-            "@controllers/*": ["src/controllers/*"],
-            "@entities/*": ["src/entities/*"],
-            "@modules/*": ["src/modules/*"],
-            "@repositories/*": ["src/repositories/*"],
-            "@services/*": ["src/services/*"],
-            "@interceptors/*": ["src/interceptors/*"],
-            "@tests/*": ["src/tests/*"]
-        }
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictBindCallApply": false,
+    "strictNullChecks": false,
+    "target": "ES2022",
+    "paths": {
+      "@controllers/*": ["src/controllers/*"],
+      "@entities/*": ["src/entities/*"],
+      "@interceptors/*": ["src/interceptors/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@modules/*": ["src/modules/*"],
+      "@repositories/*": ["src/repositories/*"],
+      "@services/*": ["src/services/*"],
+      "@shared/*": ["src/shared/*"],
+      "@tests/*": ["src/tests/*"]
     }
+  }
 }
