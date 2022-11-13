@@ -19,7 +19,7 @@
     "test:watch": "jest --watch --config ./jest.config.js",
     "test:cov": "jest --coverage --config ./jest.config.js",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./jest-e2e.config.js",
+    "test:e2e": "jest --config ./jest-e2e.config.js --forceExit",
     "test": "npm run test:unit && npm run test:e2e",
     "prepare": "husky install"
   },
