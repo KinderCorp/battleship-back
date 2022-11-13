@@ -17,13 +17,13 @@ export class LoggerInterceptor implements NestInterceptor {
     const args = context.getArgs();
     const now = Date.now();
     return next.handle().pipe(
-      tap(() =>
-        this.logger.log(
-          //prettier-ignore
-          `${args[1].statusCode} - ${args[0].method} - ${args[0].url} - ${Date.now() - now}ms`,
-        ),
-      ),
+      tap({
+        next: () =>
+          this.logger.log(
+            //prettier-ignore
+            `${args[1].statusCode} - ${args[0].method} - ${args[0].url} - ${Date.now() - now}ms`,
+          ),
+      }),
     );
-    return next.handle();
   }
 }
