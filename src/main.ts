@@ -5,6 +5,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { NestFactory } from '@nestjs/core';
 
+import ApiErrorExceptionFilter from 'src/filters/api-error/api-error-exception.filter';
 import { AppModule } from '@modules/app.module';
 
 async function bootstrap() {
@@ -14,6 +15,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
+  app.useGlobalFilters(new ApiErrorExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('BattleShip')

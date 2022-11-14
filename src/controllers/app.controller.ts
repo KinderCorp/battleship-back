@@ -2,7 +2,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Controller, Get } from '@nestjs/common';
 
 import { AppService } from '@services/app.service';
-@ApiTags('Default')
+@ApiTags('Test route')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -10,7 +10,7 @@ export class AppController {
   @Get('hello')
   @ApiOperation({ summary: 'Test routing with an "Hello World"' })
   @ApiResponse({ description: 'OK', status: 200 })
-  getHello(): Record<string, Record<string, string>> {
+  getHello(): Record<string, string> {
     return this.appService.getHello();
   }
 }
