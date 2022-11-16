@@ -16,6 +16,7 @@ import Media from '@entities/media.entity';
 import MediaWithTheme from '@entities/media-with-theme.entity';
 import Theme from '@entities/theme.entity';
 import User from '@entities/user.entity';
+import { UserModule } from '@modules/user.module';
 import Weapon from '@entities/weapon.entity';
 
 const entities = [
@@ -46,6 +47,7 @@ const entities = [
       type: 'postgres',
       username: process.env.POSTGRESQL_USER,
     }),
+    UserModule,
   ],
   providers: [
     AppService,
