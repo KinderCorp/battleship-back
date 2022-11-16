@@ -1,16 +1,17 @@
 import { Logger, Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ApiSuccessInterceptor } from '@interceptors/api-success/api-success.interceptor';
 import { AppController } from '@controllers/app.controller';
 import { AppService } from '@services/app.service';
 import Boat from '@entities/boat.entity';
 import Character from '@entities/character.entity';
 import Game from '@entities/game.entity';
 import Level from '@entities/level.entity';
+import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
 import Media from '@entities/media.entity';
 import MediaWithTheme from '@entities/media-with-theme.entity';
 import Theme from '@entities/theme.entity';
@@ -50,6 +51,7 @@ const entities = [
     AppService,
     Logger,
     { provide: APP_INTERCEPTOR, useClass: LoggerInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: ApiSuccessInterceptor },
   ],
 })
 export class AppModule {
