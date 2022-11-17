@@ -11,4 +11,4 @@ import CharacterService from '@services/character.service';
   imports: [TypeOrmModule.forFeature([Character])],
   providers: [CharacterService, CharacterRepository],
 })
-export class CharacterModule {}
+export default class CharacterModule {}

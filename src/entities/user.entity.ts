@@ -5,6 +5,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -17,12 +18,13 @@ import {
 } from '@shared/entity.const';
 import Character from '@entities/character.entity';
 import Game from '@entities/game.entity';
-import { IdentifierInterface } from '@entities/entity.interface';
+import { IdentifierInterface } from '@interfaces/entity.interface';
 import Level from '@entities/level.entity';
 
 @Entity()
 export default class User implements IdentifierInterface {
   @PrimaryGeneratedColumn('uuid')
+  @ManyToOne(() => Game, (game: Game) => game.id)
   id!: string;
 
   @Column('varchar', { length: USER_PSEUDO_MAX_LENGTH })

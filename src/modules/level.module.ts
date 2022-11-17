@@ -11,4 +11,4 @@ import LevelService from '@services/level.service';
   imports: [TypeOrmModule.forFeature([Level])],
   providers: [LevelService, LevelRepository],
 })
-export class LevelModule {}
+export default class LevelModule {}

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import UserController from '@controllers/user.controller';
-import { UserModule } from '@modules/user.module';
+import UserModule from '@modules/user.module';
 import UserService from '@services/user.service';
 
 // FIXME

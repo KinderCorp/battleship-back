@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import MediaController from '@controllers/media.controller';
-import { MediaModule } from '@modules/media.module';
+import MediaModule from '@modules/media.module';
 import MediaService from '@services/media.service';
 
 // FIXME

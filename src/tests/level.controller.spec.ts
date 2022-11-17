@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import LevelController from '@controllers/level.controller';
-import { LevelModule } from '@modules/level.module';
+import LevelModule from '@modules/level.module';
 import LevelService from '@services/level.service';
 
 // FIXME

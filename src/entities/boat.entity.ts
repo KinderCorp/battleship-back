@@ -16,6 +16,7 @@ export default class Boat {
   @Column('text')
   name!: string;
 
+  // FIXME don't work
   @ManyToOne(
     () => MediaWithTheme,
     (mediaWithTheme: MediaWithTheme) => mediaWithTheme.theme,
@@ -23,7 +24,7 @@ export default class Boat {
   @JoinColumn({ name: 'imageIds' })
   imageIds!: number[];
 
-  @Column('integer')
+  @Column('integer', { default: 1 })
   width!: number;
 
   @Column('integer')

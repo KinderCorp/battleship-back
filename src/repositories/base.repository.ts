@@ -11,7 +11,7 @@ import { instanceToPlain } from 'class-transformer';
 import { CreateDtoInterface, UpdateDtoInterface } from 'src/dto/dto.interface';
 import ApiError from '@shared/api-error';
 import { ErrorCodes } from '@interfaces/error.interface/error.interface';
-import { IdentifierInterface } from '@entities/entity.interface';
+import { IdentifierInterface } from '@interfaces/entity.interface';
 
 @Injectable()
 export default class BaseRepository<Entity extends IdentifierInterface> {

@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import CharacterController from '@controllers/character.controller';
-import { CharacterModule } from '@modules/character.module';
-import CharacterRepository from '@repositories/character.repository';
-import CharacterService from '@services/character.service';
+import CharacterModule from '@modules/character.module';
 
 // FIXME
 xdescribe('CharacterController', () => {
@@ -13,7 +11,6 @@ xdescribe('CharacterController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CharacterController],
       imports: [CharacterModule],
-      providers: [CharacterService, CharacterRepository],
     }).compile();
 
     controller = module.get<CharacterController>(CharacterController);

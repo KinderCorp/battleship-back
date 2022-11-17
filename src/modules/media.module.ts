@@ -11,4 +11,4 @@ import MediaService from '@services/media.service';
   imports: [TypeOrmModule.forFeature([Media])],
   providers: [MediaService, MediaRepository],
 })
-export class MediaModule {}
+export default class MediaModule {}
