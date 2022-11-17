@@ -12,17 +12,22 @@ import {
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, Length } from 'class-validator';
 
+import {
+  USER_PSEUDO_MAX_LENGTH,
+  USER_PSEUDO_MIN_LENGTH,
+} from '@shared/entity.const';
 import Character from '@entities/character.entity';
 import Game from '@entities/game.entity';
+import { IdentifierInterface } from '@entities/entity.interface';
 import Level from '@entities/level.entity';
 
 @Entity()
-export default class User {
+export default class User implements IdentifierInterface {
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  id!: string;
 
-  @Column('varchar', { length: 30 })
-  @Length(2, 30)
+  @Column('varchar', { length: USER_PSEUDO_MAX_LENGTH })
+  @Length(USER_PSEUDO_MIN_LENGTH, USER_PSEUDO_MAX_LENGTH)
   pseudo!: string;
 
   @Column('varchar', { unique: true })
