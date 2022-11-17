@@ -21,6 +21,7 @@
     "target": "ES2022",
     "paths": {
       "@controllers/*": ["src/controllers/*"],
+      "@dto/*": ["src/dto/*"],
       "@entities/*": ["src/entities/*"],
       "@interceptors/*": ["src/interceptors/*"],
       "@interfaces/*": ["src/interfaces/*"],

@@ -1,4 +1,10 @@
-import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import Level from '@entities/level.entity';
 import Media from '@entities/media.entity';
@@ -12,7 +18,7 @@ export default class Character {
   @JoinColumn()
   media!: number;
 
-  @OneToOne(() => Level, (level: Level) => level.id)
+  @ManyToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
   requiredLevel!: number;
 }

@@ -1,8 +1,7 @@
 import {
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Type } from 'class-transformer';
@@ -14,8 +13,7 @@ export default class Game {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @OneToOne(() => User, (user: User) => user.id)
-  @JoinColumn()
+  @OneToMany(() => User, (user: User) => user.id)
   winner!: string;
 
   @CreateDateColumn()

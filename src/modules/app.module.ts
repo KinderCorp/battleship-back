@@ -5,18 +5,28 @@ import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ApiSuccessInterceptor } from '@interceptors/api-success/api-success.interceptor';
-import { AppController } from '@controllers/app.controller';
-import { AppService } from '@services/app.service';
+import AppController from '@controllers/app.controller';
 import Boat from '@entities/boat.entity';
+
+import { AppService } from '@services/app.service';
+import BoatModule from '@modules/boat.module';
 import Character from '@entities/character.entity';
+import CharacterModule from '@modules/character.module';
 import Game from '@entities/game.entity';
+import { GameModule } from '@modules/game.module';
 import Level from '@entities/level.entity';
+import LevelModule from '@modules/level.module';
 import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
 import Media from '@entities/media.entity';
+import MediaModule from '@modules/media.module';
 import MediaWithTheme from '@entities/media-with-theme.entity';
+import MediaWithThemeModule from '@modules/media-with-theme.module';
 import Theme from '@entities/theme.entity';
+import ThemeModule from '@modules/theme.module';
 import User from '@entities/user.entity';
+import UserModule from '@modules/user.module';
 import Weapon from '@entities/weapon.entity';
+import WeaponModule from '@modules/weapon.module';
 
 const entities = [
   Boat,
@@ -46,6 +56,15 @@ const entities = [
       type: 'postgres',
       username: process.env.POSTGRESQL_USER,
     }),
+    UserModule,
+    CharacterModule,
+    LevelModule,
+    BoatModule,
+    GameModule,
+    MediaWithThemeModule,
+    MediaModule,
+    WeaponModule,
+    ThemeModule,
   ],
   providers: [
     AppService,

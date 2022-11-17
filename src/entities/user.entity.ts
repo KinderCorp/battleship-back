@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2';
 import {
   Column,
   CreateDateColumn,
@@ -6,23 +5,30 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  OneToOne,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, Length } from 'class-validator';
 
+import {
+  USER_PSEUDO_MAX_LENGTH,
+  USER_PSEUDO_MIN_LENGTH,
+} from '@shared/entity.const';
 import Character from '@entities/character.entity';
 import Game from '@entities/game.entity';
+import { IdentifierInterface } from '@interfaces/entity.interface';
 import Level from '@entities/level.entity';
 
 @Entity()
-export default class User {
+export default class User implements IdentifierInterface {
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  @ManyToOne(() => Game, (game: Game) => game.id)
+  id!: string;
 
-  @Column('varchar', { length: 30 })
-  @Length(2, 30)
+  @Column('varchar', { length: USER_PSEUDO_MAX_LENGTH })
+  @Length(USER_PSEUDO_MIN_LENGTH, USER_PSEUDO_MAX_LENGTH)
   pseudo!: string;
 
   @Column('varchar', { unique: true })
@@ -36,14 +42,16 @@ export default class User {
   @Column('boolean', { default: false })
   hasBeenConfirmed!: boolean;
 
-  @OneToOne(() => Level, (level: Level) => level.id)
+  // TASK Add default onto level 1
+  @OneToMany(() => Level, (level: Level) => level.id)
   @JoinColumn()
   level!: number;
 
-  @Column('integer')
+  @Column('integer', { default: 0 })
   xp!: number;
 
-  @OneToOne(() => Character, (character: Character) => character.id)
+  // TASK Add default onto default character
+  @OneToMany(() => Character, (character: Character) => character.id)
   @JoinColumn()
   character!: number;
 
@@ -51,12 +59,8 @@ export default class User {
   @ManyToMany(() => Game, (game: Game) => game.id)
   games: Game[];
 
+  // TASK Review date to be internationalized
   @CreateDateColumn()
   @Type(() => Date)
   createdAt!: Date;
-
-  public async setPassword(password: string): Promise<User> {
-    this.password = await argon2.hash(password);
-    return this;
-  }
 }
