@@ -5,14 +5,17 @@ import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ApiSuccessInterceptor } from '@interceptors/api-success/api-success.interceptor';
-import { AppController } from '@controllers/app.controller';
+import AppController from '@controllers/app.controller';
 import { AppService } from '@services/app.service';
 import Boat from '@entities/boat.entity';
 import Character from '@entities/character.entity';
+import { CharacterModule } from '@modules/character.module';
 import Game from '@entities/game.entity';
 import Level from '@entities/level.entity';
+import { LevelModule } from '@modules/level.module';
 import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
 import Media from '@entities/media.entity';
+import { MediaModule } from '@modules/media.module';
 import MediaWithTheme from '@entities/media-with-theme.entity';
 import Theme from '@entities/theme.entity';
 import User from '@entities/user.entity';
@@ -48,6 +51,9 @@ const entities = [
       username: process.env.POSTGRESQL_USER,
     }),
     UserModule,
+    CharacterModule,
+    LevelModule,
+    MediaModule,
   ],
   providers: [
     AppService,

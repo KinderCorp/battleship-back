@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2';
 import {
   Column,
   CreateDateColumn,
@@ -6,7 +5,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
@@ -41,14 +40,16 @@ export default class User implements IdentifierInterface {
   @Column('boolean', { default: false })
   hasBeenConfirmed!: boolean;
 
-  @OneToOne(() => Level, (level: Level) => level.id)
+  // TASK Add default onto level 1
+  @OneToMany(() => Level, (level: Level) => level.id)
   @JoinColumn()
   level!: number;
 
-  @Column('integer')
+  @Column('integer', { default: 0 })
   xp!: number;
 
-  @OneToOne(() => Character, (character: Character) => character.id)
+  // TASK Add default onto default character
+  @OneToMany(() => Character, (character: Character) => character.id)
   @JoinColumn()
   character!: number;
 
@@ -56,12 +57,8 @@ export default class User implements IdentifierInterface {
   @ManyToMany(() => Game, (game: Game) => game.id)
   games: Game[];
 
+  // TASK Review date to be internationalized
   @CreateDateColumn()
   @Type(() => Date)
   createdAt!: Date;
-
-  public async setPassword(password: string): Promise<User> {
-    this.password = await argon2.hash(password);
-    return this;
-  }
 }
