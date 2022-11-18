@@ -12,7 +12,7 @@ import BoatModule from '@modules/boat.module';
 import Character from '@entities/character.entity';
 import CharacterModule from '@modules/character.module';
 import Game from '@entities/game.entity';
-import { GameModule } from '@modules/game.module';
+import GameModule from '@modules/game.module';
 import Level from '@entities/level.entity';
 import LevelModule from '@modules/level.module';
 import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';

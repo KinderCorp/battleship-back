@@ -37,5 +37,5 @@ export class CreateUserDto implements CreateDtoInterface {
   @ApiProperty({ default: false, required: false })
   @IsOptional()
   @IsBoolean()
-  public hasBeenConfirmed!: boolean;
+  public hasBeenConfirmed?: boolean;
 }

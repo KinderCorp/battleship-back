@@ -4,7 +4,7 @@ import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateGameDto } from '@dto/game.dto';
 import GameController from '@controllers/game.controller';
-import { GameModule } from '@modules/game.module';
+import GameModule from '@modules/game.module';
 
 // npm run test:unit -- src/tests/game.controller.spec.ts --watch
 
