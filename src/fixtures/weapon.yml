@@ -1,0 +1,59 @@
+entity: Weapon
+items:
+  weapon1:
+    name: 'Bomb'
+    requiredLevel: '1'
+    media: '@media14'
+    damage:
+      {
+        b: [],
+        bl: [],
+        br: [],
+        l: [],
+        m: [row, col],
+        r: [],
+        t: [],
+        tl: [],
+        tr: [],
+      }
+  weapon2:
+    name: 'Triple'
+    requiredLevel: '2'
+    media: '@media15'
+    maxAmmunition: '2'
+    damage:
+      {
+        b: [row + 1, col],
+        bl: [],
+        br: [],
+        l: [],
+        m: [row, col],
+        r: [],
+        t: [row - 1, col],
+        tl: [],
+        tr: [],
+      }
+  weapon3:
+    name: 'Drone'
+    requiredLevel: '2'
+    media: '@media16'
+    maxAmmunition: '2'
+    damage:
+      { b: [], bl: [], br: [], l: [], m: [], r: [], t: [], tl: [], tr: [] }
+  weapon4:
+    name: 'Nuclear'
+    requiredLevel: '3'
+    media: '@media17'
+    maxAmmunition: '1'
+    damage:
+      {
+        b: [row + 1, col],
+        bl: [row + 1, col - 1],
+        br: [row + 1, col + 1],
+        l: [row, col - 1],
+        m: [row, col],
+        r: [row, col + 1],
+        t: [row - 1, col],
+        tl: [row - 1, col - 1],
+        tr: [row - 1, col + 1],
+      }

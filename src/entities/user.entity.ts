@@ -2,9 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -24,7 +21,8 @@ import Level from '@entities/level.entity';
 @Entity()
 export default class User implements IdentifierInterface {
   @PrimaryGeneratedColumn('uuid')
-  @ManyToOne(() => Game, (game: Game) => game.id)
+  @OneToMany(() => Game, (game: Game) => game.winner)
+  @OneToMany(() => Game, (game: Game) => game.loser)
   id!: string;
 
   @Column('varchar', { length: USER_PSEUDO_MAX_LENGTH })
@@ -42,22 +40,14 @@ export default class User implements IdentifierInterface {
   @Column('boolean', { default: false })
   hasBeenConfirmed!: boolean;
 
-  // TASK Add default onto level 1
-  @OneToMany(() => Level, (level: Level) => level.id)
-  @JoinColumn()
+  @ManyToOne(() => Level, (level: Level) => level.id)
   level!: number;
 
   @Column('integer', { default: 0 })
   xp!: number;
 
-  // TASK Add default onto default character
-  @OneToMany(() => Character, (character: Character) => character.id)
-  @JoinColumn()
+  @ManyToOne(() => Character, (character: Character) => character.id)
   character!: number;
-
-  @JoinTable({ name: 'user_game' })
-  @ManyToMany(() => Game, (game: Game) => game.id)
-  games: Game[];
 
   // TASK Review date to be internationalized
   @CreateDateColumn()
