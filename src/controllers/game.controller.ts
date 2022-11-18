@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateGameDto } from '@dto/game.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 import Game from '@entities/game.entity';
 import GameService from '@services/game.service';
 

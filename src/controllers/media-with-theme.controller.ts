@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateMediaWithThemeDto } from '@dto/media-with-theme.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 import MediaWithTheme from '@entities/media-with-theme.entity';
 import MediaWithThemeService from '@services/media-with-theme.service';
 

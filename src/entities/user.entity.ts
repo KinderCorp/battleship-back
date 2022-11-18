@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, Length } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 import {
   USER_PSEUDO_MAX_LENGTH,
@@ -37,12 +38,17 @@ export default class User implements IdentifierInterface {
   @Exclude()
   password!: string;
 
+  @ApiProperty({
+    default: false,
+    description: 'If the user account has been confirmed',
+  })
   @Column('boolean', { default: false })
   hasBeenConfirmed!: boolean;
 
   @ManyToOne(() => Level, (level: Level) => level.id)
   level!: number;
 
+  @ApiProperty({ default: 0 })
   @Column('integer', { default: 0 })
   xp!: number;
 

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 
 export default class ApiError extends HttpException {
   public code!: string;

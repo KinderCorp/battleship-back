@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateThemeDto } from '@dto/theme.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 import Theme from '@entities/theme.entity';
 import ThemeService from '@services/theme.service';
 
@@ -15,7 +15,7 @@ export default class ThemeController {
   @Post()
   @ApiOperation({ summary: 'Insert a new theme' })
   @ApiResponse({
-    description: 'Insert a new theme into the theme table',
+    description: 'Theme correctly inserted in database',
     status: 201,
   })
   async insert(@Body() theme: CreateThemeDto): Promise<Theme> {

@@ -4,7 +4,7 @@ import { CreateUserDto } from '@dto/user.dto';
 import UserService from '@services/user.service';
 
 import ApiError from '@shared/api-error';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 import User from '@entities/user.entity';
 
 @ApiTags('User')

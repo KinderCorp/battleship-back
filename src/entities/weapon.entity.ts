@@ -6,21 +6,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
+import { DamageMatrix } from '@interfaces/weapon.interface';
 import Level from '@entities/level.entity';
 import Media from '@entities/media.entity';
-
-type DamageMatrix = {
-  b: []; // Bottom
-  bl: []; // Bottom left
-  br: []; // Bottom right
-  l: []; // Left
-  m: []; // Middle
-  r: []; // Right
-  t: []; // Top
-  tl: []; // Top left
-  tr: []; // Top right
-};
 
 @Entity()
 export default class Weapon {
@@ -38,8 +28,11 @@ export default class Weapon {
   @JoinColumn()
   media!: number;
 
-  // TASK Add Api Doc
-  // -1 for infinity
+  @ApiProperty({
+    default: -1,
+    description:
+      'Specifies the maximum amount of ammunition. Default to -1 for infinite ammunition',
+  })
   @Column({ default: -1, type: 'integer' })
   maxAmmunition: number;
 
@@ -82,14 +75,14 @@ export default class Weapon {
 //     tr: [], // Top right
 //   }
 
-//   const droneDamages = {
-//     b: [],// Bottom
-//     bl: [],// Bottom left
-//     br: [],// Bottom right
-//     l: [],// Left
-//     m: [],// Middle
-//     r: [],// Right
-//     t: [],// Top
-//     tl: [],// Top left
-//     tr: []// Top right
-//   }
+// const droneDamages = {
+//   b: [],// Bottom
+//   bl: [],// Bottom left
+//   br: [],// Bottom right
+//   l: [],// Left
+//   m: [],// Middle
+//   r: [],// Right
+//   t: [],// Top
+//   tl: [],// Top left
+//   tr: []// Top right
+// }

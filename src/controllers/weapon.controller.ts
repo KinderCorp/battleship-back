@@ -1,7 +1,7 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateWeaponDto } from '@dto/weapon.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 
 import ApiError from '@shared/api-error';
 import Weapon from '@entities/weapon.entity';

@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateMediaDto } from '@dto/media.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 import Media from '@entities/media.entity';
 import MediaService from '@services/media.service';
 
@@ -15,7 +15,7 @@ export default class MediaController {
   @Post()
   @ApiOperation({ summary: 'Insert a new media' })
   @ApiResponse({
-    description: 'Insert a new media into the media table',
+    description: 'Media correctly inserted in database',
     status: 201,
   })
   async insert(@Body() media: CreateMediaDto): Promise<Media> {

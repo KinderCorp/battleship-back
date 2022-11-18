@@ -5,6 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 import MediaWithTheme from '@entities/media-with-theme.entity';
 
@@ -23,6 +24,7 @@ export default class Boat {
   @JoinColumn()
   mediaWithTheme!: number;
 
+  @ApiProperty({ default: 1 })
   @Column('integer', { default: 1 })
   width!: number;
 

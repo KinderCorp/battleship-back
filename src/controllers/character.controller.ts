@@ -5,7 +5,7 @@ import ApiError from '@shared/api-error';
 import Character from '@entities/character.entity';
 import CharacterService from '@services/character.service';
 import { CreateCharacterDto } from '@dto/character.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 
 @ApiTags('Character')
 @Controller('character')
@@ -15,7 +15,7 @@ export default class CharacterController {
   @Post()
   @ApiOperation({ summary: 'Insert a new character' })
   @ApiResponse({
-    description: 'Insert a new character into the character table',
+    description: 'Character correctly inserted in database',
     status: 201,
   })
   async insert(@Body() character: CreateCharacterDto): Promise<Character> {
