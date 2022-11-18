@@ -10,7 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DamageMatrix } from '@interfaces/weapon.interface';
 import Level from '@entities/level.entity';
-import Media from '@entities/media.entity';
+import MediaWithTheme from '@entities/media-with-theme.entity';
 
 @Entity()
 export default class Weapon {
@@ -24,9 +24,12 @@ export default class Weapon {
   @JoinColumn()
   requiredLevel!: number;
 
-  @OneToOne(() => Media, (media: Media) => media.id)
+  @OneToOne(
+    () => MediaWithTheme,
+    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
+  )
   @JoinColumn()
-  media!: number;
+  mediaWithTheme!: number;
 
   @ApiProperty({
     default: -1,

@@ -3,7 +3,7 @@ items:
   weapon1:
     name: 'Bomb'
     requiredLevel: '1'
-    media: '@media14'
+    mediaWithTheme: '@media-with-theme4'
     damage:
       {
         b: [],
@@ -19,7 +19,7 @@ items:
   weapon2:
     name: 'Triple'
     requiredLevel: '2'
-    media: '@media15'
+    mediaWithTheme: '@media-with-theme5'
     maxAmmunition: '2'
     damage:
       {
@@ -36,14 +36,14 @@ items:
   weapon3:
     name: 'Drone'
     requiredLevel: '2'
-    media: '@media16'
+    mediaWithTheme: '@media-with-theme6'
     maxAmmunition: '2'
     damage:
       { b: [], bl: [], br: [], l: [], m: [], r: [], t: [], tl: [], tr: [] }
   weapon4:
     name: 'Nuclear'
     requiredLevel: '3'
-    media: '@media17'
+    mediaWithTheme: '@media-with-theme7'
     maxAmmunition: '1'
     damage:
       {
