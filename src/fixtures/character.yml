@@ -1,0 +1,8 @@
+entity: Character
+items:
+  character{1..3}:
+    media: '@media($current+6)'
+    requiredLevel: '@level($current)'
+  character4:
+    media: '@media10'
+    requiredLevel: '@level2'

@@ -15,7 +15,7 @@ export default class Level {
 
   @OneToOne(() => Media, (media: Media) => media.id)
   @JoinColumn()
-  image!: number;
+  media!: number;
 
   @Column('integer')
   rank!: number;

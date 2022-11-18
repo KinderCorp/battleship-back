@@ -1,0 +1,5 @@
+entity: MediaWithTheme
+items:
+  media-with-theme{1..3}:
+    media: '@media($current)'
+    theme: '@theme($current)'

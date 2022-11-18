@@ -21,8 +21,8 @@ export default class Boat {
     () => MediaWithTheme,
     (mediaWithTheme: MediaWithTheme) => mediaWithTheme.theme,
   )
-  @JoinColumn({ name: 'imageIds' })
-  imageIds!: number[];
+  @JoinColumn({ name: 'mediaIds' })
+  mediaIds!: number[];
 
   @Column('integer', { default: 1 })
   width!: number;
