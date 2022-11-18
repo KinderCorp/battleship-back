@@ -10,7 +10,7 @@ import { ErrorCodes } from '@interfaces/error.interface';
 @ApiTags('Character')
 @Controller('character')
 export default class CharacterController {
-  constructor(private readonly characterService: CharacterService) {}
+  public constructor(private readonly characterService: CharacterService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new character' })
@@ -18,7 +18,9 @@ export default class CharacterController {
     description: 'Character correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() character: CreateCharacterDto): Promise<Character> {
+  public async insert(
+    @Body() character: CreateCharacterDto,
+  ): Promise<Character> {
     try {
       return await this.characterService.insert(character);
     } catch (error) {

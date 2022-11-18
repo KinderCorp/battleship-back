@@ -7,12 +7,12 @@ import MediaRepository from '@repositories/media.repository';
 
 @Injectable()
 export default class MediaService {
-  constructor(
+  public constructor(
     @InjectRepository(Media)
     private mediaRepository: MediaRepository,
   ) {}
 
-  async insert(media: CreateMediaDto): Promise<Media> {
+  public async insert(media: CreateMediaDto): Promise<Media> {
     return this.mediaRepository.insert(media);
   }
 }

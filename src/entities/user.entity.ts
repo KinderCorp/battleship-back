@@ -24,39 +24,39 @@ export default class User implements IdentifierInterface {
   @PrimaryGeneratedColumn('uuid')
   @OneToMany(() => Game, (game: Game) => game.winner)
   @OneToMany(() => Game, (game: Game) => game.loser)
-  id!: string;
+  public id!: string;
 
   @Column('varchar', { length: USER_PSEUDO_MAX_LENGTH })
   @Length(USER_PSEUDO_MIN_LENGTH, USER_PSEUDO_MAX_LENGTH)
-  pseudo!: string;
+  public pseudo!: string;
 
   @Column('varchar', { unique: true })
   @IsEmail()
-  email!: string;
+  public email!: string;
 
   @Column('text')
   @Exclude()
-  password!: string;
+  public password!: string;
 
   @ApiProperty({
     default: false,
     description: 'If the user account has been confirmed',
   })
   @Column('boolean', { default: false })
-  hasBeenConfirmed!: boolean;
+  public hasBeenConfirmed!: boolean;
 
   @ManyToOne(() => Level, (level: Level) => level.id)
-  level!: number;
+  public level!: number;
 
   @ApiProperty({ default: 0 })
   @Column('integer', { default: 0 })
-  xp!: number;
+  public xp!: number;
 
   @ManyToOne(() => Character, (character: Character) => character.id)
-  character!: number;
+  public character!: number;
 
   // TASK Review date to be internationalized
   @CreateDateColumn()
   @Type(() => Date)
-  createdAt!: Date;
+  public createdAt!: Date;
 }

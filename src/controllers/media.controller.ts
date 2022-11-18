@@ -10,7 +10,7 @@ import MediaService from '@services/media.service';
 @ApiTags('Media')
 @Controller('media')
 export default class MediaController {
-  constructor(private readonly mediaService: MediaService) {}
+  public constructor(private readonly mediaService: MediaService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new media' })
@@ -18,7 +18,7 @@ export default class MediaController {
     description: 'Media correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() media: CreateMediaDto): Promise<Media> {
+  public async insert(@Body() media: CreateMediaDto): Promise<Media> {
     try {
       return await this.mediaService.insert(media);
     } catch (error) {

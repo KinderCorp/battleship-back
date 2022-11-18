@@ -6,12 +6,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export default class GameService {
-  constructor(
+  public constructor(
     @InjectRepository(Game)
     private gameRepository: GameRepository,
   ) {}
 
-  async insert(game: CreateGameDto): Promise<Game> {
+  public async insert(game: CreateGameDto): Promise<Game> {
     return this.gameRepository.insert(game);
   }
 }

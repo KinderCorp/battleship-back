@@ -7,12 +7,12 @@ import MediaWithThemeRepository from '@repositories/media-with-theme.repository'
 
 @Injectable()
 export default class MediaWithThemeService {
-  constructor(
+  public constructor(
     @InjectRepository(MediaWithTheme)
     private mediaWithThemeRepository: MediaWithThemeRepository,
   ) {}
 
-  async insert(
+  public async insert(
     mediaWithTheme: CreateMediaWithThemeDto,
   ): Promise<MediaWithTheme> {
     return this.mediaWithThemeRepository.insert(mediaWithTheme);

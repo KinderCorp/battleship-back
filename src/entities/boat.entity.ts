@@ -12,22 +12,22 @@ import MediaWithTheme from '@entities/media-with-theme.entity';
 @Entity()
 export default class Boat {
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @Column('text')
-  name!: string;
+  public name!: string;
 
   @OneToOne(
     () => MediaWithTheme,
     (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
   )
   @JoinColumn()
-  mediaWithTheme!: number;
+  public mediaWithTheme!: number;
 
   @ApiProperty({ default: 1 })
   @Column('integer', { default: 1 })
-  width!: number;
+  public width!: number;
 
   @Column('integer')
-  length!: number;
+  public length!: number;
 }

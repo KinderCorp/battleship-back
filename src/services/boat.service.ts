@@ -7,12 +7,12 @@ import BoatRepository from '@repositories/boat.repository';
 
 @Injectable()
 export default class BoatService {
-  constructor(
+  public constructor(
     @InjectRepository(Boat)
     private boatRepository: BoatRepository,
   ) {}
 
-  async insert(boat: CreateBoatDto): Promise<Boat> {
+  public async insert(boat: CreateBoatDto): Promise<Boat> {
     return this.boatRepository.insert(boat);
   }
 }

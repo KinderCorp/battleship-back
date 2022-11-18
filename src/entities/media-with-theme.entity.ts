@@ -12,13 +12,13 @@ import Theme from '@entities/theme.entity';
 @Entity()
 export default class MediaWithTheme {
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @OneToOne(() => Media, (media: Media) => media.id)
   @JoinColumn()
-  media!: number;
+  public media!: number;
 
   @ManyToOne(() => Theme, (theme: Theme) => theme.id)
   @JoinColumn()
-  theme!: number;
+  public theme!: number;
 }

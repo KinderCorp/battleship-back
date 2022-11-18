@@ -9,8 +9,8 @@ export default class Theme {
     (mediaWithTheme: MediaWithTheme) => mediaWithTheme.theme,
   )
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @Column('text')
-  name!: string;
+  public name!: string;
 }

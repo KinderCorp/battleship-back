@@ -7,12 +7,12 @@ import WeaponRepository from '@repositories/weapon.repository';
 
 @Injectable()
 export default class WeaponService {
-  constructor(
+  public constructor(
     @InjectRepository(Weapon)
     private weaponRepository: WeaponRepository,
   ) {}
 
-  async insert(weapon: CreateWeaponDto): Promise<Weapon> {
+  public async insert(weapon: CreateWeaponDto): Promise<Weapon> {
     return this.weaponRepository.insert(weapon);
   }
 }

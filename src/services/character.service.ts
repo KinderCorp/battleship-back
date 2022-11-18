@@ -7,12 +7,12 @@ import { CreateCharacterDto } from '@dto/character.dto';
 
 @Injectable()
 export default class CharacterService {
-  constructor(
+  public constructor(
     @InjectRepository(Character)
     private characterRepository: CharacterRepository,
   ) {}
 
-  insert(character: CreateCharacterDto) {
+  public insert(character: CreateCharacterDto) {
     return this.characterRepository.insert(character);
   }
 }

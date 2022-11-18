@@ -15,21 +15,21 @@ import MediaWithTheme from '@entities/media-with-theme.entity';
 @Entity()
 export default class Weapon {
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @Column('text')
-  name!: string;
+  public name!: string;
 
   @ManyToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
-  requiredLevel!: number;
+  public requiredLevel!: number;
 
   @OneToOne(
     () => MediaWithTheme,
     (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
   )
   @JoinColumn()
-  mediaWithTheme!: number;
+  public mediaWithTheme!: number;
 
   @ApiProperty({
     default: -1,
@@ -37,10 +37,10 @@ export default class Weapon {
       'Specifies the maximum amount of ammunition. Default to -1 for infinite ammunition',
   })
   @Column({ default: -1, type: 'integer' })
-  maxAmmunition: number;
+  public maxAmmunition: number;
 
   @Column('json')
-  damage: DamageMatrix;
+  public damage: DamageMatrix;
 }
 
 // const regularDamages = {

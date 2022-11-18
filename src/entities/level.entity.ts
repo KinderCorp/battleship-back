@@ -16,15 +16,15 @@ export default class Level {
   @OneToMany(() => Weapon, (weapon: Weapon) => weapon.requiredLevel)
   @OneToMany(() => User, (user: User) => user.level)
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @OneToOne(() => Media, (media: Media) => media.id)
   @JoinColumn()
-  media!: number;
+  public media!: number;
 
   @Column('integer')
-  rank!: number;
+  public rank!: number;
 
   @Column('integer')
-  totalXp!: number;
+  public totalXp!: number;
 }

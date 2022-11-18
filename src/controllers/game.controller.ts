@@ -10,7 +10,7 @@ import GameService from '@services/game.service';
 @ApiTags('Game')
 @Controller('game')
 export default class GameController {
-  constructor(private readonly gameService: GameService) {}
+  public constructor(private readonly gameService: GameService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new game' })
@@ -18,7 +18,7 @@ export default class GameController {
     description: 'Game correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() game: CreateGameDto): Promise<Game> {
+  public async insert(@Body() game: CreateGameDto): Promise<Game> {
     try {
       return await this.gameService.insert(game);
     } catch (error) {

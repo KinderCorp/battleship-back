@@ -7,12 +7,12 @@ import LevelRepository from '@repositories/level.repository';
 
 @Injectable()
 export default class LevelService {
-  constructor(
+  public constructor(
     @InjectRepository(Level)
     private levelRepository: LevelRepository,
   ) {}
 
-  async insert(level: CreateLevelDto): Promise<Level> {
+  public async insert(level: CreateLevelDto): Promise<Level> {
     return this.levelRepository.insert(level);
   }
 }

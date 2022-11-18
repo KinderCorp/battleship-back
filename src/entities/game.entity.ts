@@ -11,15 +11,15 @@ import User from '@entities/user.entity';
 @Entity()
 export default class Game {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  public id!: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
-  winner!: string;
+  public winner!: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
-  loser!: string;
+  public loser!: string;
 
   @CreateDateColumn()
   @Type(() => Date)
-  createdAt!: Date;
+  public createdAt!: Date;
 }

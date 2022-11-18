@@ -10,7 +10,7 @@ import User from '@entities/user.entity';
 @ApiTags('User')
 @Controller('user')
 export default class UserController {
-  constructor(private readonly userService: UserService) {}
+  public constructor(private readonly userService: UserService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new user' })
@@ -18,7 +18,7 @@ export default class UserController {
     description: 'User correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() user: CreateUserDto): Promise<User> {
+  public async insert(@Body() user: CreateUserDto): Promise<User> {
     try {
       return await this.userService.insert(user);
     } catch (error) {

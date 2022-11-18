@@ -10,7 +10,9 @@ import MediaWithThemeService from '@services/media-with-theme.service';
 @ApiTags('Media with theme')
 @Controller('media-with-theme')
 export default class MediaWithThemeController {
-  constructor(private readonly mediaWithThemeService: MediaWithThemeService) {}
+  public constructor(
+    private readonly mediaWithThemeService: MediaWithThemeService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new media with theme' })
@@ -18,7 +20,7 @@ export default class MediaWithThemeController {
     description: 'Media with theme correctly inserted in database',
     status: 201,
   })
-  async insert(
+  public async insert(
     @Body() mediaWithTheme: CreateMediaWithThemeDto,
   ): Promise<MediaWithTheme> {
     try {

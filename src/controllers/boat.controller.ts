@@ -10,7 +10,7 @@ import BoatService from '@services/boat.service';
 @ApiTags('Boat')
 @Controller('boat')
 export default class BoatController {
-  constructor(private readonly boatService: BoatService) {}
+  public constructor(private readonly boatService: BoatService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new boat' })
@@ -18,7 +18,7 @@ export default class BoatController {
     description: 'Boat correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() boat: CreateBoatDto): Promise<Boat> {
+  public async insert(@Body() boat: CreateBoatDto): Promise<Boat> {
     try {
       return await this.boatService.insert(boat);
     } catch (error) {

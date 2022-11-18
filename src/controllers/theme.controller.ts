@@ -10,7 +10,7 @@ import ThemeService from '@services/theme.service';
 @ApiTags('Theme')
 @Controller('theme')
 export default class ThemeController {
-  constructor(private readonly themeService: ThemeService) {}
+  public constructor(private readonly themeService: ThemeService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new theme' })
@@ -18,7 +18,7 @@ export default class ThemeController {
     description: 'Theme correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() theme: CreateThemeDto): Promise<Theme> {
+  public async insert(@Body() theme: CreateThemeDto): Promise<Theme> {
     try {
       return await this.themeService.insert(theme);
     } catch (error) {
