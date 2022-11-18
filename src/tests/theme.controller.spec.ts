@@ -1,13 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { AppModule } from '@modules/app.module';
 import ThemeController from '@controllers/theme.controller';
+import ThemeModule from '@modules/theme.module';
 
-xdescribe('ThemeController', () => {
+// npm run test:unit -- src/tests/theme.controller.spec.ts --watch
+
+describe('ThemeController', () => {
   let controller: ThemeController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ThemeController],
+      imports: [AppModule, ThemeModule],
     }).compile();
 
     controller = module.get<ThemeController>(ThemeController);

@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { AppModule } from '@modules/app.module';
 import LevelController from '@controllers/level.controller';
 import LevelModule from '@modules/level.module';
-import LevelService from '@services/level.service';
 
-// FIXME
-xdescribe('LevelController', () => {
+// npm run test:unit -- src/tests/level.controller.spec.ts --watch
+
+describe('LevelController', () => {
   let controller: LevelController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [LevelController],
-      imports: [LevelModule],
-      providers: [LevelService],
+      imports: [AppModule, LevelModule],
     }).compile();
 
     controller = module.get<LevelController>(LevelController);

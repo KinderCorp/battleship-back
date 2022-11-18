@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { AppModule } from '@modules/app.module';
 import MediaController from '@controllers/media.controller';
 import MediaModule from '@modules/media.module';
-import MediaService from '@services/media.service';
 
-// FIXME
-xdescribe('MediaController', () => {
+// npm run test:unit -- src/tests/media.controller.spec.ts --watch
+
+describe('MediaController', () => {
   let controller: MediaController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [MediaController],
-      imports: [MediaModule],
-      providers: [MediaService],
+      imports: [AppModule, MediaModule],
     }).compile();
 
     controller = module.get<MediaController>(MediaController);

@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { AppModule } from '@modules/app.module';
 import UserController from '@controllers/user.controller';
 import UserModule from '@modules/user.module';
-import UserService from '@services/user.service';
 
-// FIXME
-xdescribe('UserController', () => {
+// npm run test:unit -- src/tests/game.controller.spec.ts --watch
+
+describe('UserController', () => {
   let userController: UserController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
-      imports: [UserModule],
-      providers: [UserService],
+      imports: [AppModule, UserModule],
     }).compile();
 
     userController = app.get<UserController>(UserController);
