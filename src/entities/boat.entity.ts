@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -16,13 +16,12 @@ export default class Boat {
   @Column('text')
   name!: string;
 
-  // FIXME don't work
-  @ManyToOne(
+  @OneToOne(
     () => MediaWithTheme,
-    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.theme,
+    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
   )
-  @JoinColumn({ name: 'mediaIds' })
-  mediaIds!: number[];
+  @JoinColumn()
+  mediaWithTheme!: number;
 
   @Column('integer', { default: 1 })
   width!: number;
