@@ -1,0 +1,4 @@
+entity: Media
+items:
+  media{1..10}:
+    path: '{{system.directoryPath}}'

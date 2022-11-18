@@ -28,7 +28,7 @@ import UserModule from '@modules/user.module';
 import Weapon from '@entities/weapon.entity';
 import WeaponModule from '@modules/weapon.module';
 
-const entities = [
+export const entities = [
   Boat,
   Character,
   Game,
