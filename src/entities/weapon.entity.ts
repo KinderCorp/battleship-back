@@ -12,18 +12,6 @@ import { DamageMatrix } from '@interfaces/weapon.interface';
 import Level from '@entities/level.entity';
 import MediaWithTheme from '@entities/media-with-theme.entity';
 
-type DamageMatrix = {
-  b: []; // Bottom
-  bl: []; // Bottom left
-  br: []; // Bottom right
-  l: []; // Left
-  m: []; // Middle
-  r: []; // Right
-  t: []; // Top
-  tl: []; // Top left
-  tr: []; // Top right
-};
-
 @Entity()
 export default class Weapon {
   @PrimaryGeneratedColumn()
