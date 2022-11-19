@@ -23,16 +23,24 @@
     "strictNullChecks": false,
     "target": "ES2022",
     "paths": {
-      "@controllers/*": ["src/controllers/*"],
+      "@app/*": ["src/domains/app/*"],
+      "@base/*": ["src/domains/base/*"],
+      "@boat/*": ["src/domains/boat/*"],
+      "@character/*": ["src/domains/character/*"],
       "@dto/*": ["src/dto/*"],
-      "@entities/*": ["src/entities/*"],
+      "@filters/*": ["src/filters/*"],
+      "@game/*": ["src/domains/game/*"],
       "@interceptors/*": ["src/interceptors/*"],
       "@interfaces/*": ["src/interfaces/*"],
+      "@level/*": ["src/domains/level/*"],
+      "@media-with-theme/*": ["src/domains/media-with-theme/*"],
+      "@media/*": ["src/domains/media/*"],
       "@modules/*": ["src/modules/*"],
-      "@repositories/*": ["src/repositories/*"],
-      "@services/*": ["src/services/*"],
       "@shared/*": ["src/shared/*"],
-      "@tests/*": ["src/tests/*"]
+      "@tests/*": ["src/tests/*"],
+      "@theme/*": ["src/domains/theme/*"],
+      "@user/*": ["src/domains/user/*"],
+      "@weapon/*": ["src/domains/weapon/*"]
     }
   },
   "exclude": [

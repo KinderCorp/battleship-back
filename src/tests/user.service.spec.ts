@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppModule } from '@modules/app.module';
-import UserModule from '@modules/user.module';
-import UserService from '@services/user.service';
+import UserService from '@user/user.service';
 
 // npm run test:unit -- src/tests/user.service.spec.ts --watch
 
@@ -11,7 +10,7 @@ describe('UserService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UserModule],
+      imports: [AppModule],
     }).compile();
 
     service = module.get<UserService>(UserService);

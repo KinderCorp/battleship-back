@@ -3,8 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateThemeDto } from '@dto/theme.dto';
-import ThemeController from '@controllers/theme.controller';
-import ThemeModule from '@modules/theme.module';
+import ThemeController from '@theme/theme.controller';
 
 // npm run test:unit -- src/tests/theme.controller.spec.ts --watch
 
@@ -13,7 +12,7 @@ describe('ThemeController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ThemeModule],
+      imports: [AppModule],
     }).compile();
 
     controller = module.get<ThemeController>(ThemeController);

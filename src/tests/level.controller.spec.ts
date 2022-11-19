@@ -3,8 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateLevelDto } from '@dto/level.dto';
-import LevelController from '@controllers/level.controller';
-import LevelModule from '@modules/level.module';
+import LevelController from '@level/level.controller';
 
 // npm run test:unit -- src/tests/level.controller.spec.ts --watch
 
@@ -13,7 +12,7 @@ describe('LevelController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, LevelModule],
+      imports: [AppModule],
     }).compile();
 
     controller = module.get<LevelController>(LevelController);
