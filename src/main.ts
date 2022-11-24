@@ -14,6 +14,7 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
+  app.enableCors();
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new ApiErrorExceptionFilter());
 
