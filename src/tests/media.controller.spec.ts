@@ -3,8 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateMediaDto } from '@dto/media.dto';
-import MediaController from '@controllers/media.controller';
-import MediaModule from '@modules/media.module';
+import MediaController from '@media/media.controller';
 
 // npm run test:unit -- src/tests/media.controller.spec.ts --watch
 
@@ -13,7 +12,7 @@ describe('MediaController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MediaModule],
+      imports: [AppModule],
     }).compile();
 
     controller = module.get<MediaController>(MediaController);

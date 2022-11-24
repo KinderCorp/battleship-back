@@ -3,8 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateGameDto } from '@dto/game.dto';
-import GameController from '@controllers/game.controller';
-import GameModule from '@modules/game.module';
+import GameController from '@game/game.controller';
 
 // npm run test:unit -- src/tests/game.controller.spec.ts --watch
 
@@ -13,7 +12,7 @@ describe('GameController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, GameModule],
+      imports: [AppModule],
     }).compile();
 
     controller = module.get<GameController>(GameController);
