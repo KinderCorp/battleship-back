@@ -1,5 +1,5 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { CreateWeaponDto } from '@dto/weapon.dto';
 import { ErrorCodes } from '@interfaces/error.interface';
 
@@ -22,12 +22,12 @@ export default class WeaponController {
     try {
       return await this.weaponService.insert(weapon);
     } catch (error) {
-      throw new ApiError({
-        code: ErrorCodes.WRONG_PARAMS,
-        detail: (error as { message: string }).message,
-        instance: this.constructor.name,
-        title: 'Fail to insert weapon',
-      });
+      throw new BadRequestException(
+        new ApiError({
+          code: ErrorCodes.INSERTION_FAILED,
+          message: 'Fail to insert boat.',
+        }),
+      );
     }
   }
 }

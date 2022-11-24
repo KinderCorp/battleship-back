@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateGameDto } from '@dto/game.dto';
 import GameController from '@game/game.controller';
@@ -68,7 +68,7 @@ describe('GameController', () => {
     };
 
     await expect(controller.insert(gameToInsert)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

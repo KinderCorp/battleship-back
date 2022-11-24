@@ -1,5 +1,5 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { CreateLevelDto } from '@dto/level.dto';
 import { ErrorCodes } from '@interfaces/error.interface';
 
@@ -22,12 +22,12 @@ export default class LevelController {
     try {
       return await this.levelService.insert(level);
     } catch (error) {
-      throw new ApiError({
-        code: ErrorCodes.WRONG_PARAMS,
-        detail: (error as { message: string }).message,
-        instance: this.constructor.name,
-        title: 'Fail to insert level',
-      });
+      throw new BadRequestException(
+        new ApiError({
+          code: ErrorCodes.INSERTION_FAILED,
+          message: 'Fail to insert boat.',
+        }),
+      );
     }
   }
 }

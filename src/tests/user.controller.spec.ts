@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateUserDto } from '@dto/user.dto';
 import UserController from '@user/user.controller';
@@ -39,7 +39,7 @@ describe('UserController', () => {
 
   it('should not insert a user', async () => {
     await expect(controller.insert({} as CreateUserDto)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

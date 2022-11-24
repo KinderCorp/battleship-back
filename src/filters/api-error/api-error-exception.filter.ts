@@ -3,16 +3,10 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus,
 } from '@nestjs/common';
-import ApiError from '@shared/api-error';
 import { FastifyReply } from 'fastify';
 
-type ErrorObject = {
-  statusCode?: number;
-  message: string;
-  error?: string;
-};
+import { ErrorCodes } from '@interfaces/error.interface';
 
 @Catch(HttpException)
 export default class ApiErrorExceptionFilter<T extends HttpException>
@@ -27,26 +21,13 @@ export default class ApiErrorExceptionFilter<T extends HttpException>
 
     const error =
       typeof response === 'string'
-        ? ({ message: exceptionResponse } as ErrorObject)
-        : (exceptionResponse as ErrorObject);
-
-    response.status(status).send(
-      exception instanceof ApiError
         ? exceptionResponse
-        : {
-            code: this.getTextStatusFromCode(status),
-            detail: `This error hasn't been properly handled : ${error.message}`,
-            stack: exception?.stack,
-            status,
-            title: error.error ?? 'Unhandled exception has been catch',
-          },
-    );
-  }
+        : (exceptionResponse as { message: string; error: string }).message;
 
-  public getTextStatusFromCode(statusCode: HttpStatus) {
-    const indexOfStatusCode = Object.values(HttpStatus).indexOf(
-      statusCode as unknown as HttpStatus,
-    );
-    return Object.keys(HttpStatus)[indexOfStatusCode];
+    response.status(status).send({
+      code: ErrorCodes.NOT_FOUND,
+      detail: exceptionResponse,
+      message: error,
+    });
   }
 }

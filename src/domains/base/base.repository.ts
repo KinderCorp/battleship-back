@@ -1,3 +1,4 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   DeepPartial,
   FindManyOptions,
@@ -5,12 +6,10 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { HttpStatus, Injectable } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 
 import { CreateDtoInterface, UpdateDtoInterface } from '@dto/dto.interface';
 import ApiError from '@shared/api-error';
-import { ErrorCodes } from '@interfaces/error.interface';
 import { IdentifierInterface } from '@interfaces/entity.interface';
 
 @Injectable()
@@ -33,12 +32,9 @@ export default class BaseRepository<Entity extends IdentifierInterface> {
     try {
       return await this.repository.findOneOrFail(options);
     } catch (error: unknown) {
-      throw new ApiError({
-        code: ErrorCodes.WRONG_PARAMS,
-        detail: error as object,
-        status: HttpStatus.NOT_FOUND,
-        title: 'No data was found with this parameters.',
-      });
+      throw new BadRequestException(
+        ApiError.ValidationError('No data was found with this parameters.'),
+      );
     }
   }
 

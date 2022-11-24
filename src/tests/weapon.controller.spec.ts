@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateWeaponDto } from '@dto/weapon.dto';
 import WeaponController from '@weapon/weapon.controller';
+import { BadRequestException } from '@nestjs/common';
 
 // npm run test:unit -- src/tests/weapon.controller.spec.ts --watch
 
@@ -50,7 +50,7 @@ describe('WeaponController', () => {
 
   it('should not insert a weapon', async () => {
     await expect(controller.insert({} as CreateWeaponDto)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

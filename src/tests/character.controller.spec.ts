@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import CharacterController from '@character/character.controller';
 import { CreateCharacterDto } from '@dto/character.dto';
@@ -42,7 +42,7 @@ describe('CharacterController', () => {
     };
 
     await expect(controller.insert(characterToInsert)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

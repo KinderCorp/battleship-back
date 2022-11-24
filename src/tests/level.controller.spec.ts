@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateLevelDto } from '@dto/level.dto';
 import LevelController from '@level/level.controller';
@@ -38,7 +38,7 @@ describe('LevelController', () => {
 
   it('should not insert a level', async () => {
     await expect(controller.insert({} as CreateLevelDto)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

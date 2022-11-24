@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import ApiError from '@shared/api-error';
 import { CreateGameDto } from '@dto/game.dto';
 import Game from '@game/game.entity';
 import GameRepository from '@game/game.repository';
@@ -15,7 +16,7 @@ export default class GameService {
   public async insert(game: CreateGameDto): Promise<Game> {
     if (!game.winner && !game.loser) {
       throw new BadRequestException(
-        'Please enter at least a winner or a loser',
+        ApiError.ValidationError('Please enter at least a winner or a loser'),
       );
     }
 
