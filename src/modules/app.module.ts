@@ -25,7 +25,7 @@ import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
       username: process.env.POSTGRESQL_USER,
     }),
     DomainModule,
-    GatewayModule
+    GatewayModule,
   ],
   providers: [
     Logger,

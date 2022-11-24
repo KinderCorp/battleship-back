@@ -42,7 +42,7 @@
       "@user/*": ["src/domains/user/*"],
       "@weapon/*": ["src/domains/weapon/*"],
       "@engine/*": ["src/engine/*"],
-      "@gateways/*": ["src/engine/gateways/*"],
+      "@gateways/*": ["src/engine/gateways/*"]
     }
   },
   "exclude": [
