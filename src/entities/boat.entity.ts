@@ -2,31 +2,32 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 import MediaWithTheme from '@entities/media-with-theme.entity';
 
 @Entity()
 export default class Boat {
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @Column('text')
-  name!: string;
+  public name!: string;
 
-  // FIXME don't work
-  @ManyToOne(
+  @OneToOne(
     () => MediaWithTheme,
-    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.theme,
+    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
   )
-  @JoinColumn({ name: 'imageIds' })
-  imageIds!: number[];
+  @JoinColumn()
+  public mediaWithTheme!: number;
 
+  @ApiProperty({ default: 1 })
   @Column('integer', { default: 1 })
-  width!: number;
+  public width!: number;
 
   @Column('integer')
-  length!: number;
+  public length!: number;
 }

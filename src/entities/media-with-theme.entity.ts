@@ -1,20 +1,24 @@
-import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import Media from '@entities/media.entity';
 import Theme from '@entities/theme.entity';
 
-// TASK Add APi Property for swagger
-
 @Entity()
 export default class MediaWithTheme {
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @OneToOne(() => Media, (media: Media) => media.id)
   @JoinColumn()
-  image!: number;
+  public media!: number;
 
-  @OneToOne(() => Theme, (theme: Theme) => theme.id)
+  @ManyToOne(() => Theme, (theme: Theme) => theme.id)
   @JoinColumn()
-  theme!: number;
+  public theme!: number;
 }

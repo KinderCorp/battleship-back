@@ -1,0 +1,10 @@
+entity: Level
+items:
+  level1:
+    media: '@media($current+6)'
+    rank: '($current)'
+    totalXp: '0'
+  level{2..3}:
+    media: '@media($current+6)'
+    rank: '($current)'
+    totalXp: '($current*100)'

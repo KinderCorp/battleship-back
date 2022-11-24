@@ -1,7 +1,7 @@
 import {
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Type } from 'class-transformer';
@@ -11,12 +11,15 @@ import User from '@entities/user.entity';
 @Entity()
 export default class Game {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  public id!: string;
 
-  @OneToMany(() => User, (user: User) => user.id)
-  winner!: string;
+  @ManyToOne(() => User, (user: User) => user.id)
+  public winner: string;
+
+  @ManyToOne(() => User, (user: User) => user.id)
+  public loser: string;
 
   @CreateDateColumn()
   @Type(() => Date)
-  createdAt!: Date;
+  public createdAt!: Date;
 }

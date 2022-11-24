@@ -3,8 +3,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export default class Media {
   @PrimaryGeneratedColumn()
-  id!: number;
+  public id!: number;
 
   @Column('text')
-  path!: string;
+  public path!: string;
 }

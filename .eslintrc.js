@@ -12,6 +12,19 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'sort-class-members', 'import'],
   rules: {
+    '@typescript-eslint/explicit-member-accessibility': [
+      'error',
+      {
+        accessibility: 'explicit',
+        overrides: {
+          accessors: 'explicit',
+          constructors: 'explicit',
+          methods: 'explicit',
+          parameterProperties: 'explicit',
+          properties: 'explicit',
+        },
+      },
+    ],
     'default-param-last': ['warn'],
     'import/no-cycle': 0,
     'import/no-import-module-exports': 'warn',

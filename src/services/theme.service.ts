@@ -7,12 +7,12 @@ import ThemeRepository from '@repositories/theme.repository';
 
 @Injectable()
 export default class ThemeService {
-  constructor(
+  public constructor(
     @InjectRepository(Theme)
     private themeRepository: ThemeRepository,
   ) {}
 
-  async insert(theme: CreateThemeDto): Promise<Theme> {
+  public async insert(theme: CreateThemeDto): Promise<Theme> {
     return this.themeRepository.insert(theme);
   }
 }

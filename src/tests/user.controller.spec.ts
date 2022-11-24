@@ -1,24 +1,46 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import ApiError from '@shared/api-error';
+import { AppModule } from '@modules/app.module';
+import { CreateUserDto } from '@dto/user.dto';
 import UserController from '@controllers/user.controller';
 import UserModule from '@modules/user.module';
-import UserService from '@services/user.service';
 
-// FIXME
-xdescribe('UserController', () => {
-  let userController: UserController;
+// npm run test:unit -- src/tests/user.controller.spec.ts --watch
+
+describe('UserController', () => {
+  let controller: UserController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
-      imports: [UserModule],
-      providers: [UserService],
+      imports: [AppModule, UserModule],
     }).compile();
 
-    userController = app.get<UserController>(UserController);
+    controller = app.get<UserController>(UserController);
   });
 
   it('should be defined', () => {
-    expect(userController).toBeDefined();
+    expect(controller).toBeDefined();
+  });
+
+  it('should insert a user', async () => {
+    const userToInsert: CreateUserDto = {
+      email: 'email@example.com',
+      hasBeenConfirmed: false,
+      password: '1234',
+      pseudo: 'pseudoAnonymous',
+    };
+
+    const spy = jest.spyOn(controller, 'insert').mockImplementation();
+    await controller.insert(userToInsert);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(userToInsert);
+  });
+
+  it('should not insert a user', async () => {
+    await expect(controller.insert({} as CreateUserDto)).rejects.toThrowError(
+      ApiError,
+    );
   });
 });

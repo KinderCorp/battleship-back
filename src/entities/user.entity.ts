@@ -2,15 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, Length } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 import {
   USER_PSEUDO_MAX_LENGTH,
@@ -24,43 +22,41 @@ import Level from '@entities/level.entity';
 @Entity()
 export default class User implements IdentifierInterface {
   @PrimaryGeneratedColumn('uuid')
-  @ManyToOne(() => Game, (game: Game) => game.id)
-  id!: string;
+  @OneToMany(() => Game, (game: Game) => game.winner)
+  @OneToMany(() => Game, (game: Game) => game.loser)
+  public id!: string;
 
   @Column('varchar', { length: USER_PSEUDO_MAX_LENGTH })
   @Length(USER_PSEUDO_MIN_LENGTH, USER_PSEUDO_MAX_LENGTH)
-  pseudo!: string;
+  public pseudo!: string;
 
   @Column('varchar', { unique: true })
   @IsEmail()
-  email!: string;
+  public email!: string;
 
   @Column('text')
   @Exclude()
-  password!: string;
+  public password!: string;
 
+  @ApiProperty({
+    default: false,
+    description: 'If the user account has been confirmed',
+  })
   @Column('boolean', { default: false })
-  hasBeenConfirmed!: boolean;
+  public hasBeenConfirmed!: boolean;
 
-  // TASK Add default onto level 1
-  @OneToMany(() => Level, (level: Level) => level.id)
-  @JoinColumn()
-  level!: number;
+  @ManyToOne(() => Level, (level: Level) => level.id)
+  public level!: number;
 
+  @ApiProperty({ default: 0 })
   @Column('integer', { default: 0 })
-  xp!: number;
+  public xp!: number;
 
-  // TASK Add default onto default character
-  @OneToMany(() => Character, (character: Character) => character.id)
-  @JoinColumn()
-  character!: number;
-
-  @JoinTable({ name: 'user_game' })
-  @ManyToMany(() => Game, (game: Game) => game.id)
-  games: Game[];
+  @ManyToOne(() => Character, (character: Character) => character.id)
+  public character!: number;
 
   // TASK Review date to be internationalized
   @CreateDateColumn()
   @Type(() => Date)
-  createdAt!: Date;
+  public createdAt!: Date;
 }

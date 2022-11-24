@@ -18,7 +18,7 @@ type ErrorObject = {
 export default class ApiErrorExceptionFilter<T extends HttpException>
   implements ExceptionFilter
 {
-  catch(exception: T, host: ArgumentsHost) {
+  public catch(exception: T, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response: FastifyReply<any> = ctx.getResponse<FastifyReply>();
@@ -43,7 +43,7 @@ export default class ApiErrorExceptionFilter<T extends HttpException>
     );
   }
 
-  getTextStatusFromCode(statusCode: HttpStatus) {
+  public getTextStatusFromCode(statusCode: HttpStatus) {
     const indexOfStatusCode = Object.values(HttpStatus).indexOf(
       statusCode as unknown as HttpStatus,
     );

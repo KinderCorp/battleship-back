@@ -1,7 +1,7 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateWeaponDto } from '@dto/weapon.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 
 import ApiError from '@shared/api-error';
 import Weapon from '@entities/weapon.entity';
@@ -10,7 +10,7 @@ import WeaponService from '@services/weapon.service';
 @ApiTags('Weapon')
 @Controller('weapon')
 export default class WeaponController {
-  constructor(private readonly weaponService: WeaponService) {}
+  public constructor(private readonly weaponService: WeaponService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new weapon' })
@@ -18,7 +18,7 @@ export default class WeaponController {
     description: 'Weapon correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() weapon: CreateWeaponDto): Promise<Weapon> {
+  public async insert(@Body() weapon: CreateWeaponDto): Promise<Weapon> {
     try {
       return await this.weaponService.insert(weapon);
     } catch (error) {

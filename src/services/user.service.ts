@@ -8,12 +8,12 @@ import UserRepository from '@repositories/user.repository';
 
 @Injectable()
 export default class UserService {
-  constructor(
+  public constructor(
     @InjectRepository(User)
     private userRepository: UserRepository,
   ) {}
 
-  async insert(user: CreateUserDto): Promise<User> {
+  public async insert(user: CreateUserDto): Promise<User> {
     user.password = await this.setPassword(user.password);
 
     return this.userRepository.insert(user);

@@ -1,0 +1,4 @@
+entity: Theme
+items:
+  theme{1..3}:
+    name: '{{color.human}}'

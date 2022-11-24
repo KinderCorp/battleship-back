@@ -1,7 +1,7 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateLevelDto } from '@dto/level.dto';
-import { ErrorCodes } from '@interfaces/error.interface/error.interface';
+import { ErrorCodes } from '@interfaces/error.interface';
 
 import ApiError from '@shared/api-error';
 import Level from '@entities/level.entity';
@@ -10,7 +10,7 @@ import LevelService from '@services/level.service';
 @ApiTags('Level')
 @Controller('level')
 export default class LevelController {
-  constructor(private readonly levelService: LevelService) {}
+  public constructor(private readonly levelService: LevelService) {}
 
   @Post()
   @ApiOperation({ summary: 'Insert a new level' })
@@ -18,7 +18,7 @@ export default class LevelController {
     description: 'Level correctly inserted in database',
     status: 201,
   })
-  async insert(@Body() level: CreateLevelDto): Promise<Level> {
+  public async insert(@Body() level: CreateLevelDto): Promise<Level> {
     try {
       return await this.levelService.insert(level);
     } catch (error) {

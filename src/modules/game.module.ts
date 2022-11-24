@@ -11,4 +11,4 @@ import GameService from '@services/game.service';
   imports: [TypeOrmModule.forFeature([Game])],
   providers: [GameService, GameRepository],
 })
-export class GameModule {}
+export default class GameModule {}

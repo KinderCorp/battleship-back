@@ -1,0 +1,9 @@
+entity: User
+items:
+  user{1..3}:
+    pseudo: '{{name.firstName}}'
+    email: '{{internet.email}}'
+    password: '{{internet.password}}'
+    level: '@level1'
+    xp: '0'
+    character: '@character1'
