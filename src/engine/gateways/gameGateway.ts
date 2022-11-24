@@ -1,6 +1,6 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server as SocketServer } from 'socket.io';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class GameGateway implements OnModuleInit {
