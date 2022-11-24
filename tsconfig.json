@@ -40,7 +40,9 @@
       "@tests/*": ["src/tests/*"],
       "@theme/*": ["src/domains/theme/*"],
       "@user/*": ["src/domains/user/*"],
-      "@weapon/*": ["src/domains/weapon/*"]
+      "@weapon/*": ["src/domains/weapon/*"],
+      "@engine/*": ["src/engine/*"],
+      "@gateways/*": ["src/engine/gateways/*"],
     }
   },
   "exclude": [
