@@ -1,5 +1,5 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { CreateUserDto } from '@dto/user.dto';
 import UserService from '@user/user.service';
 
@@ -22,12 +22,12 @@ export default class UserController {
     try {
       return await this.userService.insert(user);
     } catch (error) {
-      throw new ApiError({
-        code: ErrorCodes.WRONG_PARAMS,
-        detail: (error as { message: string }).message,
-        instance: this.constructor.name,
-        title: 'Fail to insert user',
-      });
+      throw new BadRequestException(
+        new ApiError({
+          code: ErrorCodes.INSERTION_FAILED,
+          message: 'Fail to insert user.',
+        }),
+      );
     }
   }
 }

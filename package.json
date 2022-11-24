@@ -16,7 +16,7 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "start": "nest start",
+    "start": "npm run start:dev",
     "test:cov": "jest --coverage --config ./jest.config.js",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./jest-e2e.config.js --forceExit",

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateMediaDto } from '@dto/media.dto';
 import MediaController from '@media/media.controller';
@@ -36,7 +36,7 @@ describe('MediaController', () => {
 
   it('should not insert a media', async () => {
     await expect(controller.insert({} as CreateMediaDto)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

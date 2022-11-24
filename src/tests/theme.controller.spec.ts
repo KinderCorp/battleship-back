@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateThemeDto } from '@dto/theme.dto';
 import ThemeController from '@theme/theme.controller';
@@ -36,7 +36,7 @@ describe('ThemeController', () => {
 
   it('should not insert a theme', async () => {
     await expect(controller.insert({} as CreateThemeDto)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

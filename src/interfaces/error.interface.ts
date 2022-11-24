@@ -1,3 +1,5 @@
 export enum ErrorCodes {
+  INSERTION_FAILED = 'INSERTION_FAILED',
+  NOT_FOUND = 'NOT_FOUND',
   WRONG_PARAMS = 'WRONG_PARAMS',
 }

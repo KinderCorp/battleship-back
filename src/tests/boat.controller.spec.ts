@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import BoatController from '@boat/boat.controller';
 import { CreateBoatDto } from '@dto/boat.dto';
@@ -43,7 +43,7 @@ describe('BoatController', () => {
 
   it('should not insert a boat', async () => {
     await expect(controller.insert({} as CreateBoatDto)).rejects.toThrowError(
-      ApiError,
+      BadRequestException,
     );
   });
 });

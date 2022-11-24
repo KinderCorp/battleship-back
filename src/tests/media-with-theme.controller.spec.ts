@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
-import ApiError from '@shared/api-error';
 import { AppModule } from '@modules/app.module';
 import { CreateMediaWithThemeDto } from '@dto/media-with-theme.dto';
 import MediaWithThemeController from '@media-with-theme/media-with-theme.controller';
@@ -43,6 +43,6 @@ describe('MediaWithThemeController', () => {
 
     await expect(
       controller.insert(mediaWithThemeToInsert),
-    ).rejects.toThrowError(ApiError);
+    ).rejects.toThrowError(BadRequestException);
   });
 });

@@ -1,5 +1,5 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateGameDto } from '@dto/game.dto';
@@ -22,12 +22,12 @@ export default class GameController {
     try {
       return await this.gameService.insert(game);
     } catch (error) {
-      throw new ApiError({
-        code: ErrorCodes.WRONG_PARAMS,
-        detail: (error as { message: string }).message,
-        instance: this.constructor.name,
-        title: 'Fail to insert game',
-      });
+      throw new BadRequestException(
+        new ApiError({
+          code: ErrorCodes.INSERTION_FAILED,
+          message: 'Fail to insert game.',
+        }),
+      );
     }
   }
 }
