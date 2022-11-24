@@ -48,7 +48,7 @@ export default class Weapon {
 //     bl: [],// Bottom left
 //     br: [],// Bottom right
 //     l: [],// Left
-//     m: [row, col],// Middle
+//     m: [0, 0],// Middle
 //     r: [],// Right
 //     t: [],// Top
 //     tl: [],// Top left
@@ -56,24 +56,24 @@ export default class Weapon {
 //   }
 
 //   const nuclearDamages = {
-//     b: [row + 1, col], // Bottom
-//     bl: [row + 1, col - 1], // Bottom left
-//     br: [row + 1, col + 1], // Bottom right
-//     l: [row, col - 1], // Left
-//     m: [row, col], // Middle
-//     r: [row, col + 1], // Right
-//     t: [row - 1, col], // Top
-//     tl: [row - 1, col - 1], // Top left
-//     tr: [row - 1, col + 1], // Top right
+//     b: [1, 0], // Bottom
+//     bl: [1, -1], // Bottom left
+//     br: [1, 1], // Bottom right
+//     l: [0, -1], // Left
+//     m: [0, 0], // Middle
+//     r: [0, 1], // Right
+//     t: [-1, 0], // Top
+//     tl: [-1, -1], // Top left
+//     tr: [-1, 1], // Top right
 //   }
 //   const tripleDamages = {
-//     b: [row + 1, col], // Bottom
+//     b: [1, 0], // Bottom
 //     bl: [], // Bottom left
 //     br: [], // Bottom right
 //     l: [], // Left
-//     m: [row, col], // Middle
+//     m: [0, 0], // Middle
 //     r: [], // Right
-//     t: [row - 1, col], // Top
+//     t: [-1, 0], // Top
 //     tl: [], // Top left
 //     tr: [], // Top right
 //   }

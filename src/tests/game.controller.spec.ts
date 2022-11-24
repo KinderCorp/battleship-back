@@ -36,10 +36,36 @@ describe('GameController', () => {
     expect(spy).toHaveBeenCalledWith(gameToInsert);
   });
 
-  it('should not insert a game', async () => {
+  it('should insert a game with an anonymous winner', async () => {
     const gameToInsert: CreateGameDto = {
-      loser: 2 as unknown as string,
-      winner: 2 as unknown as string,
+      loser: '2a322532-6fb2-4e72-818c-37b416ea016b',
+      winner: null,
+    };
+
+    const spy = jest.spyOn(controller, 'insert').mockImplementation();
+    await controller.insert(gameToInsert);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(gameToInsert);
+  });
+
+  it('should insert a game with an anonymous loser', async () => {
+    const gameToInsert: CreateGameDto = {
+      loser: '2a322532-6fb2-4e72-818c-37b416ea016b',
+      winner: null,
+    };
+
+    const spy = jest.spyOn(controller, 'insert').mockImplementation();
+    await controller.insert(gameToInsert);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(gameToInsert);
+  });
+
+  it('should not insert a game because there was no user logged into the game', async () => {
+    const gameToInsert: CreateGameDto = {
+      loser: null,
+      winner: null,
     };
 
     await expect(controller.insert(gameToInsert)).rejects.toThrowError(

@@ -9,3 +9,9 @@ items:
   game3:
     winner: '@user2'
     loser: '@user3'
+  game4:
+    winner: '@user1'
+    loser: null
+  game5:
+    winner: null
+    loser: '@user3'

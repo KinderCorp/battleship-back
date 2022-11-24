@@ -5,17 +5,7 @@ items:
     requiredLevel: '1'
     mediaWithTheme: '@media-with-theme4'
     damage:
-      {
-        b: [],
-        bl: [],
-        br: [],
-        l: [],
-        m: [row, col],
-        r: [],
-        t: [],
-        tl: [],
-        tr: [],
-      }
+      { b: [], bl: [], br: [], l: [], m: [0, 0], r: [], t: [], tl: [], tr: [] }
   weapon2:
     name: 'Triple'
     requiredLevel: '2'
@@ -23,13 +13,13 @@ items:
     maxAmmunition: '2'
     damage:
       {
-        b: [row + 1, col],
+        b: [1, 0],
         bl: [],
         br: [],
         l: [],
-        m: [row, col],
+        m: [0, 0],
         r: [],
-        t: [row - 1, col],
+        t: [-1, 0],
         tl: [],
         tr: [],
       }
@@ -47,13 +37,13 @@ items:
     maxAmmunition: '1'
     damage:
       {
-        b: [row + 1, col],
-        bl: [row + 1, col - 1],
-        br: [row + 1, col + 1],
-        l: [row, col - 1],
-        m: [row, col],
-        r: [row, col + 1],
-        t: [row - 1, col],
-        tl: [row - 1, col - 1],
-        tr: [row - 1, col + 1],
+        b: [1, 0],
+        bl: [1, -1],
+        br: [1, 1],
+        l: [0, -1],
+        m: [0, 0],
+        r: [0, 1],
+        t: [-1, 0],
+        tl: [-1, -1],
+        tr: [-1, 1],
       }

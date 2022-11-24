@@ -20,7 +20,6 @@ describe('BoatController', () => {
   });
 
   afterEach(() => {
-    // Restore the initial state altered by the spyOn
     jest.restoreAllMocks();
   });
 

@@ -14,10 +14,10 @@ export default class Game {
   public id!: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
-  public winner!: string;
+  public winner: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
-  public loser!: string;
+  public loser: string;
 
   @CreateDateColumn()
   @Type(() => Date)
