@@ -7,6 +7,9 @@ import { NestFactory } from '@nestjs/core';
 
 import ApiErrorExceptionFilter from '@filters/api-error/api-error-exception.filter';
 import { AppModule } from '@modules/app.module';
+import { Logger } from '@nestjs/common';
+
+const logger = new Logger();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -30,6 +33,14 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.API_PORT);
+  await app.listen(process.env.API_PORT, async () => {
+    logger.log(`
+    ***********************************************************
+    |  🛫 The API is listening on ${await app.getUrl()}/api/  |
+    |                          –––                            |
+    |  📚 Swagger available on ${await app.getUrl()}/docs     |
+    ***********************************************************
+    `);
+  });
 }
 bootstrap();
