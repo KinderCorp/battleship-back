@@ -7,10 +7,10 @@ export class GameGateway implements OnModuleInit {
   public logger = new Logger();
 
   @WebSocketServer()
-  public server: Server;
+  public socketServer: SocketServer;
 
   public onModuleInit() {
-    this.server.on('connection', (socket) => {
+    this.socketServer.on('connection', (socket) => {
       this.logger.log(`Socket ${socket.id} connected`);
     });
   }
