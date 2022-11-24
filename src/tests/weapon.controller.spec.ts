@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 
 import { AppModule } from '@modules/app.module';
 import { CreateWeaponDto } from '@dto/weapon.dto';
 import WeaponController from '@weapon/weapon.controller';
-import { BadRequestException } from '@nestjs/common';
 
 // npm run test:unit -- src/tests/weapon.controller.spec.ts --watch
 
