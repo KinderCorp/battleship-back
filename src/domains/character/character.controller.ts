@@ -27,7 +27,7 @@ export default class CharacterController {
       throw new BadRequestException(
         new ApiError({
           code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert boat.',
+          message: 'Fail to insert character.',
         }),
       );
     }

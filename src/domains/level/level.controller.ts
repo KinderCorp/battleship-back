@@ -25,7 +25,7 @@ export default class LevelController {
       throw new BadRequestException(
         new ApiError({
           code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert boat.',
+          message: 'Fail to insert level.',
         }),
       );
     }

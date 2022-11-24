@@ -29,7 +29,7 @@ export default class MediaWithThemeController {
       throw new BadRequestException(
         new ApiError({
           code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert boat.',
+          message: 'Fail to insert media with theme.',
         }),
       );
     }
