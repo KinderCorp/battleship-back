@@ -3,14 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { DamageMatrix } from '@interfaces/weapon.interface';
 import Level from '@level/level.entity';
-import MediaWithTheme from '@media-with-theme/media-with-theme.entity';
 
 @Entity()
 export default class Weapon {
@@ -23,13 +21,6 @@ export default class Weapon {
   @ManyToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
   public requiredLevel!: number;
-
-  @OneToOne(
-    () => MediaWithTheme,
-    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
-  )
-  @JoinColumn()
-  public mediaWithTheme!: number;
 
   @ApiProperty({
     default: -1,

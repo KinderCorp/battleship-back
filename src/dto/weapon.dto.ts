@@ -15,11 +15,6 @@ export class CreateWeaponDto implements CreateDtoInterface {
   @IsNumber()
   public requiredLevel!: number;
 
-  @ApiProperty({ description: 'Must match with a media Id' })
-  @IsNotEmpty()
-  @IsNumber()
-  public mediaWithTheme!: number;
-
   @ApiProperty({
     default: -1,
     description:

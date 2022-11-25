@@ -1,13 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-
-import MediaWithTheme from '@media-with-theme/media-with-theme.entity';
 
 @Entity()
 export default class Boat {
@@ -16,13 +8,6 @@ export default class Boat {
 
   @Column('text')
   public name!: string;
-
-  @OneToOne(
-    () => MediaWithTheme,
-    (mediaWithTheme: MediaWithTheme) => mediaWithTheme.id,
-  )
-  @JoinColumn()
-  public mediaWithTheme!: number;
 
   @ApiProperty({ default: 1 })
   @Column('integer', { default: 1 })

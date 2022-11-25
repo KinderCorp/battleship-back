@@ -24,7 +24,6 @@ describe('LevelController', () => {
 
   it('should insert a level', async () => {
     const levelToInsert: CreateLevelDto = {
-      media: 1,
       rank: 1,
       totalXp: 100,
     };

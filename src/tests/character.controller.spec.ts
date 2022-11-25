@@ -24,7 +24,6 @@ describe('CharacterController', () => {
 
   it('should insert a character', async () => {
     const characterToInsert: CreateCharacterDto = {
-      media: 0,
       requiredLevel: 0,
     };
 
@@ -37,7 +36,6 @@ describe('CharacterController', () => {
 
   it('should not insert a character', async () => {
     const characterToInsert: CreateCharacterDto = {
-      media: '0' as unknown as number,
       requiredLevel: '0' as unknown as number,
     };
 

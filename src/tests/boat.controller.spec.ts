@@ -29,7 +29,6 @@ describe('BoatController', () => {
   it('should insert a boat', async () => {
     const boatToInsert: CreateBoatDto = {
       length: 1,
-      mediaWithTheme: 1,
       name: 'Kayak',
       width: 1,
     };
