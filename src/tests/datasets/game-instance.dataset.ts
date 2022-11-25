@@ -11,27 +11,71 @@ const validBoatName = 'destroyer';
 export const validBoatPlacement1: BoatPlacement = {
   boatName: validBoatName,
   emplacement: [
-    ['A', 1],
-    ['B', 1],
-    ['C', 1],
+    [3, 1],
+    [2, 1],
+    [1, 1],
   ],
 };
 
 export const validBoatPlacement2: BoatPlacement = {
   boatName: validBoatName,
   emplacement: [
-    ['A', 3],
-    ['B', 4],
-    ['C', 5],
+    [1, 5],
+    [1, 4],
+    [1, 3],
   ],
 };
 
 export const invalidBoatPlacement1: BoatPlacement = {
   boatName: validBoatName,
   emplacement: [
-    ['ZZLZLALZ', 3],
-    ['B', 4],
-    ['C', 238917837298],
+    [11, 3],
+    [2, 4],
+    [3, 238917837298],
+  ],
+};
+
+export const invalidBoatPlacement2: BoatPlacement = {
+  boatName: validBoatName,
+  emplacement: [
+    [2, 3],
+    [2, 4],
+    [3, 2],
+  ],
+};
+
+export const invalidBoatPlacement3: BoatPlacement = {
+  boatName: validBoatName,
+  emplacement: [
+    [2, 3],
+    [2, 5],
+    [2, 2],
+  ],
+};
+export const invalidBoatPlacement4: BoatPlacement = {
+  boatName: validBoatName,
+  emplacement: [
+    [2, 3],
+    [2, 3],
+    [2, 2],
+  ],
+};
+
+export const invalidBoatPlacement5: BoatPlacement = {
+  boatName: validBoatName,
+  emplacement: [
+    [1, 3],
+    [4, 3],
+    [3, 3],
+  ],
+};
+
+export const invalidBoatPlacement6: BoatPlacement = {
+  boatName: validBoatName,
+  emplacement: [
+    [1, 3],
+    [3, 3],
+    [3, 3],
   ],
 };
 

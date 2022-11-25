@@ -45,7 +45,9 @@ export default class GameInstanceService {
     this.gameState = GameState.playing;
   }
 
-  public startPlacingBoats(gameConfiguration: GameConfiguration) {
+  public startPlacingBoats(
+    gameConfiguration: Omit<GameConfiguration, 'boats'>,
+  ) {
     // TASK Check game configuration
 
     this.gameInstanceValidatorsService.validatePlayers(

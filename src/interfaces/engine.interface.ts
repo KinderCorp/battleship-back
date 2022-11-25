@@ -13,7 +13,7 @@ export enum GameState {
 
 export interface BoatPlacement {
   boatName: string;
-  emplacement: [string, number][];
+  emplacement: [number, number][];
 }
 
 export interface BaseGameConfiguration {
@@ -33,7 +33,7 @@ export interface GameConfiguration extends BaseGameConfiguration {
   timePerTurn: number;
 }
 
-export type GameBoard = [string[], number[]];
+export type GameBoard = [number[], number[]];
 
 export type GamePlayer = LoggedPlayer | GuestPlayer;
 

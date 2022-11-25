@@ -9,6 +9,11 @@ import {
   guestPlayer1,
   guestPlayer2,
   invalidBoatPlacement1,
+  invalidBoatPlacement2,
+  invalidBoatPlacement3,
+  invalidBoatPlacement4,
+  invalidBoatPlacement5,
+  invalidBoatPlacement6,
   loggedPlayer1,
   loggedPlayer2,
   validBoatPlacement1,
@@ -43,13 +48,62 @@ describe('GameInstanceValidatorsService', () => {
     ).toEqual(true);
   });
 
-  it('should throw an error for invalid boat placement', () => {
+  it('should throw an error for out of bounds placement', () => {
     expect(() =>
       service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement1),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.outOfBounds,
         message: GameEngineErrorMessages.outOfBounds,
+      }),
+    );
+  });
+
+  it('should throw an error for invalid boar placement because boat is not aligned', () => {
+    expect(() =>
+      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement2),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
+      }),
+    );
+  });
+
+  it('should throw an error for invalid boar placement because positions are not adjacent', () => {
+    expect(() =>
+      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement3),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
+      }),
+    );
+
+    expect(() =>
+      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement4),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
+      }),
+    );
+
+    expect(() =>
+      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement5),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
+      }),
+    );
+
+    expect(() =>
+      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement6),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
       }),
     );
   });
