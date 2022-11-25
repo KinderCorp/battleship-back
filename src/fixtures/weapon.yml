@@ -2,14 +2,12 @@ entity: Weapon
 items:
   weapon1:
     name: 'Bomb'
-    requiredLevel: '1'
-    mediaWithTheme: '@media-with-theme4'
+    requiredLevel: '@level1'
     damage:
       { b: [], bl: [], br: [], l: [], m: [0, 0], r: [], t: [], tl: [], tr: [] }
   weapon2:
     name: 'Triple'
-    requiredLevel: '2'
-    mediaWithTheme: '@media-with-theme5'
+    requiredLevel: '@level2'
     maxAmmunition: '2'
     damage:
       {
@@ -25,15 +23,13 @@ items:
       }
   weapon3:
     name: 'Drone'
-    requiredLevel: '2'
-    mediaWithTheme: '@media-with-theme6'
+    requiredLevel: '@level2'
     maxAmmunition: '2'
     damage:
       { b: [], bl: [], br: [], l: [], m: [], r: [], t: [], tl: [], tr: [] }
   weapon4:
     name: 'Nuclear'
-    requiredLevel: '3'
-    mediaWithTheme: '@media-with-theme7'
+    requiredLevel: '@level3'
     maxAmmunition: '1'
     damage:
       {

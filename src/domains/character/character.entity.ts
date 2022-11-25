@@ -22,6 +22,5 @@ export default class Character {
   public media!: number;
 
   @ManyToOne(() => Level, (level: Level) => level.id)
-  @JoinColumn()
   public requiredLevel!: number;
 }

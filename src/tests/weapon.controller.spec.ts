@@ -36,7 +36,6 @@ describe('WeaponController', () => {
         tr: [],
       },
       maxAmmunition: -1,
-      mediaWithTheme: 1,
       name: 'basic weapon',
       requiredLevel: 1,
     };

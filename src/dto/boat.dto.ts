@@ -9,11 +9,6 @@ export class CreateBoatDto implements CreateDtoInterface {
   @IsString()
   public name!: string;
 
-  @ApiProperty({ description: 'Must match with a media with theme Id' })
-  @IsNotEmpty()
-  @IsNumber()
-  public mediaWithTheme!: number;
-
   @ApiProperty({ default: 1, required: false })
   @IsOptional()
   @IsNumber()

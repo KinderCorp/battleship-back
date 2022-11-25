@@ -19,9 +19,6 @@ import LevelService from '@level/level.service';
 import MediaController from '@media/media.controller';
 import MediaRepository from '@media/media.repository';
 import MediaService from '@media/media.service';
-import MediaWithThemeController from '@media-with-theme/media-with-theme.controller';
-import MediaWithThemeRepository from '@media-with-theme/media-with-theme.repository';
-import MediaWithThemeService from '@media-with-theme/media-with-theme.service';
 import ThemeController from '@theme/theme.controller';
 import ThemeRepository from '@theme/theme.repository';
 import ThemeService from '@theme/theme.service';
@@ -39,7 +36,6 @@ import WeaponService from '@weapon/weapon.service';
     CharacterController,
     GameController,
     MediaController,
-    MediaWithThemeController,
     ThemeController,
     LevelController,
     UserController,
@@ -58,8 +54,6 @@ import WeaponService from '@weapon/weapon.service';
     LevelService,
     MediaRepository,
     MediaService,
-    MediaWithThemeRepository,
-    MediaWithThemeService,
     ThemeRepository,
     ThemeService,
     UserRepository,
