@@ -3,7 +3,9 @@ import { Controller, Get } from '@nestjs/common';
 
 import AppService from '@app/app.service';
 
-@ApiTags('Test route')
+const entityName = 'Test route';
+
+@ApiTags(entityName)
 @Controller()
 export default class AppController {
   public constructor(private readonly appService: AppService) {}

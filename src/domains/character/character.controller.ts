@@ -5,9 +5,10 @@ import ApiError from '@shared/api-error';
 import Character from '@character/character.entity';
 import CharacterService from '@character/character.service';
 import { CreateCharacterDto } from '@dto/character.dto';
-import { ErrorCodes } from '@interfaces/error.interface';
 
-@ApiTags('Character')
+const entityName = 'Character';
+
+@ApiTags(entityName)
 @Controller('character')
 export default class CharacterController {
   public constructor(private readonly characterService: CharacterService) {}
@@ -24,12 +25,7 @@ export default class CharacterController {
     try {
       return await this.characterService.insert(character);
     } catch (error) {
-      throw new BadRequestException(
-        new ApiError({
-          code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert character.',
-        }),
-      );
+      throw new BadRequestException(ApiError.InsertionFailed(entityName));
     }
   }
 }

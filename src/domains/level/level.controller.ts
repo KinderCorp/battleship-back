@@ -1,13 +1,14 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { CreateLevelDto } from '@dto/level.dto';
-import { ErrorCodes } from '@interfaces/error.interface';
 
 import ApiError from '@shared/api-error';
+import { CreateLevelDto } from '@dto/level.dto';
 import Level from '@level/level.entity';
 import LevelService from '@level/level.service';
 
-@ApiTags('Level')
+const entityName = 'Level';
+
+@ApiTags(entityName)
 @Controller('level')
 export default class LevelController {
   public constructor(private readonly levelService: LevelService) {}
@@ -22,12 +23,7 @@ export default class LevelController {
     try {
       return await this.levelService.insert(level);
     } catch (error) {
-      throw new BadRequestException(
-        new ApiError({
-          code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert level.',
-        }),
-      );
+      throw new BadRequestException(ApiError.InsertionFailed(entityName));
     }
   }
 }

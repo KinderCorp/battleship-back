@@ -3,11 +3,12 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateThemeDto } from '@dto/theme.dto';
-import { ErrorCodes } from '@interfaces/error.interface';
 import Theme from '@theme/theme.entity';
 import ThemeService from '@theme/theme.service';
 
-@ApiTags('Theme')
+const entityName = 'Theme';
+
+@ApiTags(entityName)
 @Controller('theme')
 export default class ThemeController {
   public constructor(private readonly themeService: ThemeService) {}
@@ -22,12 +23,7 @@ export default class ThemeController {
     try {
       return await this.themeService.insert(theme);
     } catch (error) {
-      throw new BadRequestException(
-        new ApiError({
-          code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert theme.',
-        }),
-      );
+      throw new BadRequestException(ApiError.InsertionFailed(entityName));
     }
   }
 }

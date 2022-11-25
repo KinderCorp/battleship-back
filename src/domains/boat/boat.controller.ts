@@ -5,9 +5,10 @@ import { CreateBoatDto } from '@dto/boat.dto';
 import ApiError from '@shared/api-error';
 import Boat from '@boat/boat.entity';
 import BoatService from '@boat/boat.service';
-import { ErrorCodes } from '@interfaces/error.interface';
 
-@ApiTags('Boat')
+const entityName = 'Boat';
+
+@ApiTags(entityName)
 @Controller('boat')
 export default class BoatController {
   public constructor(private readonly boatService: BoatService) {}
@@ -22,12 +23,7 @@ export default class BoatController {
     try {
       return await this.boatService.insert(boat);
     } catch (error) {
-      throw new BadRequestException(
-        new ApiError({
-          code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert boat.',
-        }),
-      );
+      throw new BadRequestException(ApiError.InsertionFailed(entityName));
     }
   }
 }

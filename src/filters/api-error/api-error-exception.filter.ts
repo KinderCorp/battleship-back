@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 
-import { ErrorCodes } from '@interfaces/error.interface';
+import { ApiErrorCodes } from '@interfaces/error.interface';
 
 @Catch(HttpException)
 export default class ApiErrorExceptionFilter<T extends HttpException>
@@ -25,7 +25,7 @@ export default class ApiErrorExceptionFilter<T extends HttpException>
         : (exceptionResponse as { message: string; error: string }).message;
 
     response.status(status).send({
-      code: ErrorCodes.NOT_FOUND,
+      code: ApiErrorCodes.notFound,
       detail: exceptionResponse,
       message: error,
     });

@@ -3,11 +3,12 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateGameDto } from '@dto/game.dto';
-import { ErrorCodes } from '@interfaces/error.interface';
 import Game from '@game/game.entity';
 import GameService from '@game/game.service';
 
-@ApiTags('Game')
+const entityName = 'Game';
+
+@ApiTags(entityName)
 @Controller('game')
 export default class GameController {
   public constructor(private readonly gameService: GameService) {}
@@ -22,12 +23,7 @@ export default class GameController {
     try {
       return await this.gameService.insert(game);
     } catch (error) {
-      throw new BadRequestException(
-        new ApiError({
-          code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert game.',
-        }),
-      );
+      throw new BadRequestException(ApiError.InsertionFailed(entityName));
     }
   }
 }

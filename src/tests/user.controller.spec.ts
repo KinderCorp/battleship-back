@@ -27,7 +27,7 @@ describe('UserController', () => {
       email: 'email@example.com',
       hasBeenConfirmed: false,
       password: '1234',
-      pseudo: 'pseudoAnonymous',
+      pseudo: 'pseudoGuest',
     };
 
     const spy = jest.spyOn(controller, 'insert').mockImplementation();
