@@ -1,7 +1,6 @@
 #!/bin/bash
 
 fixtures-ts-node-commonjs load \
-        ./src/fixtures/media.yml \
         ./src/fixtures/theme.yml \
         ./src/fixtures/level.yml \
         ./src/fixtures/character.yml \

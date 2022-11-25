@@ -33,7 +33,6 @@
       "@interceptors/*": ["src/interceptors/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@level/*": ["src/domains/level/*"],
-      "@media/*": ["src/domains/media/*"],
       "@modules/*": ["src/modules/*"],
       "@shared/*": ["src/shared/*"],
       "@tests/*": ["src/tests/*"],
