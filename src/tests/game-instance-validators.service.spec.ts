@@ -44,13 +44,16 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat placement', () => {
     expect(
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, validBoatPlacement1),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, validBoatPlacement1),
     ).toEqual(true);
   });
 
   it('should throw an error for out of bounds placement', () => {
     expect(() =>
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement1),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement1,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.outOfBounds,
@@ -61,7 +64,10 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should throw an error for invalid boar placement because boat is not aligned', () => {
     expect(() =>
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement2),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement2,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.invalidBoat,
@@ -72,7 +78,10 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should throw an error for invalid boar placement because positions are not adjacent', () => {
     expect(() =>
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement3),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement3,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.invalidBoat,
@@ -81,7 +90,10 @@ describe('GameInstanceValidatorsService', () => {
     );
 
     expect(() =>
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement4),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement4,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.invalidBoat,
@@ -90,7 +102,10 @@ describe('GameInstanceValidatorsService', () => {
     );
 
     expect(() =>
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement5),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement5,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.invalidBoat,
@@ -99,7 +114,10 @@ describe('GameInstanceValidatorsService', () => {
     );
 
     expect(() =>
-      service.validateBoatPlacement(DEFAULT_BOARD_GAME, invalidBoatPlacement6),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement6,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.invalidBoat,
@@ -108,25 +126,25 @@ describe('GameInstanceValidatorsService', () => {
     );
   });
 
-  it('should validate players boats', () => {
-    const boatsPlacement: BoatPlacement[] = [
-      validBoatPlacement1,
-      validBoatPlacement2,
+  it('should validate boats of players', () => {
+    const boatsPlacement: BoatPlacement[][] = [
+      [validBoatPlacement1, validBoatPlacement2],
+      [validBoatPlacement1, validBoatPlacement2],
     ];
 
     expect(
-      service.validatePlayerBoats(DEFAULT_BOARD_GAME, boatsPlacement),
+      service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
     ).toEqual(true);
   });
 
-  it('should throw an error for invalid player boats', () => {
-    const boatsPlacement: BoatPlacement[] = [
-      validBoatPlacement1,
-      invalidBoatPlacement1,
+  it('should throw an error for invalid boats of players', () => {
+    const boatsPlacement: BoatPlacement[][] = [
+      [validBoatPlacement1, validBoatPlacement2],
+      [validBoatPlacement1, invalidBoatPlacement1],
     ];
 
     expect(() =>
-      service.validatePlayerBoats(DEFAULT_BOARD_GAME, boatsPlacement),
+      service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.outOfBounds,
@@ -182,6 +200,28 @@ describe('GameInstanceValidatorsService', () => {
       new GameEngineError({
         code: GameEngineErrorCodes.invalidNumberOfPlayers,
         message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
+      }),
+    );
+  });
+
+  it('should validate board dimensions', () => {
+    expect(service.validateBoardDimensions(10)).toEqual(true);
+  });
+
+  it('should invalidate board dimensions because too small', () => {
+    expect(() => service.validateBoardDimensions(4)).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoardGameDimensions,
+        message: GameEngineErrorMessages.invalidBoardGameDimensions,
+      }),
+    );
+  });
+
+  it('should invalidate board dimensions because too large', () => {
+    expect(() => service.validateBoardDimensions(100)).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoardGameDimensions,
+        message: GameEngineErrorMessages.invalidBoardGameDimensions,
       }),
     );
   });

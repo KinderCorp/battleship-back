@@ -9,11 +9,29 @@ import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
+import {
+  MAX_BOARD_GAME_DIMENSIONS,
+  MIN_BOARD_GAME_DIMENSIONS,
+} from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()
 export default class GameInstanceValidatorsService {
-  public validateBoatPlacement(
+  public validateBoardDimensions(boardDimensions: number) {
+    if (
+      boardDimensions < MIN_BOARD_GAME_DIMENSIONS ||
+      boardDimensions > MAX_BOARD_GAME_DIMENSIONS
+    ) {
+      throw new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoardGameDimensions,
+        message: GameEngineErrorMessages.invalidBoardGameDimensions,
+      });
+    }
+
+    return true;
+  }
+
+  private validateBoatPlacement(
     gameBoard: GameBoard,
     boatPlacement: BoatPlacement,
   ) {
@@ -61,6 +79,18 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
+  public validateBoatsOfPlayers(
+    gameBoard: GameBoard,
+    boatsPlacementOfPlayers: BoatPlacement[][],
+  ) {
+    boatsPlacementOfPlayers.forEach((boatPlacements) => {
+      boatPlacements.forEach((boatPlacement) => {
+        this.validateBoatPlacement(gameBoard, boatPlacement);
+      });
+    });
+
+    return true;
+  }
   public validateNumbersAreAdjacent(arrayOfNumbers: number[]) {
     arrayOfNumbers.sort((a, b) => a - b);
 
@@ -84,16 +114,6 @@ export default class GameInstanceValidatorsService {
         });
       }
     });
-  }
-
-  public validatePlayerBoats(
-    gameBoard: GameBoard,
-    boatsPlacement: BoatPlacement[],
-  ) {
-    boatsPlacement.forEach((boatPlacement) => {
-      this.validateBoatPlacement(gameBoard, boatPlacement);
-    });
-    return true;
   }
 
   public validatePlayers(players: GamePlayer[]) {

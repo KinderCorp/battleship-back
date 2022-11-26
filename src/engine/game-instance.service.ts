@@ -18,12 +18,12 @@ export default class GameInstanceService {
   public constructor(
     {
       gameMode = GameMode.OneVersusOne,
-      state: status = GameState.waitingToStart,
+      state = GameState.waitingToStart,
     }: BaseGameConfiguration,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
     this.gameMode = gameMode;
-    this._gameState = status;
+    this._gameState = state;
   }
 
   public get gameState(): GameState {
@@ -37,18 +37,24 @@ export default class GameInstanceService {
     this.gameState = GameState.finished;
   }
 
-  public isGameSettingsValid() {
-    this.gameInstanceValidatorsService.validatePlayers(this.players);
-  }
+  public startGame(gameConfiguration: GameConfiguration) {
+    // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
+    const boatsOfPlayers = Object.values(gameConfiguration.boats);
 
-  public startGame() {
+    this.gameInstanceValidatorsService.validateBoatsOfPlayers(
+      DEFAULT_BOARD_GAME,
+      boatsOfPlayers,
+    );
+
     this.gameState = GameState.playing;
   }
 
   public startPlacingBoats(
     gameConfiguration: Omit<GameConfiguration, 'boats'>,
   ) {
-    // TASK Check game configuration
+    this.gameInstanceValidatorsService.validateBoardDimensions(
+      gameConfiguration.boardDimensions,
+    );
 
     this.gameInstanceValidatorsService.validatePlayers(
       gameConfiguration.players,

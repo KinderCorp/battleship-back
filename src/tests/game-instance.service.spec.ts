@@ -36,18 +36,28 @@ describe('GameInstanceService', () => {
   });
 
   it('should start the game', () => {
-    service.startGame();
+    service.startGame(gameConfiguration1);
+
+    jest
+      .spyOn(gameInstanceValidatorsService, 'validateBoatsOfPlayers')
+      .mockReturnValue(true);
 
     expect(service.gameState).toEqual(GameState.playing);
   });
 
   it('should start placing boats', () => {
-    jest
+    const spyValidateBoard = jest
+      .spyOn(gameInstanceValidatorsService, 'validateBoardDimensions')
+      .mockReturnValue(true);
+
+    const spyValidatePlayers = jest
       .spyOn(gameInstanceValidatorsService, 'validatePlayers')
       .mockReturnValue(true);
 
     service.startPlacingBoats(gameConfiguration1);
 
+    expect(spyValidateBoard).toHaveBeenCalledTimes(1);
+    expect(spyValidatePlayers).toHaveBeenCalledTimes(1);
     expect(service.gameState).toEqual(GameState.placingBoats);
   });
 
