@@ -23,7 +23,9 @@ export default class GameController {
     try {
       return await this.gameService.insert(game);
     } catch (error) {
-      throw new BadRequestException(ApiError.InsertionFailed(entityName));
+      throw new BadRequestException(
+        ApiError.InsertionFailed(entityName, error),
+      );
     }
   }
 }

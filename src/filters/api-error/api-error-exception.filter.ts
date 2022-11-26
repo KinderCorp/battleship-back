@@ -8,6 +8,13 @@ import { FastifyReply } from 'fastify';
 
 import { ApiErrorCodes } from '@interfaces/error.interface';
 
+type ErrorObject = {
+  code: ApiErrorCodes;
+  message: string | object;
+  title: string | object;
+};
+
+// FIXME This is not working properly
 @Catch(HttpException)
 export default class ApiErrorExceptionFilter<T extends HttpException>
   implements ExceptionFilter
@@ -19,15 +26,6 @@ export default class ApiErrorExceptionFilter<T extends HttpException>
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    const error =
-      typeof response === 'string'
-        ? exceptionResponse
-        : (exceptionResponse as { message: string; error: string }).message;
-
-    response.status(status).send({
-      code: ApiErrorCodes.notFound,
-      detail: exceptionResponse,
-      message: error,
-    });
+    response.status(status).send(exception);
   }
 }

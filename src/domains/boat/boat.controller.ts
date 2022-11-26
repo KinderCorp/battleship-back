@@ -23,7 +23,9 @@ export default class BoatController {
     try {
       return await this.boatService.insert(boat);
     } catch (error) {
-      throw new BadRequestException(ApiError.InsertionFailed(entityName));
+      throw new BadRequestException(
+        ApiError.InsertionFailed(entityName, error),
+      );
     }
   }
 }

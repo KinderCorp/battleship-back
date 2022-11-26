@@ -23,7 +23,9 @@ export default class UserController {
     try {
       return await this.userService.insert(user);
     } catch (error) {
-      throw new BadRequestException(ApiError.InsertionFailed(entityName));
+      throw new BadRequestException(
+        ApiError.InsertionFailed(entityName, error),
+      );
     }
   }
 }

@@ -23,7 +23,9 @@ export default class ThemeController {
     try {
       return await this.themeService.insert(theme);
     } catch (error) {
-      throw new BadRequestException(ApiError.InsertionFailed(entityName));
+      throw new BadRequestException(
+        ApiError.InsertionFailed(entityName, error),
+      );
     }
   }
 }

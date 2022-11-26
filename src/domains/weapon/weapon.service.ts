@@ -12,6 +12,14 @@ export default class WeaponService {
     private weaponRepository: WeaponRepository,
   ) {}
 
+  public async findAll(): Promise<Weapon[]> {
+    return await this.weaponRepository.find({});
+  }
+
+  public async findById(id: number): Promise<Weapon> {
+    return await this.weaponRepository.findOneById(id);
+  }
+
   public async insert(weapon: CreateWeaponDto): Promise<Weapon> {
     return this.weaponRepository.insert(weapon);
   }

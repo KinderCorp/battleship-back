@@ -5,7 +5,6 @@ import {
 } from '@nestjs/platform-fastify';
 import { NestFactory } from '@nestjs/core';
 
-import ApiErrorExceptionFilter from '@filters/api-error/api-error-exception.filter';
 import { AppModule } from '@modules/app.module';
 import { Logger } from '@nestjs/common';
 
@@ -19,7 +18,9 @@ async function bootstrap() {
 
   app.enableCors();
   app.setGlobalPrefix('api');
-  app.useGlobalFilters(new ApiErrorExceptionFilter());
+
+  // FIXME Later to have better errors
+  // app.useGlobalFilters(new ApiErrorExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('BattleShip')

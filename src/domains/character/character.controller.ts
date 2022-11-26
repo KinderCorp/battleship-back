@@ -25,7 +25,9 @@ export default class CharacterController {
     try {
       return await this.characterService.insert(character);
     } catch (error) {
-      throw new BadRequestException(ApiError.InsertionFailed(entityName));
+      throw new BadRequestException(
+        ApiError.InsertionFailed(entityName, error),
+      );
     }
   }
 }

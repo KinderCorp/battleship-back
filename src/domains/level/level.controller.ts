@@ -23,7 +23,9 @@ export default class LevelController {
     try {
       return await this.levelService.insert(level);
     } catch (error) {
-      throw new BadRequestException(ApiError.InsertionFailed(entityName));
+      throw new BadRequestException(
+        ApiError.InsertionFailed(entityName, error),
+      );
     }
   }
 }
