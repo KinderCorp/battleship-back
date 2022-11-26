@@ -17,6 +17,8 @@ export default class GameInstanceService {
   private _gameState!: GameState;
   private players: GamePlayer[] = [];
   private board: GameBoard = DEFAULT_BOARD_GAME;
+  private masterPlayerBoards!: PlayerBoards;
+  private visiblePlayerBoards!: PlayerBoards;
 
   public constructor(
     {
@@ -36,11 +38,18 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
+  // public checkIfCellContainsABoat(
+  //   targetedPlayer: string,
+  //   cell: [number, number],
+  // ) {
+  //   // TASK If cell has already been check, throw an error
+  // }
+
   public endGame() {
     this.gameState = GameState.finished;
   }
 
-  public generatePlayerBoards(boats: GameBoats) {
+  public generateMasterPlayerBoards(boats: GameBoats) {
     const playerBoards: PlayerBoards = {};
 
     Object.entries(boats).forEach(
@@ -56,6 +65,18 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
+  public generateVisiblePlayerBoards(players: GamePlayer[]) {
+    const playerBoards: PlayerBoards = {};
+
+    players.forEach((player, index) => {
+      const playerName = `${player.pseudo}${index}`;
+
+      playerBoards[playerName] = [];
+    });
+
+    return playerBoards;
+  }
+
   public startGame(gameConfiguration: GameConfiguration) {
     // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
     const boatsOfPlayers = Object.values(gameConfiguration.boats);
@@ -63,6 +84,13 @@ export default class GameInstanceService {
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
       DEFAULT_BOARD_GAME,
       boatsOfPlayers,
+    );
+
+    this.masterPlayerBoards = this.generateMasterPlayerBoards(
+      gameConfiguration.boats,
+    );
+    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(
+      gameConfiguration.players,
     );
 
     this.gameState = GameState.playing;

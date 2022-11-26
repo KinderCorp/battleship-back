@@ -126,7 +126,7 @@ export const gameConfiguration1: GameConfiguration = {
   weapons: [0, 1, 2],
 };
 
-export const playerBoards1: PlayerBoards = {
+export const masterPlayerBoards1: PlayerBoards = {
   player1: [
     [3, 1],
     [2, 1],
@@ -143,4 +143,9 @@ export const playerBoards1: PlayerBoards = {
     [1, 4],
     [1, 3],
   ],
+};
+
+export const visiblePlayerBoards1: PlayerBoards = {
+  Drakenline0: [],
+  Nonma1: [],
 };
