@@ -9,7 +9,12 @@ import {
   GameState,
   PlayerBoards,
 } from '@interfaces/engine.interface';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
+import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 export default class GameInstanceService {
@@ -19,6 +24,8 @@ export default class GameInstanceService {
   private board: GameBoard = DEFAULT_BOARD_GAME;
   private masterPlayerBoards!: PlayerBoards;
   private visiblePlayerBoards!: PlayerBoards;
+  private gameConfiguration!: GameConfiguration;
+  private playerBoats: typeof this.gameConfiguration.boats;
 
   public constructor(
     {
@@ -38,12 +45,32 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
-  // public checkIfCellContainsABoat(
-  //   targetedPlayer: string,
-  //   cell: [number, number],
-  // ) {
-  //   // TASK If cell has already been check, throw an error
-  // }
+  public doesCellContainABoat(
+    targetedPlayer: string,
+    targetedCell: [number, number],
+  ) {
+    if (this.hasCellAlreadyBeenHit(targetedPlayer, targetedCell)) {
+      throw new GameEngineError({
+        code: GameEngineErrorCodes.cellAlreadyHit,
+        message: GameEngineErrorMessages.cellAlreadyHit,
+      });
+    }
+
+    this.visiblePlayerBoards[targetedPlayer].push(targetedCell);
+
+    const [xTargetedCell, yTargetedCell] = targetedCell;
+
+    const doesCellContainABoat = this.masterPlayerBoards[targetedPlayer].some(
+      ([xMasterCell, yMasterCell]) =>
+        xMasterCell === xTargetedCell && yMasterCell === yTargetedCell,
+    );
+
+    if (doesCellContainABoat) {
+      // TASK Update boat object
+    }
+
+    return doesCellContainABoat;
+  }
 
   public endGame() {
     this.gameState = GameState.finished;
@@ -77,6 +104,16 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
+  public hasCellAlreadyBeenHit(
+    targetedPlayer: string,
+    [xTargetedCell, yTargetedCell]: [number, number],
+  ) {
+    return this.visiblePlayerBoards[targetedPlayer].some(
+      ([xVisibleCell, yVisibleCell]) =>
+        xVisibleCell === xTargetedCell && yVisibleCell === yTargetedCell,
+    );
+  }
+
   public startGame(gameConfiguration: GameConfiguration) {
     // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
     const boatsOfPlayers = Object.values(gameConfiguration.boats);
@@ -93,6 +130,7 @@ export default class GameInstanceService {
       gameConfiguration.players,
     );
 
+    this.gameConfiguration = gameConfiguration;
     this.gameState = GameState.playing;
   }
 
@@ -109,4 +147,8 @@ export default class GameInstanceService {
 
     this.gameState = GameState.placingBoats;
   }
+
+  // TASK Find and update the boat object after it has been hit
+  // TASK If hit array is deep equal to the emplacement array, then turn isSunk to true
+  // public updatePlayerBoatObject() {}
 }

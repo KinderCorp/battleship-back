@@ -20,6 +20,7 @@ export enum GameEngineErrorCodes {
   missingBoatName = 'MISSING_BOAT_NAME',
   outOfBounds = 'OUT_OF_BOUNDS',
   invalidBoardGameDimensions = 'INVALID_BOARD_GAME_DIMENSIONS',
+  cellAlreadyHit = 'CELL_ALREADY_HIT',
 }
 
 export enum GameEngineErrorMessages {
@@ -30,4 +31,5 @@ export enum GameEngineErrorMessages {
   missingBoatName = 'Missing boat name',
   outOfBounds = 'Out of bounds',
   invalidBoardGameDimensions = 'Invalid board game dimensions',
+  cellAlreadyHit = 'Cell already hit',
 }
