@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  BoatPlacement,
-  GameBoard,
-  GamePlayer,
-} from '@interfaces/engine.interface';
+import { GameBoard, GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
@@ -31,10 +27,7 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  private validateBoatPlacement(
-    gameBoard: GameBoard,
-    boatPlacement: BoatPlacement,
-  ) {
+  private validateBoatPlacement(gameBoard: GameBoard, boatPlacement: GameBoat) {
     const [xBoardPositions, yBoardPositions] = gameBoard;
 
     // Check if positions are out of bounds
@@ -81,7 +74,7 @@ export default class GameInstanceValidatorsService {
 
   public validateBoatsOfPlayers(
     gameBoard: GameBoard,
-    boatsPlacementOfPlayers: BoatPlacement[][],
+    boatsPlacementOfPlayers: GameBoat[][],
   ) {
     boatsPlacementOfPlayers.forEach((boatPlacements) => {
       boatPlacements.forEach((boatPlacement) => {

@@ -11,9 +11,13 @@ export enum GameState {
   finished = 'FINISHED',
 }
 
-export interface BoatPlacement {
+export type BoatEmplacement = [number, number][];
+
+export type PlayerBoards = Record<string, BoatEmplacement>;
+
+export interface GameBoat {
   boatName: string;
-  emplacement: [number, number][];
+  emplacement: BoatEmplacement;
 }
 
 export interface BaseGameConfiguration {
@@ -21,12 +25,18 @@ export interface BaseGameConfiguration {
   state: GameState;
 }
 
+export type GameBoats = {
+  [playerName: string]: GameBoat[];
+};
+
+export interface OneVersusOneBoats extends GameBoats {
+  player1: GameBoat[];
+  player2: GameBoat[];
+}
+
 export interface GameConfiguration extends BaseGameConfiguration {
   boardDimensions: number;
-  boats: {
-    player1: BoatPlacement[];
-    player2: BoatPlacement[];
-  };
+  boats: OneVersusOneBoats;
   players: GamePlayer[];
   weapons: number[];
   hasBoatsSafetyZone: boolean;

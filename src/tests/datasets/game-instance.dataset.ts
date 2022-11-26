@@ -1,14 +1,15 @@
 import {
-  BoatPlacement,
+  GameBoat,
   GameConfiguration,
   GameMode,
   GameState,
+  PlayerBoards,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 
 const validBoatName = 'destroyer';
 
-export const validBoatPlacement1: BoatPlacement = {
+export const validBoatPlacement1: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [3, 1],
@@ -17,7 +18,7 @@ export const validBoatPlacement1: BoatPlacement = {
   ],
 };
 
-export const validBoatPlacement2: BoatPlacement = {
+export const validBoatPlacement2: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [1, 5],
@@ -26,7 +27,7 @@ export const validBoatPlacement2: BoatPlacement = {
   ],
 };
 
-export const invalidBoatPlacement1: BoatPlacement = {
+export const invalidBoatPlacement1: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [11, 3],
@@ -35,7 +36,7 @@ export const invalidBoatPlacement1: BoatPlacement = {
   ],
 };
 
-export const invalidBoatPlacement2: BoatPlacement = {
+export const invalidBoatPlacement2: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [2, 3],
@@ -44,7 +45,7 @@ export const invalidBoatPlacement2: BoatPlacement = {
   ],
 };
 
-export const invalidBoatPlacement3: BoatPlacement = {
+export const invalidBoatPlacement3: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [2, 3],
@@ -52,7 +53,7 @@ export const invalidBoatPlacement3: BoatPlacement = {
     [2, 2],
   ],
 };
-export const invalidBoatPlacement4: BoatPlacement = {
+export const invalidBoatPlacement4: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [2, 3],
@@ -61,7 +62,7 @@ export const invalidBoatPlacement4: BoatPlacement = {
   ],
 };
 
-export const invalidBoatPlacement5: BoatPlacement = {
+export const invalidBoatPlacement5: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [1, 3],
@@ -70,7 +71,7 @@ export const invalidBoatPlacement5: BoatPlacement = {
   ],
 };
 
-export const invalidBoatPlacement6: BoatPlacement = {
+export const invalidBoatPlacement6: GameBoat = {
   boatName: validBoatName,
   emplacement: [
     [1, 3],
@@ -123,4 +124,23 @@ export const gameConfiguration1: GameConfiguration = {
   state: GameState.waitingToStart,
   timePerTurn: 60,
   weapons: [0, 1, 2],
+};
+
+export const playerBoards1: PlayerBoards = {
+  player1: [
+    [3, 1],
+    [2, 1],
+    [1, 1],
+    [1, 5],
+    [1, 4],
+    [1, 3],
+  ],
+  player2: [
+    [3, 1],
+    [2, 1],
+    [1, 1],
+    [1, 5],
+    [1, 4],
+    [1, 3],
+  ],
 };

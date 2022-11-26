@@ -1,10 +1,13 @@
 import {
   BaseGameConfiguration,
   GameBoard,
+  GameBoat,
+  GameBoats,
   GameConfiguration,
   GameMode,
   GamePlayer,
   GameState,
+  PlayerBoards,
 } from '@interfaces/engine.interface';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
@@ -35,6 +38,22 @@ export default class GameInstanceService {
 
   public endGame() {
     this.gameState = GameState.finished;
+  }
+
+  public generatePlayerBoards(boats: GameBoats) {
+    const playerBoards: PlayerBoards = {};
+
+    Object.entries(boats).forEach(
+      ([playerName, boats]: [string, GameBoat[]]) => {
+        const arrayOfBoatEmplacement = boats
+          .map((boat) => boat.emplacement)
+          .flat(1);
+
+        playerBoards[playerName] = arrayOfBoatEmplacement;
+      },
+    );
+
+    return playerBoards;
   }
 
   public startGame(gameConfiguration: GameConfiguration) {

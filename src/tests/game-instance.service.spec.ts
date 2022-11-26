@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import {
+  gameConfiguration1,
+  playerBoards1,
+} from '@tests/datasets/game-instance.dataset';
 import { GameMode, GameState } from '@interfaces/engine.interface';
-import { gameConfiguration1 } from '@tests/datasets/game-instance.dataset';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
@@ -65,5 +68,11 @@ describe('GameInstanceService', () => {
     service.endGame();
 
     expect(service.gameState).toEqual(GameState.finished);
+  });
+
+  it('should generate the player boards', () => {
+    expect(
+      service.generatePlayerBoards(gameConfiguration1.boats),
+    ).toStrictEqual(playerBoards1);
   });
 });

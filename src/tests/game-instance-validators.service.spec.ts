@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BoatPlacement, GamePlayer } from '@interfaces/engine.interface';
+import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
@@ -127,7 +127,7 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate boats of players', () => {
-    const boatsPlacement: BoatPlacement[][] = [
+    const boatsPlacement: GameBoat[][] = [
       [validBoatPlacement1, validBoatPlacement2],
       [validBoatPlacement1, validBoatPlacement2],
     ];
@@ -138,7 +138,7 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should throw an error for invalid boats of players', () => {
-    const boatsPlacement: BoatPlacement[][] = [
+    const boatsPlacement: GameBoat[][] = [
       [validBoatPlacement1, validBoatPlacement2],
       [validBoatPlacement1, invalidBoatPlacement1],
     ];
