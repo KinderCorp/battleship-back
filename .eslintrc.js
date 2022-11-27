@@ -36,7 +36,6 @@ module.exports = {
         patterns: ['./*', '../*'],
       },
     ],
-    'no-underscore-dangle': ['error'],
     'object-shorthand': ['off'],
     'prefer-destructuring': ['warn'],
     'sort-class-members/sort-class-members': [

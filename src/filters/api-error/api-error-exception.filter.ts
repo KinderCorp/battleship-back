@@ -6,8 +6,15 @@ import {
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 
-import { ErrorCodes } from '@interfaces/error.interface';
+// import { ApiErrorCodes } from '@interfaces/error.interface';
 
+// type ErrorObject = {
+//   code: ApiErrorCodes;
+//   message: string | object;
+//   title: string | object;
+// };
+
+// FIXME This is not working properly
 @Catch(HttpException)
 export default class ApiErrorExceptionFilter<T extends HttpException>
   implements ExceptionFilter
@@ -17,17 +24,8 @@ export default class ApiErrorExceptionFilter<T extends HttpException>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response: FastifyReply<any> = ctx.getResponse<FastifyReply>();
     const status = exception.getStatus();
-    const exceptionResponse = exception.getResponse();
+    // const exceptionResponse = exception.getResponse();
 
-    const error =
-      typeof response === 'string'
-        ? exceptionResponse
-        : (exceptionResponse as { message: string; error: string }).message;
-
-    response.status(status).send({
-      code: ErrorCodes.NOT_FOUND,
-      detail: exceptionResponse,
-      message: error,
-    });
+    response.status(status).send(exception);
   }
 }

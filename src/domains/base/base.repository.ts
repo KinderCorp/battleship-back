@@ -24,10 +24,6 @@ export default class BaseRepository<Entity extends IdentifierInterface> {
     return await this.repository.find(options);
   }
 
-  public async findById(id: string | number): Promise<Entity> {
-    return this.repository.findOneBy({ id: id } as FindOptionsWhere<Entity>);
-  }
-
   public async findOne(options: FindOneOptions): Promise<Entity> {
     try {
       return await this.repository.findOneOrFail(options);
@@ -36,6 +32,10 @@ export default class BaseRepository<Entity extends IdentifierInterface> {
         ApiError.ValidationError('No data was found with this parameters.'),
       );
     }
+  }
+
+  public async findOneById(id: string | number): Promise<Entity> {
+    return this.repository.findOneBy({ id: id } as FindOptionsWhere<Entity>);
   }
 
   public async insert(dto: CreateDtoInterface): Promise<Entity> {

@@ -1,13 +1,14 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { CreateUserDto } from '@dto/user.dto';
-import UserService from '@user/user.service';
 
 import ApiError from '@shared/api-error';
-import { ErrorCodes } from '@interfaces/error.interface';
+import { CreateUserDto } from '@dto/user.dto';
 import User from '@user/user.entity';
+import UserService from '@user/user.service';
 
-@ApiTags('User')
+const entityName = 'User';
+
+@ApiTags(entityName)
 @Controller('user')
 export default class UserController {
   public constructor(private readonly userService: UserService) {}
@@ -23,10 +24,7 @@ export default class UserController {
       return await this.userService.insert(user);
     } catch (error) {
       throw new BadRequestException(
-        new ApiError({
-          code: ErrorCodes.INSERTION_FAILED,
-          message: 'Fail to insert user.',
-        }),
+        ApiError.InsertionFailed(entityName, error),
       );
     }
   }
