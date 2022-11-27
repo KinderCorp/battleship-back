@@ -81,20 +81,22 @@ describe('GameInstanceService', () => {
 
   it('should generate the master player boards', () => {
     expect(
-      service.generateMasterPlayerBoards(gameConfiguration1().boats),
+      service['generateMasterPlayerBoards'](gameConfiguration1().boats),
     ).toStrictEqual(masterPlayerBoards1());
   });
 
   it('should generate the visible player boards', () => {
     expect(
-      service.generateVisiblePlayerBoards(gameConfiguration1().players),
+      service['generateVisiblePlayerBoards'](gameConfiguration1().players),
     ).toStrictEqual(visiblePlayerBoards1());
   });
 
   it('should thrown an error if the targeted cell has been hit', () => {
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
 
-    expect(() => service.doesCellContainABoat('player0', [1, 1])).toThrowError(
+    expect(() =>
+      service['doesCellContainABoat']('player0', [1, 1]),
+    ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.cellAlreadyHit,
         message: GameEngineErrorMessages.cellAlreadyHit,
@@ -106,7 +108,7 @@ describe('GameInstanceService', () => {
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
 
-    const doesCellContainABoat = service.doesCellContainABoat(
+    const doesCellContainABoat = service['doesCellContainABoat'](
       'player0',
       [1, 10],
     );
@@ -125,7 +127,7 @@ describe('GameInstanceService', () => {
     service['masterPlayerBoards'] = masterPlayerBoards1();
     service['boatsOfPlayers'] = gameConfiguration1().boats;
 
-    const doesCellContainABoat = service.doesCellContainABoat(
+    const doesCellContainABoat = service['doesCellContainABoat'](
       'player0',
       [3, 1],
     );
@@ -162,7 +164,7 @@ describe('GameInstanceService', () => {
   it('should update player boat object and not to be sunk at first, then to be sunk', () => {
     service['boatsOfPlayers'] = gameConfiguration1().boats;
 
-    service.updatePlayerBoatObject('player0', [3, 1]);
+    service['updatePlayerBoatObject']('player0', [3, 1]);
 
     expect(service['boatsOfPlayers']['player0'][0]).toStrictEqual({
       boatName: 'destroyer',
@@ -175,17 +177,17 @@ describe('GameInstanceService', () => {
       isSunk: false,
     });
 
-    service.updatePlayerBoatObject('player0', [2, 1]);
+    service['updatePlayerBoatObject']('player0', [2, 1]);
     expect(service['boatsOfPlayers']['player0'][0].isSunk).toEqual(false);
 
-    service.updatePlayerBoatObject('player0', [1, 1]);
+    service['updatePlayerBoatObject']('player0', [1, 1]);
     expect(service['boatsOfPlayers']['player0'][0].isSunk).toEqual(true);
   });
 
   it('should update player boat object and throw an error because boat is already hit on targeted cell ', () => {
     service['boatsOfPlayers'] = gameConfiguration1().boats;
 
-    service.updatePlayerBoatObject('player0', [3, 1]);
+    service['updatePlayerBoatObject']('player0', [3, 1]);
 
     expect(service['boatsOfPlayers']['player0'][0]).toStrictEqual({
       boatName: 'destroyer',
@@ -198,11 +200,11 @@ describe('GameInstanceService', () => {
       isSunk: false,
     });
 
-    service.updatePlayerBoatObject('player0', [2, 1]);
+    service['updatePlayerBoatObject']('player0', [2, 1]);
     expect(service['boatsOfPlayers']['player0'][0].isSunk).toEqual(false);
 
     expect(() =>
-      service.updatePlayerBoatObject('player0', [3, 1]),
+      service['updatePlayerBoatObject']('player0', [3, 1]),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.cellAlreadyHit,

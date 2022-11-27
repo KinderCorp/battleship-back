@@ -15,7 +15,6 @@ import {
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
-// TASK Turn to private methods that can be private
 export default class GameInstanceService {
   private readonly gameMode!: GameMode;
   private _gameState!: GameState;
@@ -44,7 +43,9 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
-  public doesCellContainABoat(targetedPlayer: string, targetedCell: Cell) {
+  // TASK Add hitCell function that take a targetedPlayer and an array of cells (The damage object of the weapon)
+
+  private doesCellContainABoat(targetedPlayer: string, targetedCell: Cell) {
     this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
       this.visiblePlayerBoards[targetedPlayer],
       targetedCell,
@@ -74,7 +75,7 @@ export default class GameInstanceService {
     return playerBoats.filter((boat) => !boat.isSunk);
   }
 
-  public generateMasterPlayerBoards(boats: GameBoats) {
+  private generateMasterPlayerBoards(boats: GameBoats) {
     const playerBoards: PlayerBoards = {};
 
     Object.entries(boats).forEach(
@@ -90,7 +91,7 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  public generateVisiblePlayerBoards(players: GamePlayer[]) {
+  private generateVisiblePlayerBoards(players: GamePlayer[]) {
     const playerBoards: PlayerBoards = {};
 
     players.forEach((player, index) => {
@@ -136,7 +137,7 @@ export default class GameInstanceService {
     this.gameState = GameState.placingBoats;
   }
 
-  public updatePlayerBoatObject(
+  private updatePlayerBoatObject(
     targetedPlayer: keyof typeof this.boatsOfPlayers,
     targetedCell: Cell,
   ) {
