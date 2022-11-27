@@ -37,6 +37,35 @@ export const validBoatPlacement2: () => GameBoat = () => {
   };
 };
 
+export const validBoatPlacement3: () => GameBoat = () => {
+  return {
+    boatName: validBoatName,
+    emplacement: [
+      [5, 5],
+      [5, 4],
+      [5, 3],
+    ],
+    hit: [
+      [5, 5],
+      [5, 4],
+      [5, 3],
+    ],
+    isSunk: true,
+  };
+};
+
+export const validBoatPlacement4: () => GameBoat = () => {
+  return {
+    boatName: validBoatName,
+    emplacement: [
+      [1, 5],
+      [1, 4],
+    ],
+    hit: [],
+    isSunk: false,
+  };
+};
+
 export const invalidBoatPlacement1: () => GameBoat = () => {
   return {
     boatName: validBoatName,
@@ -75,6 +104,7 @@ export const invalidBoatPlacement3: () => GameBoat = () => {
     isSunk: false,
   };
 };
+
 export const invalidBoatPlacement4: () => GameBoat = () => {
   return {
     boatName: validBoatName,
@@ -107,6 +137,18 @@ export const invalidBoatPlacement6: () => GameBoat = () => {
     emplacement: [
       [1, 3],
       [3, 3],
+      [3, 3],
+    ],
+    hit: [],
+    isSunk: false,
+  };
+};
+
+export const invalidBoatPlacement7: () => GameBoat = () => {
+  return {
+    boatName: validBoatName,
+    emplacement: [
+      [1, 3],
       [3, 3],
     ],
     hit: [],
@@ -157,13 +199,14 @@ export const loggedPlayer2: () => LoggedPlayer = () => {
 export const gameConfiguration1: () => GameConfiguration = () => {
   const boat1 = validBoatPlacement1();
   const boat2 = validBoatPlacement2();
+  const boat3 = validBoatPlacement3();
   const guest1 = guestPlayer1();
   const guest2 = guestPlayer2();
 
   return {
     boardDimensions: 10,
     boats: {
-      player0: [boat1, boat2],
+      player0: [boat1, boat3],
       player1: [boat1, boat2],
     },
     gameMode: GameMode.OneVersusOne,
@@ -181,9 +224,9 @@ export const masterPlayerBoards1: () => PlayerBoards = () => {
       [3, 1],
       [2, 1],
       [1, 1],
-      [1, 5],
-      [1, 4],
-      [1, 3],
+      [5, 5],
+      [5, 4],
+      [5, 3],
     ],
     player1: [
       [3, 1],

@@ -11,7 +11,7 @@ export enum GameState {
   finished = 'FINISHED',
 }
 
-type Cell = [number, number];
+export type Cell = [number, number];
 
 export type PlayerBoards = Record<string, Cell[]>;
 

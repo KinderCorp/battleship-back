@@ -14,10 +14,13 @@ import {
   invalidBoatPlacement4,
   invalidBoatPlacement5,
   invalidBoatPlacement6,
+  invalidBoatPlacement7,
   loggedPlayer1,
   loggedPlayer2,
   validBoatPlacement1,
   validBoatPlacement2,
+  validBoatPlacement4,
+  visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
@@ -47,6 +50,13 @@ describe('GameInstanceValidatorsService', () => {
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
         validBoatPlacement1(),
+      ),
+    ).toEqual(true);
+
+    expect(
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        validBoatPlacement4(),
       ),
     ).toEqual(true);
   });
@@ -120,6 +130,18 @@ describe('GameInstanceValidatorsService', () => {
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
         invalidBoatPlacement6(),
+      ),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
+      }),
+    );
+
+    expect(() =>
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement7(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -227,5 +249,31 @@ describe('GameInstanceValidatorsService', () => {
         message: GameEngineErrorMessages.invalidBoardGameDimensions,
       }),
     );
+  });
+
+  it('should return throw an error because the targeted cell has been already  hit', () => {
+    const visiblePlayerBoards = visiblePlayerBoards2();
+    const arrayOfCells = visiblePlayerBoards['player0'];
+
+    expect(() =>
+      service.validateCellHasNotBeenHit(arrayOfCells, [1, 1]),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.cellAlreadyHit,
+        message: GameEngineErrorMessages.cellAlreadyHit,
+      }),
+    );
+  });
+
+  it('should return true because the targeted cell has not been already hit', () => {
+    const visiblePlayerBoards = visiblePlayerBoards2();
+    const arrayOfCells = visiblePlayerBoards['player0'];
+
+    const hasCellAlreadyBeenHit = service.validateCellHasNotBeenHit(
+      arrayOfCells,
+      [1, 10],
+    );
+
+    expect(hasCellAlreadyBeenHit).toEqual(true);
   });
 });

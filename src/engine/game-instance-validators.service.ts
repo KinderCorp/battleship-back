@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { GameBoard, GameBoat, GamePlayer } from '@interfaces/engine.interface';
+import {
+  Cell,
+  GameBoard,
+  GameBoat,
+  GamePlayer,
+} from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
@@ -84,11 +89,31 @@ export default class GameInstanceValidatorsService {
 
     return true;
   }
+
+  public validateCellHasNotBeenHit(
+    arrayOfCells: Cell[],
+    [xTargetedCell, yTargetedCell]: Cell,
+  ) {
+    const hasCellAlreadyBeenHit = arrayOfCells.some(
+      ([xVisibleCell, yVisibleCell]) =>
+        xVisibleCell === xTargetedCell && yVisibleCell === yTargetedCell,
+    );
+
+    if (hasCellAlreadyBeenHit) {
+      throw new GameEngineError({
+        code: GameEngineErrorCodes.cellAlreadyHit,
+        message: GameEngineErrorMessages.cellAlreadyHit,
+      });
+    }
+
+    return true;
+  }
+
   public validateNumbersAreAdjacent(arrayOfNumbers: number[]) {
     arrayOfNumbers.sort((a, b) => a - b);
 
-    arrayOfNumbers.forEach((yPosition, index) => {
-      if (index === 0 && yPosition + 1 !== arrayOfNumbers[index + 1]) {
+    arrayOfNumbers.forEach((axisPosition, index) => {
+      if (index === 0 && axisPosition + 1 !== arrayOfNumbers[index + 1]) {
         throw new GameEngineError({
           code: GameEngineErrorCodes.invalidBoat,
           message: GameEngineErrorMessages.invalidBoat,
@@ -98,8 +123,8 @@ export default class GameInstanceValidatorsService {
       const isNotFirstIndex = index > 0 && index < arrayOfNumbers.length - 1;
 
       if (
-        (isNotFirstIndex && yPosition + 1 !== arrayOfNumbers[index + 1]) ||
-        (isNotFirstIndex && yPosition - 1 !== arrayOfNumbers[index - 1])
+        (isNotFirstIndex && axisPosition + 1 !== arrayOfNumbers[index + 1]) ||
+        (isNotFirstIndex && axisPosition - 1 !== arrayOfNumbers[index - 1])
       ) {
         throw new GameEngineError({
           code: GameEngineErrorCodes.invalidBoat,

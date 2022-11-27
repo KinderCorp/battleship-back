@@ -1,5 +1,8 @@
+import * as radash from 'radash';
+
 import {
   BaseGameConfiguration,
+  Cell,
   GameBoard,
   GameBoat,
   GameBoats,
@@ -9,14 +12,10 @@ import {
   GameState,
   PlayerBoards,
 } from '@interfaces/engine.interface';
-import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
-import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
+// TASK Turn to private methods that can be private
 export default class GameInstanceService {
   private readonly gameMode!: GameMode;
   private _gameState!: GameState;
@@ -25,7 +24,7 @@ export default class GameInstanceService {
   private masterPlayerBoards!: PlayerBoards;
   private visiblePlayerBoards!: PlayerBoards;
   private gameConfiguration!: GameConfiguration;
-  private playerBoats: typeof this.gameConfiguration.boats;
+  private boatsOfPlayers: typeof this.gameConfiguration.boats;
 
   public constructor(
     {
@@ -45,16 +44,11 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
-  public doesCellContainABoat(
-    targetedPlayer: string,
-    targetedCell: [number, number],
-  ) {
-    if (this.hasCellAlreadyBeenHit(targetedPlayer, targetedCell)) {
-      throw new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
-      });
-    }
+  public doesCellContainABoat(targetedPlayer: string, targetedCell: Cell) {
+    this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
+      this.visiblePlayerBoards[targetedPlayer],
+      targetedCell,
+    );
 
     this.visiblePlayerBoards[targetedPlayer].push(targetedCell);
 
@@ -66,7 +60,7 @@ export default class GameInstanceService {
     );
 
     if (doesCellContainABoat) {
-      // TASK Update boat object
+      this.updatePlayerBoatObject(targetedPlayer, targetedCell);
     }
 
     return doesCellContainABoat;
@@ -74,6 +68,10 @@ export default class GameInstanceService {
 
   public endGame() {
     this.gameState = GameState.finished;
+  }
+
+  private findStillInGamePlayerBoats(playerBoats: GameBoat[]) {
+    return playerBoats.filter((boat) => !boat.isSunk);
   }
 
   public generateMasterPlayerBoards(boats: GameBoats) {
@@ -104,33 +102,21 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  public hasCellAlreadyBeenHit(
-    targetedPlayer: string,
-    [xTargetedCell, yTargetedCell]: [number, number],
-  ) {
-    return this.visiblePlayerBoards[targetedPlayer].some(
-      ([xVisibleCell, yVisibleCell]) =>
-        xVisibleCell === xTargetedCell && yVisibleCell === yTargetedCell,
-    );
-  }
-
   public startGame(gameConfiguration: GameConfiguration) {
     // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
     const boatsOfPlayers = Object.values(gameConfiguration.boats);
 
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
-      DEFAULT_BOARD_GAME,
+      this.board,
       boatsOfPlayers,
     );
-
     this.masterPlayerBoards = this.generateMasterPlayerBoards(
       gameConfiguration.boats,
     );
-    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(
-      gameConfiguration.players,
-    );
+    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(this.players);
 
     this.gameConfiguration = gameConfiguration;
+    this.boatsOfPlayers = gameConfiguration.boats;
     this.gameState = GameState.playing;
   }
 
@@ -145,10 +131,37 @@ export default class GameInstanceService {
       gameConfiguration.players,
     );
 
+    this.players = gameConfiguration.players;
+
     this.gameState = GameState.placingBoats;
   }
 
-  // TASK Find and update the boat object after it has been hit
-  // TASK If hit array is deep equal to the emplacement array, then turn isSunk to true
-  // public updatePlayerBoatObject() {}
+  public updatePlayerBoatObject(
+    targetedPlayer: keyof typeof this.boatsOfPlayers,
+    targetedCell: Cell,
+  ) {
+    const [xTargetedCell, yTargetedCell] = targetedCell;
+
+    const playerBoats = this.boatsOfPlayers[targetedPlayer];
+
+    const stillInGameBoats = this.findStillInGamePlayerBoats(playerBoats);
+
+    const targetedBoat = stillInGameBoats.find((boat) =>
+      boat.emplacement.some(
+        ([xMasterCell, yMasterCell]) =>
+          xMasterCell === xTargetedCell && yMasterCell === yTargetedCell,
+      ),
+    );
+
+    this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
+      targetedBoat.hit,
+      targetedCell,
+    );
+
+    targetedBoat.hit.push(targetedCell);
+
+    if (radash.isEqual(targetedBoat.hit, targetedBoat.emplacement)) {
+      targetedBoat.isSunk = true;
+    }
+  }
 }
