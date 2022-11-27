@@ -23,7 +23,7 @@ export default class GameInstanceService {
   private masterPlayerBoards!: PlayerBoards;
   private visiblePlayerBoards!: PlayerBoards;
   private gameConfiguration!: GameConfiguration;
-  private boatsOfPlayers: typeof this.gameConfiguration.boats;
+  private playersFleet: typeof this.gameConfiguration.boats;
 
   public constructor(
     {
@@ -117,7 +117,7 @@ export default class GameInstanceService {
     this.visiblePlayerBoards = this.generateVisiblePlayerBoards(this.players);
 
     this.gameConfiguration = gameConfiguration;
-    this.boatsOfPlayers = gameConfiguration.boats;
+    this.playersFleet = gameConfiguration.boats;
     this.gameState = GameState.playing;
   }
 
@@ -138,14 +138,14 @@ export default class GameInstanceService {
   }
 
   private updatePlayerBoatObject(
-    targetedPlayer: keyof typeof this.boatsOfPlayers,
+    targetedPlayer: keyof typeof this.playersFleet,
     targetedCell: Cell,
   ) {
     const [xTargetedCell, yTargetedCell] = targetedCell;
 
-    const playerBoats = this.boatsOfPlayers[targetedPlayer];
+    const playerFleet = this.playersFleet[targetedPlayer];
 
-    const stillInGameBoats = this.findStillInGamePlayerBoats(playerBoats);
+    const stillInGameBoats = this.findStillInGamePlayerBoats(playerFleet);
 
     const targetedBoat = stillInGameBoats.find((boat) =>
       boat.emplacement.some(
