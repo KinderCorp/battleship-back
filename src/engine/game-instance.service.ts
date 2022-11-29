@@ -11,10 +11,15 @@ import {
   GameMode,
   GamePlayer,
   GameState,
-  // GameWeapon,
+  GameWeapon,
   PlayerBoards,
 } from '@interfaces/engine.interface';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
+import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 export default class GameInstanceService {
@@ -130,6 +135,21 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
+  private getShotCells(weapon: GameWeapon, originCell: Cell) {
+    const [xOriginCell, yOriginCell] = originCell;
+    const shotCells: Cell[] = [];
+
+    Object.values(weapon.damageArea).forEach(([xShotCell, yShotCell]) => {
+      if (xShotCell === undefined && yShotCell === undefined) {
+        return;
+      }
+
+      shotCells.push([xOriginCell + xShotCell, yOriginCell + yShotCell]);
+    });
+
+    return shotCells;
+  }
+
   // TASK Add shoot function that take a targetedPlayer, a weapon and an origin cell
   // TASK Then calculate the damage area depending the weapon and the origin cell
   // TASK Then use doesCellContainABoat for each cell in the damage area
@@ -139,15 +159,48 @@ export default class GameInstanceService {
    * @param weapon
    * @param originCell The cell where the player touch
    */
-  // public shoot(
-  //   targetedPlayer: keyof typeof this.playersFleet,
-  //   weapon: GameWeapon,
-  //   originCell: Cell,
-  // ) {
-  //   // TASK Check if the gameState is equal to "playing"
-  //   // TASK Check if the weapon used has ammunition remaining
-  //   // TASK Check if cell is out of bounds
-  // }
+  public shoot(
+    targetedPlayer: keyof typeof this.playersFleet,
+    weapon: GameWeapon,
+    originCell: Cell,
+  ) {
+    if (this.gameState !== GameState.playing) {
+      const errorKey = 'gameNotStarted';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    if (weapon.ammunitionRemaining === 0) {
+      const errorKey = 'noRemainingAmmunition';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    const [xOriginCell, yOriginCell] = originCell;
+    const [xBoardPositions, yBoardPositions] = this.board;
+
+    if (
+      !xBoardPositions.includes(xOriginCell) ||
+      !yBoardPositions.includes(yOriginCell)
+    ) {
+      const errorKey = 'outOfBounds';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    const shotCells = this.getShotCells(weapon, originCell);
+
+    // TASK Check if each cell contains a boat
+  }
 
   public startGame(gameConfiguration: GameConfiguration) {
     // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration

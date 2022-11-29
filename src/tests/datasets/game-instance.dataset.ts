@@ -4,6 +4,7 @@ import {
   GameConfiguration,
   GameMode,
   GameState,
+  GameWeapon,
   OneVersusOneWeapons,
   PlayerBoards,
 } from '@interfaces/engine.interface';
@@ -373,5 +374,41 @@ export const gameArsenal1: () => GameArsenal = () => {
         name: WeaponName.triple,
       },
     ],
+  };
+};
+
+export const bomb: () => GameWeapon = () => {
+  return {
+    ammunitionRemaining: -1,
+    damageArea: {
+      b: [],
+      bl: [],
+      br: [],
+      l: [],
+      o: [0, 0],
+      r: [],
+      t: [],
+      tl: [],
+      tr: [],
+    },
+    name: WeaponName.bomb,
+  };
+};
+
+export const fakeWeapon: () => GameWeapon = () => {
+  return {
+    ammunitionRemaining: -1,
+    damageArea: {
+      b: [1, -1],
+      bl: [0, 0],
+      br: [2, 4],
+      l: [0, 1],
+      o: [],
+      r: [1, 0],
+      t: [1, 1],
+      tl: [-1, 1],
+      tr: [],
+    },
+    name: WeaponName.bomb,
   };
 };

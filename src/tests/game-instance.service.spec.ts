@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
+  bomb,
+  fakeWeapon,
   gameArsenal1,
   gameConfiguration1,
   masterPlayerBoards1,
@@ -224,5 +226,66 @@ describe('GameInstanceService', () => {
     expect(service['generateGameArsenal'](gameConfiguration1())).toEqual(
       gameArsenal1(),
     );
+  });
+
+  it('should not shoot because the game is not started', () => {
+    expect(() => service.shoot('player0', bomb(), [1, 1])).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.gameNotStarted,
+        message: GameEngineErrorMessages.gameNotStarted,
+      }),
+    );
+  });
+
+  it('should not shoot because no remaining ammunition', () => {
+    service.gameState = GameState.playing;
+
+    const weapon = bomb();
+    weapon.ammunitionRemaining = 0;
+
+    expect(() => service.shoot('player0', weapon, [1, 1])).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.noRemainingAmmunition,
+        message: GameEngineErrorMessages.noRemainingAmmunition,
+      }),
+    );
+  });
+
+  it('should not shoot because the origin cell is out of bound', () => {
+    service.gameState = GameState.playing;
+
+    expect(() => service.shoot('player0', bomb(), [0, 1])).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.outOfBounds,
+        message: GameEngineErrorMessages.outOfBounds,
+      }),
+    );
+
+    expect(() => service.shoot('player0', bomb(), [1, 0])).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.outOfBounds,
+        message: GameEngineErrorMessages.outOfBounds,
+      }),
+    );
+  });
+
+  it('should shoot', () => {
+    service.gameState = GameState.playing;
+
+    expect(() => service.shoot('player0', bomb(), [1, 1])).not.toThrowError();
+  });
+
+  it('should get shot cells', () => {
+    const shotCells = service['getShotCells'](fakeWeapon(), [5, 5]);
+
+    expect(shotCells).toEqual([
+      [6, 4],
+      [5, 5],
+      [7, 9],
+      [5, 6],
+      [6, 5],
+      [6, 6],
+      [4, 6],
+    ]);
   });
 });
