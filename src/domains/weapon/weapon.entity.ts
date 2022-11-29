@@ -7,16 +7,20 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DamageMatrix } from '@interfaces/weapon.interface';
+import {
+  DamageMatrix,
+  WeaponName,
+  WeaponType,
+} from '@interfaces/weapon.interface';
 import Level from '@level/level.entity';
 
 @Entity()
-export default class Weapon {
+export default class Weapon implements WeaponType {
   @PrimaryGeneratedColumn()
   public id!: number;
 
-  @Column('text')
-  public name!: string;
+  @Column({ enum: WeaponName, type: 'enum', unique: true })
+  public name!: WeaponName;
 
   @ManyToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
@@ -31,7 +35,7 @@ export default class Weapon {
   public maxAmmunition: number;
 
   @Column('json')
-  public damage: DamageMatrix;
+  public damageArea: DamageMatrix;
 }
 
 // const regularDamages = {
@@ -39,7 +43,7 @@ export default class Weapon {
 //     bl: [],// Bottom left
 //     br: [],// Bottom right
 //     l: [],// Left
-//     m: [0, 0],// Middle
+//     o: [0, 0],// Origin - where the player click/touch
 //     r: [],// Right
 //     t: [],// Top
 //     tl: [],// Top left
@@ -51,7 +55,7 @@ export default class Weapon {
 //     bl: [1, -1], // Bottom left
 //     br: [1, 1], // Bottom right
 //     l: [0, -1], // Left
-//     m: [0, 0], // Middle
+//     o: [0, 0], // Origin - where the player click/touch
 //     r: [0, 1], // Right
 //     t: [-1, 0], // Top
 //     tl: [-1, -1], // Top left
@@ -62,7 +66,7 @@ export default class Weapon {
 //     bl: [], // Bottom left
 //     br: [], // Bottom right
 //     l: [], // Left
-//     m: [0, 0], // Middle
+//     o: [0, 0], // Origin - where the player click/touch
 //     r: [], // Right
 //     t: [-1, 0], // Top
 //     tl: [], // Top left
@@ -74,7 +78,7 @@ export default class Weapon {
 //   bl: [],// Bottom left
 //   br: [],// Bottom right
 //   l: [],// Left
-//   m: [],// Middle
+//   o: [],// Origin - where the player click/touch
 //   r: [],// Right
 //   t: [],// Top
 //   tl: [],// Top left

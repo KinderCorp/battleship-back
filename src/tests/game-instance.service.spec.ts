@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
+  gameArsenal1,
   gameConfiguration1,
   masterPlayerBoards1,
   visiblePlayerBoards1,
@@ -54,6 +55,7 @@ describe('GameInstanceService', () => {
       .spyOn(gameInstanceValidatorsService, 'validateBoatsOfPlayers')
       .mockReturnValue(true);
 
+    // TASK Update this test
     expect(service.gameState).toEqual(GameState.playing);
   });
 
@@ -216,5 +218,11 @@ describe('GameInstanceService', () => {
       [2, 1],
     ]);
     expect(service['playersFleet']['player0'][0].isSunk).toEqual(false);
+  });
+
+  it('should generate the game arsenal', () => {
+    expect(service['generateGameArsenal'](gameConfiguration1())).toEqual(
+      gameArsenal1(),
+    );
   });
 });

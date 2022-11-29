@@ -3,6 +3,7 @@ import * as radash from 'radash';
 import {
   BaseGameConfiguration,
   Cell,
+  GameArsenal,
   GameBoard,
   GameBoat,
   GameBoats,
@@ -10,21 +11,24 @@ import {
   GameMode,
   GamePlayer,
   GameState,
+  // GameWeapon,
   PlayerBoards,
 } from '@interfaces/engine.interface';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 export default class GameInstanceService {
-  private readonly gameMode!: GameMode;
   private _gameState!: GameState;
-  private players: GamePlayer[] = [];
   private board: GameBoard = DEFAULT_BOARD_GAME;
-  private masterPlayerBoards!: PlayerBoards;
-  private visiblePlayerBoards!: PlayerBoards;
+  private gameArsenal: GameArsenal;
   private gameConfiguration!: GameConfiguration;
+  private masterPlayerBoards!: PlayerBoards;
+  private players: GamePlayer[] = [];
   private playersFleet: typeof this.gameConfiguration.boats;
+  private readonly gameMode!: GameMode;
+  private visiblePlayerBoards!: PlayerBoards;
 
+  // TASK Add the logic about the ammunition limit
   public constructor(
     {
       gameMode = GameMode.OneVersusOne,
@@ -43,9 +47,10 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
-  // TASK Add hitCell function that take a targetedPlayer and an array of cells (The damage object of the weapon)
-
-  private doesCellContainABoat(targetedPlayer: string, targetedCell: Cell) {
+  private doesCellContainABoat(
+    targetedPlayer: keyof typeof this.playersFleet,
+    targetedCell: Cell,
+  ) {
     this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
       this.visiblePlayerBoards[targetedPlayer],
       targetedCell,
@@ -73,6 +78,28 @@ export default class GameInstanceService {
 
   private findStillInGamePlayerBoats(playerBoats: GameBoat[]) {
     return playerBoats.filter((boat) => !boat.isSunk);
+  }
+
+  private generateGameArsenal(gameConfiguration: GameConfiguration) {
+    const gameArsenal: GameArsenal = {};
+
+    Object.entries(gameConfiguration.weapons).forEach(
+      ([playerName, weapons]) => {
+        weapons.forEach((weapon) => {
+          if (!gameArsenal[playerName]) {
+            gameArsenal[playerName] = [];
+          }
+
+          gameArsenal[playerName].push({
+            ammunitionRemaining: weapon.maxAmmunition,
+            damageArea: weapon.damageArea,
+            name: weapon.name,
+          });
+        });
+      },
+    );
+
+    return gameArsenal;
   }
 
   private generateMasterPlayerBoards(boats: GameBoats) {
@@ -103,6 +130,25 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
+  // TASK Add shoot function that take a targetedPlayer, a weapon and an origin cell
+  // TASK Then calculate the damage area depending the weapon and the origin cell
+  // TASK Then use doesCellContainABoat for each cell in the damage area
+  /**
+   * Make a shot with the specified weapon
+   * @param targetedPlayer
+   * @param weapon
+   * @param originCell The cell where the player touch
+   */
+  // public shoot(
+  //   targetedPlayer: keyof typeof this.playersFleet,
+  //   weapon: GameWeapon,
+  //   originCell: Cell,
+  // ) {
+  //   // TASK Check if the gameState is equal to "playing"
+  //   // TASK Check if the weapon used has ammunition remaining
+  //   // TASK Check if cell is out of bounds
+  // }
+
   public startGame(gameConfiguration: GameConfiguration) {
     // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
     const boatsOfPlayers = Object.values(gameConfiguration.boats);
@@ -115,6 +161,7 @@ export default class GameInstanceService {
       gameConfiguration.boats,
     );
     this.visiblePlayerBoards = this.generateVisiblePlayerBoards(this.players);
+    this.gameArsenal = this.generateGameArsenal(gameConfiguration);
 
     this.gameConfiguration = gameConfiguration;
     this.playersFleet = gameConfiguration.boats;

@@ -1,14 +1,14 @@
 import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { DamageMatrix, WeaponName } from '@interfaces/weapon.interface';
 import { CreateDtoInterface } from '@dto/dto.interface';
-import { DamageMatrix } from '@interfaces/weapon.interface';
 
 export class CreateWeaponDto implements CreateDtoInterface {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  public name!: string;
+  public name!: WeaponName;
 
   @ApiProperty({ description: 'Must match with a level Id' })
   @IsNotEmpty()
@@ -31,7 +31,7 @@ export class CreateWeaponDto implements CreateDtoInterface {
       bl: [],
       br: [],
       l: [],
-      m: [],
+      o: [],
       r: [],
       t: [],
       tl: [],

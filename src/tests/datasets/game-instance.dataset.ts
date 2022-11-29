@@ -1,11 +1,14 @@
 import {
+  GameArsenal,
   GameBoat,
   GameConfiguration,
   GameMode,
   GameState,
+  OneVersusOneWeapons,
   PlayerBoards,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
 
 // INFO Datasets must be functions to ensure that the values don't mutate
 
@@ -202,6 +205,7 @@ export const gameConfiguration1: () => GameConfiguration = () => {
   const boat3 = validBoatPlacement3();
   const guest1 = guestPlayer1();
   const guest2 = guestPlayer2();
+  const oneVersusOneWeapons = oneVersusOneWeapons1();
 
   return {
     boardDimensions: 10,
@@ -214,7 +218,7 @@ export const gameConfiguration1: () => GameConfiguration = () => {
     players: [guest1, guest2],
     state: GameState.waitingToStart,
     timePerTurn: 60,
-    weapons: [0, 1, 2],
+    weapons: oneVersusOneWeapons,
   };
 };
 
@@ -253,5 +257,121 @@ export const visiblePlayerBoards2: () => PlayerBoards = () => {
       [2, 1],
     ],
     player1: [[10, 1]],
+  };
+};
+
+export const oneVersusOneWeapons1: () => OneVersusOneWeapons = () => {
+  const bomb = gameWeaponBomb();
+  const triple = gameWeaponTriple();
+
+  return { player0: [bomb, triple], player1: [bomb, triple] };
+};
+
+const gameWeaponBomb: () => WeaponType = () => {
+  return {
+    damageArea: {
+      b: [],
+      bl: [],
+      br: [],
+      l: [],
+      o: [0, 0],
+      r: [],
+      t: [],
+      tl: [],
+      tr: [],
+    },
+    id: 1,
+    maxAmmunition: -1,
+    name: WeaponName.bomb,
+    requiredLevel: 1,
+  };
+};
+
+const gameWeaponTriple: () => WeaponType = () => {
+  return {
+    damageArea: {
+      b: [1, 0],
+      bl: [],
+      br: [],
+      l: [],
+      o: [0, 0],
+      r: [],
+      t: [-1, 0],
+      tl: [],
+      tr: [],
+    },
+    id: 2,
+    maxAmmunition: 1,
+    name: WeaponName.triple,
+    requiredLevel: 1,
+  };
+};
+
+export const gameArsenal1: () => GameArsenal = () => {
+  return {
+    player0: [
+      {
+        ammunitionRemaining: -1,
+        damageArea: {
+          b: [],
+          bl: [],
+          br: [],
+          l: [],
+          o: [0, 0],
+          r: [],
+          t: [],
+          tl: [],
+          tr: [],
+        },
+        name: WeaponName.bomb,
+      },
+      {
+        ammunitionRemaining: 1,
+        damageArea: {
+          b: [1, 0],
+          bl: [],
+          br: [],
+          l: [],
+          o: [0, 0],
+          r: [],
+          t: [-1, 0],
+          tl: [],
+          tr: [],
+        },
+        name: WeaponName.triple,
+      },
+    ],
+    player1: [
+      {
+        ammunitionRemaining: -1,
+        damageArea: {
+          b: [],
+          bl: [],
+          br: [],
+          l: [],
+          o: [0, 0],
+          r: [],
+          t: [],
+          tl: [],
+          tr: [],
+        },
+        name: WeaponName.bomb,
+      },
+      {
+        ammunitionRemaining: 1,
+        damageArea: {
+          b: [1, 0],
+          bl: [],
+          br: [],
+          l: [],
+          o: [0, 0],
+          r: [],
+          t: [-1, 0],
+          tl: [],
+          tr: [],
+        },
+        name: WeaponName.triple,
+      },
+    ],
   };
 };

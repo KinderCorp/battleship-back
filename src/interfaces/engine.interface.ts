@@ -1,4 +1,6 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import Weapon from '@weapon/weapon.entity';
+import { WeaponType } from '@interfaces/weapon.interface';
 
 export enum GameMode {
   OneVersusOne = '1v1',
@@ -27,20 +29,29 @@ export interface BaseGameConfiguration {
   state: GameState;
 }
 
-export type GameBoats = {
+export interface GameBoats extends OneVersusOne<GameBoat> {
   [playerName: string]: GameBoat[];
-};
+}
 
 export interface OneVersusOneBoats extends GameBoats {
   player0: GameBoat[];
   player1: GameBoat[];
 }
 
+export interface OneVersusOneWeapons extends OneVersusOne<WeaponType> {
+  player0: WeaponType[];
+  player1: WeaponType[];
+}
+
+type OneVersusOne<T> = {
+  [playerName: string]: T[];
+};
+
 export interface GameConfiguration extends BaseGameConfiguration {
   boardDimensions: number;
   boats: OneVersusOneBoats;
   players: GamePlayer[];
-  weapons: number[];
+  weapons: OneVersusOneWeapons;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
 }
@@ -48,6 +59,15 @@ export interface GameConfiguration extends BaseGameConfiguration {
 export type GameBoard = [number[], number[]];
 
 export type GamePlayer = LoggedPlayer | GuestPlayer;
+
+export interface GameWeapon
+  extends Omit<Weapon, 'id' | 'maxAmmunition' | 'requiredLevel'> {
+  ammunitionRemaining: number;
+}
+
+export type GameArsenal = {
+  [playerName: string]: GameWeapon[];
+};
 
 /**
  * Classic rules for battleship

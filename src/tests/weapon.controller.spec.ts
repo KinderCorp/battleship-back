@@ -29,7 +29,7 @@ describe('WeaponController', () => {
         bl: [],
         br: [],
         l: [],
-        m: [],
+        o: [],
         r: [],
         t: [],
         tl: [],
