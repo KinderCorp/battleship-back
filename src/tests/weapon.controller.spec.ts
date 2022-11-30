@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { AppModule } from '@modules/app.module';
 import { CreateWeaponDto } from '@dto/weapon.dto';
 import WeaponController from '@weapon/weapon.controller';
+import { WeaponName } from '@interfaces/weapon.interface';
 
 // npm run test:unit -- src/tests/weapon.controller.spec.ts --watch
 
@@ -36,7 +37,7 @@ describe('WeaponController', () => {
         tr: [],
       },
       maxAmmunition: -1,
-      name: 'basic weapon',
+      name: WeaponName.bomb,
       requiredLevel: 1,
     };
 

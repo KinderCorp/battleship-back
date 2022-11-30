@@ -33,7 +33,6 @@ export default class GameInstanceService {
   private readonly gameMode!: GameMode;
   private visiblePlayerBoards!: PlayerBoards;
 
-  // TASK Add the logic about the ammunition limit
   public constructor(
     {
       gameMode = GameMode.OneVersusOne,
@@ -150,9 +149,6 @@ export default class GameInstanceService {
     return shotCells;
   }
 
-  // TASK Add shoot function that take a targetedPlayer, a weapon and an origin cell
-  // TASK Then calculate the damage area depending the weapon and the origin cell
-  // TASK Then use doesCellContainABoat for each cell in the damage area
   /**
    * Make a shot with the specified weapon
    * @param targetedPlayer
@@ -199,7 +195,9 @@ export default class GameInstanceService {
 
     const shotCells = this.getShotCells(weapon, originCell);
 
-    // TASK Check if each cell contains a boat
+    shotCells.forEach((shotCell) => {
+      this.doesCellContainABoat(targetedPlayer, shotCell);
+    });
   }
 
   public startGame(gameConfiguration: GameConfiguration) {
@@ -210,9 +208,11 @@ export default class GameInstanceService {
       this.board,
       boatsOfPlayers,
     );
+
     this.masterPlayerBoards = this.generateMasterPlayerBoards(
       gameConfiguration.boats,
     );
+
     this.visiblePlayerBoards = this.generateVisiblePlayerBoards(this.players);
     this.gameArsenal = this.generateGameArsenal(gameConfiguration);
 

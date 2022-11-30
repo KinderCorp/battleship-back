@@ -51,14 +51,19 @@ describe('GameInstanceService', () => {
   });
 
   it('should start the game', () => {
-    service.startGame(gameConfiguration1());
-
-    jest
+    const spyValidateBoats = jest
       .spyOn(gameInstanceValidatorsService, 'validateBoatsOfPlayers')
       .mockReturnValue(true);
 
-    // TASK Update this test
+    service.startGame(gameConfiguration1());
+
     expect(service.gameState).toEqual(GameState.playing);
+    expect(spyValidateBoats).toHaveBeenCalledTimes(1);
+    expect(service['masterPlayerBoards']).toBeDefined();
+    expect(service['visiblePlayerBoards']).toBeDefined();
+    expect(service['gameArsenal']).toBeDefined();
+    expect(service['gameConfiguration']).toBeDefined();
+    expect(service['playersFleet']).toBeDefined();
   });
 
   it('should start placing boats', () => {
@@ -271,8 +276,17 @@ describe('GameInstanceService', () => {
 
   it('should shoot', () => {
     service.gameState = GameState.playing;
+    service['visiblePlayerBoards'] = visiblePlayerBoards2();
+    service['masterPlayerBoards'] = masterPlayerBoards1();
+    service['playersFleet'] = gameConfiguration1().boats;
 
+    jest
+      .spyOn(gameInstanceValidatorsService, 'validateCellHasNotBeenHit')
+      .mockReturnValue(true);
+
+    expect(service['playersFleet']['player0'][0].hit).toHaveLength(0);
     expect(() => service.shoot('player0', bomb(), [1, 1])).not.toThrowError();
+    expect(service['playersFleet']['player0'][0].hit).toEqual([[1, 1]]);
   });
 
   it('should get shot cells', () => {

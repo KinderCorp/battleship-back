@@ -11,8 +11,6 @@ export enum ApiErrorMessages {
   insertionFailed = 'Fail to insert',
 }
 
-// TASK Create ApiErrorMessages
-
 export enum GameEngineErrorCodes {
   missingPlayer = 'MISSING_PLAYER',
   invalidNumberOfPlayers = 'INVALID_NUMBER_OF_PLAYERS',
