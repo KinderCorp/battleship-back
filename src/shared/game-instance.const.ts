@@ -7,3 +7,5 @@ export const DEFAULT_BOARD_GAME: GameBoard = [
 
 export const MIN_BOARD_GAME_DIMENSIONS = 10;
 export const MAX_BOARD_GAME_DIMENSIONS = 10;
+
+// export const TEMPORARY_PLAYER_PSEUDO_SEPARATOR = '_';

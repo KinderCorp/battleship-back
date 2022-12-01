@@ -5,7 +5,7 @@ import {
   GameMode,
   GameState,
   GameWeapon,
-  OneVersusOneWeapons,
+  OneVersusOne,
   PlayerBoards,
   Turn,
 } from '@interfaces/engine.interface';
@@ -163,14 +163,14 @@ export const invalidBoatPlacement7: () => GameBoat = () => {
 
 export const guestPlayer1: () => GuestPlayer = () => {
   return {
-    id: 'Drakenline_1',
+    id: 'drakenline_0',
     pseudo: 'Drakenline',
   };
 };
 
 export const guestPlayer2: () => GuestPlayer = () => {
   return {
-    id: 'Nonma_1',
+    id: 'nonma_1',
     pseudo: 'Nonma',
   };
 };
@@ -212,8 +212,8 @@ export const gameConfiguration1: () => GameConfiguration = () => {
   return {
     boardDimensions: 10,
     boats: {
-      player0: [boat1, boat3],
-      player1: [boat1, boat2],
+      drakenline_0: [boat1, boat3],
+      nonma_1: [boat1, boat2],
     },
     gameMode: GameMode.OneVersusOne,
     hasBoatsSafetyZone: false,
@@ -226,7 +226,7 @@ export const gameConfiguration1: () => GameConfiguration = () => {
 
 export const masterPlayerBoards1: () => PlayerBoards = () => {
   return {
-    player0: [
+    drakenline_0: [
       [3, 1],
       [2, 1],
       [1, 1],
@@ -234,7 +234,7 @@ export const masterPlayerBoards1: () => PlayerBoards = () => {
       [5, 4],
       [5, 3],
     ],
-    player1: [
+    nonma_1: [
       [3, 1],
       [2, 1],
       [1, 1],
@@ -247,33 +247,29 @@ export const masterPlayerBoards1: () => PlayerBoards = () => {
 
 export const visiblePlayerBoards1: () => PlayerBoards = () => {
   return {
-    drakenline0: [],
-    nonma1: [],
+    drakenline_0: [],
+    nonma_1: [],
   };
 };
 
 export const visiblePlayerBoards2: () => PlayerBoards = () => {
   return {
-    player0: [
+    drakenline_0: [
       [1, 1],
       [2, 1],
     ],
-    player1: [[10, 1]],
+    nonma_1: [[10, 1]],
   };
 };
 
-export const visiblePlayerBoards3: () => PlayerBoards = () => {
-  return {
-    player0: [],
-    player1: [],
-  };
-};
-
-export const oneVersusOneWeapons1: () => OneVersusOneWeapons = () => {
+export const oneVersusOneWeapons1: () => OneVersusOne<WeaponType> = () => {
   const bomb = gameWeaponBomb();
   const triple = gameWeaponTriple();
 
-  return { player0: [bomb, triple], player1: [bomb, triple] };
+  return {
+    drakenline_0: [bomb, triple],
+    nonma_1: [bomb, triple],
+  };
 };
 
 const gameWeaponBomb: () => WeaponType = () => {
@@ -321,8 +317,8 @@ export const gameArsenal1: () => GameArsenal = () => {
   const tripleWeapon = triple1();
 
   return {
-    player0: [bombWeapon, tripleWeapon],
-    player1: [bombWeapon, tripleWeapon],
+    drakenline_0: [bombWeapon, tripleWeapon],
+    nonma_1: [bombWeapon, tripleWeapon],
   };
 };
 
@@ -383,7 +379,7 @@ const triple1: () => GameWeapon = () => {
 export const turn1: () => Turn = () => {
   return {
     actionRemaining: 1,
-    isTurnOf: 'player0',
-    nextPlayer: 'player1',
+    isTurnOf: guestPlayer1(),
+    nextPlayer: guestPlayer2(),
   };
 };

@@ -253,7 +253,7 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should return throw an error because the targeted cell has been already  hit', () => {
     const visiblePlayerBoards = visiblePlayerBoards2();
-    const arrayOfCells = visiblePlayerBoards['player0'];
+    const arrayOfCells = visiblePlayerBoards['drakenline_0'];
 
     expect(() =>
       service.validateCellHasNotBeenHit(arrayOfCells, [1, 1]),
@@ -267,7 +267,7 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should return true because the targeted cell has not been already hit', () => {
     const visiblePlayerBoards = visiblePlayerBoards2();
-    const arrayOfCells = visiblePlayerBoards['player0'];
+    const arrayOfCells = visiblePlayerBoards['drakenline_0'];
 
     const hasCellAlreadyBeenHit = service.validateCellHasNotBeenHit(
       arrayOfCells,

@@ -160,6 +160,7 @@ export default class GameInstanceValidatorsService {
         message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
       });
     }
+
     return true;
   }
 }

@@ -18,7 +18,7 @@ export enum GameState {
 export type Cell = [number, number];
 
 export type PlayerBoards = {
-  [playerName: string]: Cell[];
+  [playerId: string]: Cell[];
 };
 
 export interface GameBoat {
@@ -34,28 +34,19 @@ export interface BaseGameConfiguration {
 }
 
 export interface GameBoats extends OneVersusOne<GameBoat> {
-  [playerName: string]: GameBoat[];
+  [playerId: string]: GameBoat[];
 }
 
-export interface OneVersusOneBoats extends GameBoats {
-  player0: GameBoat[];
-  player1: GameBoat[];
-}
-
-export interface OneVersusOneWeapons extends OneVersusOne<WeaponType> {
-  player0: WeaponType[];
-  player1: WeaponType[];
-}
-
-type OneVersusOne<T> = {
-  [playerName: string]: T[];
+// TASK Search how to indicate the number of key value pairs
+export type OneVersusOne<T> = {
+  [playerId: string]: T[];
 };
 
 export interface GameConfiguration extends BaseGameConfiguration {
   boardDimensions: number;
-  boats: OneVersusOneBoats;
+  boats: GameBoats;
   players: GamePlayer[];
-  weapons: OneVersusOneWeapons;
+  weapons: OneVersusOne<WeaponType>;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
 }
@@ -70,13 +61,18 @@ export interface GameWeapon
 }
 
 export type GameArsenal = {
-  [playerName: string]: GameWeapon[];
+  [playerId: string]: GameWeapon[];
 };
 
 export interface Turn {
   actionRemaining: IntRange<0, 2>;
-  isTurnOf: string;
-  nextPlayer: string;
+  isTurnOf: GamePlayer;
+  nextPlayer: GamePlayer;
+}
+
+export interface HasGameBeenEnded {
+  loser: GamePlayer[];
+  winner: GamePlayer[];
 }
 
 // TASK Move this in readme

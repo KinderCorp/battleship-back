@@ -12,6 +12,7 @@ import {
   GamePlayer,
   GameState,
   GameWeapon,
+  HasGameBeenEnded,
   PlayerBoards,
   Turn,
 } from '@interfaces/engine.interface';
@@ -29,16 +30,14 @@ export default class GameInstanceService {
   private gameArsenal: GameArsenal;
   private gameConfiguration!: GameConfiguration;
   private masterPlayerBoards!: PlayerBoards;
-  private players: GamePlayer[] = [];
   private readonly gameMode!: GameMode;
-  private visiblePlayerBoards!: PlayerBoards;
   private turn!: Turn;
-  private temporaryPlayerPseudos!: string[];
+  private visiblePlayerBoards!: PlayerBoards;
 
   public constructor(
     {
       gameMode = GameMode.OneVersusOne,
-      state = GameState.waitingToStart,
+      state = GameState.waitingToRival,
     }: BaseGameConfiguration,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
@@ -64,20 +63,19 @@ export default class GameInstanceService {
     }
   }
 
-  private doesCellContainABoat(
-    targetedPlayer: keyof typeof this.gameConfiguration.boats,
-    targetedCell: Cell,
-  ) {
+  private doesCellContainABoat(targetedPlayer: GamePlayer, targetedCell: Cell) {
     this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
-      this.visiblePlayerBoards[targetedPlayer],
+      this.visiblePlayerBoards[targetedPlayer.id],
       targetedCell,
     );
 
-    this.visiblePlayerBoards[targetedPlayer].push(targetedCell);
+    this.visiblePlayerBoards[targetedPlayer.id].push(targetedCell);
 
     const [xTargetedCell, yTargetedCell] = targetedCell;
 
-    const doesCellContainABoat = this.masterPlayerBoards[targetedPlayer].some(
+    const doesCellContainABoat = this.masterPlayerBoards[
+      targetedPlayer.id
+    ].some(
       ([xMasterCell, yMasterCell]) =>
         xMasterCell === xTargetedCell && yMasterCell === yTargetedCell,
     );
@@ -92,12 +90,11 @@ export default class GameInstanceService {
   public endGame() {
     this.gameState = GameState.finished;
   }
-
   private endTurn(turn: Turn) {
     turn.isTurnOf = turn.nextPlayer;
     turn.nextPlayer = this.getNextPlayer(
       turn.isTurnOf,
-      this.temporaryPlayerPseudos,
+      this.gameConfiguration.players,
     );
     turn.actionRemaining = 1;
   }
@@ -109,21 +106,19 @@ export default class GameInstanceService {
   private generateGameArsenal(gameConfiguration: GameConfiguration) {
     const gameArsenal: GameArsenal = {};
 
-    Object.entries(gameConfiguration.weapons).forEach(
-      ([playerName, weapons]) => {
-        weapons.forEach((weapon) => {
-          if (!gameArsenal[playerName]) {
-            gameArsenal[playerName] = [];
-          }
+    Object.entries(gameConfiguration.weapons).forEach(([playerId, weapons]) => {
+      weapons.forEach((weapon) => {
+        if (!gameArsenal[playerId]) {
+          gameArsenal[playerId] = [];
+        }
 
-          gameArsenal[playerName].push({
-            ammunitionRemaining: weapon.maxAmmunition,
-            damageArea: weapon.damageArea,
-            name: weapon.name,
-          });
+        gameArsenal[playerId].push({
+          ammunitionRemaining: weapon.maxAmmunition,
+          damageArea: weapon.damageArea,
+          name: weapon.name,
         });
-      },
-    );
+      });
+    });
 
     return gameArsenal;
   }
@@ -131,63 +126,58 @@ export default class GameInstanceService {
   private generateMasterPlayerBoards(boats: GameBoats) {
     const playerBoards: PlayerBoards = {};
 
-    Object.entries(boats).forEach(
-      ([playerName, boats]: [string, GameBoat[]]) => {
-        const arrayOfBoatEmplacement = boats
-          .map((boat) => boat.emplacement)
-          .flat(1);
+    Object.entries(boats).forEach(([playerId, boats]: [string, GameBoat[]]) => {
+      const arrayOfBoatEmplacement = boats
+        .map((boat) => boat.emplacement)
+        .flat(1);
 
-        playerBoards[playerName] = arrayOfBoatEmplacement;
-      },
-    );
+      playerBoards[playerId] = arrayOfBoatEmplacement;
+    });
 
     return playerBoards;
   }
 
-  private generateTemporaryPlayerPseudos(players: GamePlayer[]) {
-    return players.map(
-      (player, index) => `${player.pseudo.toLowerCase()}${index}`,
-    );
-  }
-
-  private generateTurns(
-    temporaryPlayerPseudos: typeof this.temporaryPlayerPseudos,
-  ): Turn {
-    const firstPlayer = radash.draw(temporaryPlayerPseudos);
+  private generateTurns(players: typeof this.gameConfiguration.players): Turn {
+    const firstPlayer = radash.draw(players);
 
     return {
       actionRemaining: 1,
       isTurnOf: firstPlayer,
-      nextPlayer: this.getNextPlayer(firstPlayer, temporaryPlayerPseudos),
+      nextPlayer: this.getNextPlayer(firstPlayer, players),
     };
   }
 
-  private generateVisiblePlayerBoards(temporaryPlayerPseudos: string[]) {
+  private generateVisiblePlayerBoards(players: GamePlayer[]) {
     const playerBoards: PlayerBoards = {};
+    const playerIds = players.map((player) => player.id);
 
-    temporaryPlayerPseudos.forEach((playerPseudo) => {
-      playerBoards[playerPseudo] = [];
+    playerIds.forEach((playerId) => {
+      playerBoards[playerId] = [];
     });
 
     return playerBoards;
   }
 
   private getNextPlayer(
-    actualTemporaryPlayerPseudo: string,
-    temporaryPlayerPseudos: typeof this.temporaryPlayerPseudos,
+    player: GamePlayer,
+    players: typeof this.gameConfiguration.players,
   ) {
-    const nextPlayerIndex =
-      temporaryPlayerPseudos.indexOf(actualTemporaryPlayerPseudo) + 1;
+    const nextPlayerIndex = players.indexOf(player) + 1;
 
-    return temporaryPlayerPseudos[nextPlayerIndex] ?? temporaryPlayerPseudos[0];
+    return players[nextPlayerIndex] ?? players[0];
   }
 
   private getShotCells(weapon: GameWeapon, originCell: Cell) {
     const [xOriginCell, yOriginCell] = originCell;
     const shotCells: Cell[] = [];
 
-    Object.values(weapon.damageArea).forEach(([xShotCell, yShotCell]) => {
-      if (xShotCell === undefined && yShotCell === undefined) {
+    Object.values(weapon.damageArea).forEach(([xShotCell, yShotCell]: Cell) => {
+      if (
+        xShotCell === undefined ||
+        yShotCell === undefined ||
+        xShotCell === null ||
+        yShotCell === null
+      ) {
         return;
       }
 
@@ -197,6 +187,47 @@ export default class GameInstanceService {
     return shotCells;
   }
 
+  // TEST add some tests
+  // private hasGameBeenEnded(): HasGameBeenEnded | false {
+  //   const hasGameBeenEnded: HasGameBeenEnded = {
+  //     loser: [],
+  //     winner: [],
+  //   };
+
+  //   Object.entries(this.gameConfiguration.boats).forEach(
+  //     ([playerName, playerFleet]) => {
+  //       const hasPlayerFleetBeenSunk = this.hasPlayerFleetBeenSunk(playerFleet);
+
+  //       if (!hasPlayerFleetBeenSunk) {
+  //         return;
+  //       }
+
+  //       const playerPseudo = playerName.substring(0, separatorIndex);
+
+  //       const winner = this.gameConfiguration.players.find(
+  //         (player) => player.pseudo.toLowerCase() === playerPseudo,
+  //       );
+
+  //       const loser = this.gameConfiguration.players.find(
+  //         (player) => player.pseudo.toLowerCase() !== playerPseudo,
+  //       );
+
+  //       hasGameBeenEnded.winner.push(winner);
+  //       hasGameBeenEnded.loser.push(loser);
+  //     },
+  //   );
+
+  //   if (!hasGameBeenEnded.winner.length) {
+  //     return false;
+  //   }
+
+  //   return hasGameBeenEnded;
+  // }
+
+  private hasPlayerFleetBeenSunk(playerFleet: GameBoat[]) {
+    return playerFleet.every((boat) => boat.isSunk);
+  }
+
   /**
    * Make a shot with the specified weapon
    * @param targetedPlayer
@@ -204,7 +235,7 @@ export default class GameInstanceService {
    * @param originCell The cell where the player touch
    */
   public shoot(
-    targetedPlayer: keyof typeof this.gameConfiguration.boats,
+    targetedPlayer: GamePlayer,
     weapon: GameWeapon,
     originCell: Cell,
   ) {
@@ -262,8 +293,16 @@ export default class GameInstanceService {
     cells.sort((cell1, cell2) => cell1[cellIndex] - cell2[cellIndex]);
   }
 
+  // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
   public startGame(gameConfiguration: GameConfiguration) {
-    // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
+    this.gameInstanceValidatorsService.validateBoardDimensions(
+      gameConfiguration.boardDimensions,
+    );
+
+    this.gameInstanceValidatorsService.validatePlayers(
+      gameConfiguration.players,
+    );
+
     const boatsOfPlayers = Object.values(gameConfiguration.boats);
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
       this.board,
@@ -272,21 +311,17 @@ export default class GameInstanceService {
 
     this.gameConfiguration = gameConfiguration;
 
-    this.temporaryPlayerPseudos = this.generateTemporaryPlayerPseudos(
-      gameConfiguration.players,
-    );
-
     this.masterPlayerBoards = this.generateMasterPlayerBoards(
       gameConfiguration.boats,
     );
 
     this.visiblePlayerBoards = this.generateVisiblePlayerBoards(
-      this.temporaryPlayerPseudos,
+      this.gameConfiguration.players,
     );
 
     this.gameArsenal = this.generateGameArsenal(gameConfiguration);
 
-    this.turn = this.generateTurns(this.temporaryPlayerPseudos);
+    this.turn = this.generateTurns(this.gameConfiguration.players);
 
     this.gameState = GameState.playing;
   }
@@ -302,18 +337,16 @@ export default class GameInstanceService {
       gameConfiguration.players,
     );
 
-    this.players = gameConfiguration.players;
-
     this.gameState = GameState.placingBoats;
   }
 
   private updatePlayerBoatObject(
-    targetedPlayer: keyof typeof this.gameConfiguration.boats,
+    targetedPlayer: GamePlayer,
     targetedCell: Cell,
   ) {
     const [xTargetedCell, yTargetedCell] = targetedCell;
 
-    const playerFleet = this.gameConfiguration.boats[targetedPlayer];
+    const playerFleet = this.gameConfiguration.boats[targetedPlayer.id];
 
     const stillInGameBoats = this.findStillInGamePlayerBoats(playerFleet);
 
@@ -324,6 +357,7 @@ export default class GameInstanceService {
       ),
     );
 
+    // Should never throw because we already check with the visible player board
     this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
       targetedBoat.hit,
       targetedCell,
