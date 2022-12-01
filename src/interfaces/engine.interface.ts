@@ -3,13 +3,12 @@ import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
 import { WeaponType } from '@interfaces/weapon.interface';
 
-type TimePerTurn = number;
-
 export enum GameMode {
   OneVersusOne = '1v1',
 }
 
 export enum GameState {
+  waitingToRival = 'WAITING_TO_RIVAL',
   waitingToStart = 'WAITING_TO_START',
   placingBoats = 'PLACING_BOATS',
   playing = 'PLAYING',
@@ -58,7 +57,7 @@ export interface GameConfiguration extends BaseGameConfiguration {
   players: GamePlayer[];
   weapons: OneVersusOneWeapons;
   hasBoatsSafetyZone: boolean;
-  timePerTurn: TimePerTurn;
+  timePerTurn: number;
 }
 
 export type GameBoard = [number[], number[]];
@@ -76,9 +75,8 @@ export type GameArsenal = {
 
 export interface Turn {
   actionRemaining: IntRange<0, 2>;
-  isTurnOf: keyof PlayerBoards;
-  nextPlayer: keyof PlayerBoards;
-  timePerTurn: TimePerTurn;
+  isTurnOf: string;
+  nextPlayer: string;
 }
 
 // TASK Move this in readme

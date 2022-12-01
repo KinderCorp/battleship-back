@@ -6,6 +6,7 @@ import {
   gameArsenal1,
   gameConfiguration1,
   masterPlayerBoards1,
+  turn1,
   visiblePlayerBoards1,
   visiblePlayerBoards2,
   visiblePlayerBoards3,
@@ -52,21 +53,22 @@ describe('GameInstanceService', () => {
   });
 
   it('should start the game', () => {
+    const gameConfiguration = gameConfiguration1();
     const spyValidateBoats = jest
       .spyOn(gameInstanceValidatorsService, 'validateBoatsOfPlayers')
       .mockReturnValue(true);
 
-    service.startGame(gameConfiguration1());
+    service.startGame(gameConfiguration);
 
-    expect(service.gameState).toEqual(GameState.playing);
     expect(spyValidateBoats).toHaveBeenCalledTimes(1);
+    expect(service['gameConfiguration']).toEqual(gameConfiguration);
+    expect(service['temporaryPlayerPseudos']).toBeDefined();
+    expect(service['temporaryPlayerPseudos']).toHaveLength(2);
     expect(service['masterPlayerBoards']).toBeDefined();
     expect(service['visiblePlayerBoards']).toBeDefined();
     expect(service['gameArsenal']).toBeDefined();
-    expect(service['gameConfiguration']).toBeDefined();
-    expect(service['playersFleet']).toBeDefined();
-    expect(service['temporaryPlayerPseudos']).toBeDefined();
-    expect(service['temporaryPlayerPseudos']).toHaveLength(2);
+    expect(service['turn']).toBeDefined();
+    expect(service.gameState).toEqual(GameState.playing);
   });
 
   it('should start placing boats', () => {
@@ -139,7 +141,7 @@ describe('GameInstanceService', () => {
   it('should add the targeted cell to the visible board and hit a boat', () => {
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameConfiguration'] = gameConfiguration1();
 
     const doesCellContainABoat = service['doesCellContainABoat'](
       'player0',
@@ -156,8 +158,8 @@ describe('GameInstanceService', () => {
   });
 
   it('should find the boats of the player that are still in game', () => {
-    service['playersFleet'] = gameConfiguration1().boats;
-    const playerBoats = service['playersFleet']['player0'];
+    service['gameConfiguration'] = gameConfiguration1();
+    const playerBoats = service['gameConfiguration']['boats']['player0'];
 
     const stillInGameBoats = service['findStillInGamePlayerBoats'](playerBoats);
 
@@ -176,11 +178,11 @@ describe('GameInstanceService', () => {
   });
 
   it('should update player boat object and not to be sunk at first, then to be sunk', () => {
-    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameConfiguration'] = gameConfiguration1();
 
     service['updatePlayerBoatObject']('player0', [3, 1]);
 
-    expect(service['playersFleet']['player0'][0]).toStrictEqual({
+    expect(service['gameConfiguration']['boats']['player0'][0]).toStrictEqual({
       boatName: 'destroyer',
       emplacement: [
         [1, 1],
@@ -192,18 +194,22 @@ describe('GameInstanceService', () => {
     });
 
     service['updatePlayerBoatObject']('player0', [2, 1]);
-    expect(service['playersFleet']['player0'][0].isSunk).toEqual(false);
+    expect(service['gameConfiguration']['boats']['player0'][0].isSunk).toEqual(
+      false,
+    );
 
     service['updatePlayerBoatObject']('player0', [1, 1]);
-    expect(service['playersFleet']['player0'][0].isSunk).toEqual(true);
+    expect(service['gameConfiguration']['boats']['player0'][0].isSunk).toEqual(
+      true,
+    );
   });
 
   it('should update player boat object and throw an error because boat is already hit on targeted cell ', () => {
-    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameConfiguration'] = gameConfiguration1();
 
     service['updatePlayerBoatObject']('player0', [3, 1]);
 
-    expect(service['playersFleet']['player0'][0]).toStrictEqual({
+    expect(service['gameConfiguration']['boats']['player0'][0]).toStrictEqual({
       boatName: 'destroyer',
       emplacement: [
         [1, 1],
@@ -215,7 +221,9 @@ describe('GameInstanceService', () => {
     });
 
     service['updatePlayerBoatObject']('player0', [2, 1]);
-    expect(service['playersFleet']['player0'][0].isSunk).toEqual(false);
+    expect(service['gameConfiguration']['boats']['player0'][0].isSunk).toEqual(
+      false,
+    );
 
     expect(() =>
       service['updatePlayerBoatObject']('player0', [3, 1]),
@@ -225,11 +233,13 @@ describe('GameInstanceService', () => {
         message: GameEngineErrorMessages.cellAlreadyHit,
       }),
     );
-    expect(service['playersFleet']['player0'][0].hit).toEqual([
+    expect(service['gameConfiguration']['boats']['player0'][0].hit).toEqual([
       [2, 1],
       [3, 1],
     ]);
-    expect(service['playersFleet']['player0'][0].isSunk).toEqual(false);
+    expect(service['gameConfiguration']['boats']['player0'][0].isSunk).toEqual(
+      false,
+    );
   });
 
   it('should generate the game arsenal', () => {
@@ -255,8 +265,8 @@ describe('GameInstanceService', () => {
 
     expect(() => service.shoot('player0', weapon, [1, 1])).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.noRemainingAmmunition,
-        message: GameEngineErrorMessages.noRemainingAmmunition,
+        code: GameEngineErrorCodes.noAmmunitionRemaining,
+        message: GameEngineErrorMessages.noAmmunitionRemaining,
       }),
     );
   });
@@ -283,7 +293,7 @@ describe('GameInstanceService', () => {
     service.gameState = GameState.playing;
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameConfiguration'] = gameConfiguration1();
     service['gameArsenal'] = gameArsenal1();
 
     jest
@@ -293,11 +303,15 @@ describe('GameInstanceService', () => {
     expect(service['gameArsenal']['player0'][0].ammunitionRemaining).toEqual(
       -1,
     );
-    expect(service['playersFleet']['player0'][0].hit).toHaveLength(0);
+    expect(
+      service['gameConfiguration']['boats']['player0'][0].hit,
+    ).toHaveLength(0);
     expect(() =>
       service.shoot('player0', service['gameArsenal']['player0'][0], [1, 1]),
     ).not.toThrowError();
-    expect(service['playersFleet']['player0'][0].hit).toEqual([[1, 1]]);
+    expect(service['gameConfiguration']['boats']['player0'][0].hit).toEqual([
+      [1, 1],
+    ]);
     expect(service['gameArsenal']['player0'][0].ammunitionRemaining).toEqual(
       -1,
     );
@@ -307,7 +321,7 @@ describe('GameInstanceService', () => {
     service.gameState = GameState.playing;
     service['visiblePlayerBoards'] = visiblePlayerBoards3();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameConfiguration'] = gameConfiguration1();
     service['gameArsenal'] = gameArsenal1();
 
     jest
@@ -315,16 +329,20 @@ describe('GameInstanceService', () => {
       .mockReturnValue(true);
 
     expect(service['gameArsenal']['player0'][1].ammunitionRemaining).toEqual(1);
-    expect(service['playersFleet']['player0'][0].hit).toHaveLength(0);
+    expect(
+      service['gameConfiguration']['boats']['player0'][0].hit,
+    ).toHaveLength(0);
     expect(() =>
       service.shoot('player0', service['gameArsenal']['player0'][1], [2, 1]),
     ).not.toThrowError();
-    expect(service['playersFleet']['player0'][0].hit).toEqual([
+    expect(service['gameConfiguration']['boats']['player0'][0].hit).toEqual([
       [1, 1],
       [2, 1],
       [3, 1],
     ]);
-    expect(service['playersFleet']['player0'][0].isSunk).toEqual(true);
+    expect(service['gameConfiguration']['boats']['player0'][0].isSunk).toEqual(
+      true,
+    );
     expect(service['gameArsenal']['player0'][1].ammunitionRemaining).toEqual(0);
   });
 
@@ -332,7 +350,7 @@ describe('GameInstanceService', () => {
     service.gameState = GameState.playing;
     service['visiblePlayerBoards'] = visiblePlayerBoards3();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameConfiguration'] = gameConfiguration1();
     service['gameArsenal'] = gameArsenal1();
     const targetedPlayer = 'player0';
 
@@ -343,7 +361,9 @@ describe('GameInstanceService', () => {
     expect(
       service['gameArsenal'][targetedPlayer][1].ammunitionRemaining,
     ).toEqual(1);
-    expect(service['playersFleet'][targetedPlayer][0].hit).toHaveLength(0);
+    expect(
+      service['gameConfiguration']['boats'][targetedPlayer][0].hit,
+    ).toHaveLength(0);
     expect(() =>
       service.shoot(
         targetedPlayer,
@@ -351,11 +371,15 @@ describe('GameInstanceService', () => {
         [3, 1],
       ),
     ).not.toThrowError();
-    expect(service['playersFleet'][targetedPlayer][0].hit).toEqual([
+    expect(
+      service['gameConfiguration']['boats'][targetedPlayer][0].hit,
+    ).toEqual([
       [2, 1],
       [3, 1],
     ]);
-    expect(service['playersFleet'][targetedPlayer][0].isSunk).toEqual(false);
+    expect(
+      service['gameConfiguration']['boats'][targetedPlayer][0].isSunk,
+    ).toEqual(false);
     expect(
       service['gameArsenal'][targetedPlayer][1].ammunitionRemaining,
     ).toEqual(0);
@@ -437,5 +461,62 @@ describe('GameInstanceService', () => {
     );
 
     expect(temporaryPlayerPseudos).toEqual(['drakenline0', 'nonma1']);
+  });
+
+  it('should get the next player', () => {
+    const temporaryPlayerPseudos = ['player0', 'player1'];
+
+    expect(service['getNextPlayer']('player0', temporaryPlayerPseudos)).toEqual(
+      'player1',
+    );
+    expect(service['getNextPlayer']('player1', temporaryPlayerPseudos)).toEqual(
+      'player0',
+    );
+  });
+
+  it('should generate turns', () => {
+    const turns = service['generateTurns'](['player0', 'player1']);
+
+    expect(turns.actionRemaining).toEqual(1);
+    expect(turns.isTurnOf).not.toEqual(turns.nextPlayer);
+  });
+
+  it('should count down an action', () => {
+    const expectedTurn = { ...turn1(), actionRemaining: 0 };
+    service['turn'] = turn1();
+
+    const spyActionCanBeExecuted = jest
+      .spyOn(gameInstanceValidatorsService, 'validateActionCanBeExecuted')
+      .mockReturnValue(true);
+
+    const spyEndTurn = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(service as any, 'endTurn')
+      .mockImplementation();
+
+    service['countDownAction'](service['turn']);
+
+    expect(spyActionCanBeExecuted).toHaveBeenCalledTimes(1);
+    expect(spyEndTurn).toHaveBeenCalledTimes(1);
+    expect(service['turn']).toEqual(expectedTurn);
+  });
+
+  it('should end the turn', () => {
+    const expectedTurn = {
+      actionRemaining: 1,
+      isTurnOf: 'player1',
+      nextPlayer: 'player0',
+    };
+    service['turn'] = turn1();
+
+    const spyGetNextPlayer = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(service as any, 'getNextPlayer')
+      .mockReturnValue('player0');
+
+    service['endTurn'](service['turn']);
+
+    expect(spyGetNextPlayer).toHaveBeenCalledTimes(1);
+    expect(service['turn']).toEqual(expectedTurn);
   });
 });

@@ -20,7 +20,7 @@ export enum GameEngineErrorCodes {
   invalidBoardGameDimensions = 'INVALID_BOARD_GAME_DIMENSIONS',
   cellAlreadyHit = 'CELL_ALREADY_HIT',
   gameNotStarted = 'GAME_NOT_STARTED',
-  noRemainingAmmunition = 'NO_REMAINING_AMMUNITION',
+  noAmmunitionRemaining = 'NO_AMMUNITION_REMAINING',
 }
 
 export enum GameEngineErrorMessages {
@@ -33,5 +33,5 @@ export enum GameEngineErrorMessages {
   invalidBoardGameDimensions = 'Invalid board game dimensions',
   cellAlreadyHit = 'Cell already hit',
   gameNotStarted = 'The game is not started',
-  noRemainingAmmunition = 'No remaining ammunition',
+  noAmmunitionRemaining = 'No ammunition remaining',
 }

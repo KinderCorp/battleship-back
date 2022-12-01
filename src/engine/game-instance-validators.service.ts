@@ -5,6 +5,7 @@ import {
   GameBoard,
   GameBoat,
   GamePlayer,
+  Turn,
 } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
@@ -18,6 +19,19 @@ import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()
 export default class GameInstanceValidatorsService {
+  public validateActionCanBeExecuted(turn: Turn) {
+    if (turn.actionRemaining < 1) {
+      const errorKey = 'noAmmunitionRemaining';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    return true;
+  }
+
   public validateBoardDimensions(boardDimensions: number) {
     if (
       boardDimensions < MIN_BOARD_GAME_DIMENSIONS ||

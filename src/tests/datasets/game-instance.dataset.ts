@@ -7,6 +7,7 @@ import {
   GameWeapon,
   OneVersusOneWeapons,
   PlayerBoards,
+  Turn,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
@@ -376,5 +377,13 @@ const triple1: () => GameWeapon = () => {
       tr: [],
     },
     name: WeaponName.triple,
+  };
+};
+
+export const turn1: () => Turn = () => {
+  return {
+    actionRemaining: 1,
+    isTurnOf: 'player0',
+    nextPlayer: 'player1',
   };
 };

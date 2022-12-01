@@ -30,7 +30,6 @@ export default class GameInstanceService {
   private gameConfiguration!: GameConfiguration;
   private masterPlayerBoards!: PlayerBoards;
   private players: GamePlayer[] = [];
-  private playersFleet: typeof this.gameConfiguration.boats;
   private readonly gameMode!: GameMode;
   private visiblePlayerBoards!: PlayerBoards;
   private turn!: Turn;
@@ -54,8 +53,19 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
+  // TASK Use this function in the socket
+  private countDownAction(turn: Turn) {
+    this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);
+
+    turn.actionRemaining -= 1;
+
+    if (turn.actionRemaining < 1) {
+      this.endTurn(turn);
+    }
+  }
+
   private doesCellContainABoat(
-    targetedPlayer: keyof typeof this.playersFleet,
+    targetedPlayer: keyof typeof this.gameConfiguration.boats,
     targetedCell: Cell,
   ) {
     this.gameInstanceValidatorsService.validateCellHasNotBeenHit(
@@ -81,6 +91,15 @@ export default class GameInstanceService {
 
   public endGame() {
     this.gameState = GameState.finished;
+  }
+
+  private endTurn(turn: Turn) {
+    turn.isTurnOf = turn.nextPlayer;
+    turn.nextPlayer = this.getNextPlayer(
+      turn.isTurnOf,
+      this.temporaryPlayerPseudos,
+    );
+    turn.actionRemaining = 1;
   }
 
   private findStillInGamePlayerBoats(playerBoats: GameBoat[]) {
@@ -125,17 +144,22 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  // private generateTurns(gameConfiguration: GameConfiguration) {
-  //   const turn = {};
-
-  //   const players = Object.keys()
-  //   const firstPlayer =
-  // }
-
   private generateTemporaryPlayerPseudos(players: GamePlayer[]) {
     return players.map(
       (player, index) => `${player.pseudo.toLowerCase()}${index}`,
     );
+  }
+
+  private generateTurns(
+    temporaryPlayerPseudos: typeof this.temporaryPlayerPseudos,
+  ): Turn {
+    const firstPlayer = radash.draw(temporaryPlayerPseudos);
+
+    return {
+      actionRemaining: 1,
+      isTurnOf: firstPlayer,
+      nextPlayer: this.getNextPlayer(firstPlayer, temporaryPlayerPseudos),
+    };
   }
 
   private generateVisiblePlayerBoards(temporaryPlayerPseudos: string[]) {
@@ -146,6 +170,16 @@ export default class GameInstanceService {
     });
 
     return playerBoards;
+  }
+
+  private getNextPlayer(
+    actualTemporaryPlayerPseudo: string,
+    temporaryPlayerPseudos: typeof this.temporaryPlayerPseudos,
+  ) {
+    const nextPlayerIndex =
+      temporaryPlayerPseudos.indexOf(actualTemporaryPlayerPseudo) + 1;
+
+    return temporaryPlayerPseudos[nextPlayerIndex] ?? temporaryPlayerPseudos[0];
   }
 
   private getShotCells(weapon: GameWeapon, originCell: Cell) {
@@ -170,7 +204,7 @@ export default class GameInstanceService {
    * @param originCell The cell where the player touch
    */
   public shoot(
-    targetedPlayer: keyof typeof this.playersFleet,
+    targetedPlayer: keyof typeof this.gameConfiguration.boats,
     weapon: GameWeapon,
     originCell: Cell,
   ) {
@@ -184,7 +218,7 @@ export default class GameInstanceService {
     }
 
     if (weapon.ammunitionRemaining === 0) {
-      const errorKey = 'noRemainingAmmunition';
+      const errorKey = 'noAmmunitionRemaining';
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
@@ -236,6 +270,8 @@ export default class GameInstanceService {
       boatsOfPlayers,
     );
 
+    this.gameConfiguration = gameConfiguration;
+
     this.temporaryPlayerPseudos = this.generateTemporaryPlayerPseudos(
       gameConfiguration.players,
     );
@@ -250,8 +286,8 @@ export default class GameInstanceService {
 
     this.gameArsenal = this.generateGameArsenal(gameConfiguration);
 
-    this.gameConfiguration = gameConfiguration;
-    this.playersFleet = gameConfiguration.boats;
+    this.turn = this.generateTurns(this.temporaryPlayerPseudos);
+
     this.gameState = GameState.playing;
   }
 
@@ -272,12 +308,12 @@ export default class GameInstanceService {
   }
 
   private updatePlayerBoatObject(
-    targetedPlayer: keyof typeof this.playersFleet,
+    targetedPlayer: keyof typeof this.gameConfiguration.boats,
     targetedCell: Cell,
   ) {
     const [xTargetedCell, yTargetedCell] = targetedCell;
 
-    const playerFleet = this.playersFleet[targetedPlayer];
+    const playerFleet = this.gameConfiguration.boats[targetedPlayer];
 
     const stillInGameBoats = this.findStillInGamePlayerBoats(playerFleet);
 
