@@ -1,4 +1,5 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
 import { WeaponType } from '@interfaces/weapon.interface';
 
@@ -74,12 +75,13 @@ export type GameArsenal = {
 };
 
 export interface Turn {
-  actionRemaining: number;
+  actionRemaining: IntRange<0, 2>;
   isTurnOf: keyof PlayerBoards;
   nextPlayer: keyof PlayerBoards;
   timePerTurn: TimePerTurn;
 }
 
+// TASK Move this in readme
 /**
  * Classic rules for battleship
  *

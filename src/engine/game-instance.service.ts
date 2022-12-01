@@ -34,6 +34,7 @@ export default class GameInstanceService {
   private readonly gameMode!: GameMode;
   private visiblePlayerBoards!: PlayerBoards;
   private turn!: Turn;
+  private temporaryPlayerPseudos!: string[];
 
   public constructor(
     {
@@ -124,13 +125,24 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  private generateVisiblePlayerBoards(players: GamePlayer[]) {
+  // private generateTurns(gameConfiguration: GameConfiguration) {
+  //   const turn = {};
+
+  //   const players = Object.keys()
+  //   const firstPlayer =
+  // }
+
+  private generateTemporaryPlayerPseudos(players: GamePlayer[]) {
+    return players.map(
+      (player, index) => `${player.pseudo.toLowerCase()}${index}`,
+    );
+  }
+
+  private generateVisiblePlayerBoards(temporaryPlayerPseudos: string[]) {
     const playerBoards: PlayerBoards = {};
 
-    players.forEach((player, index) => {
-      const playerName = `${player.pseudo}${index}`;
-
-      playerBoards[playerName] = [];
+    temporaryPlayerPseudos.forEach((playerPseudo) => {
+      playerBoards[playerPseudo] = [];
     });
 
     return playerBoards;
@@ -219,17 +231,23 @@ export default class GameInstanceService {
   public startGame(gameConfiguration: GameConfiguration) {
     // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
     const boatsOfPlayers = Object.values(gameConfiguration.boats);
-
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
       this.board,
       boatsOfPlayers,
+    );
+
+    this.temporaryPlayerPseudos = this.generateTemporaryPlayerPseudos(
+      gameConfiguration.players,
     );
 
     this.masterPlayerBoards = this.generateMasterPlayerBoards(
       gameConfiguration.boats,
     );
 
-    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(this.players);
+    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(
+      this.temporaryPlayerPseudos,
+    );
+
     this.gameArsenal = this.generateGameArsenal(gameConfiguration);
 
     this.gameConfiguration = gameConfiguration;

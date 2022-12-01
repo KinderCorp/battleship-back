@@ -246,8 +246,8 @@ export const masterPlayerBoards1: () => PlayerBoards = () => {
 
 export const visiblePlayerBoards1: () => PlayerBoards = () => {
   return {
-    Drakenline0: [],
-    Nonma1: [],
+    drakenline0: [],
+    nonma1: [],
   };
 };
 

@@ -65,6 +65,8 @@ describe('GameInstanceService', () => {
     expect(service['gameArsenal']).toBeDefined();
     expect(service['gameConfiguration']).toBeDefined();
     expect(service['playersFleet']).toBeDefined();
+    expect(service['temporaryPlayerPseudos']).toBeDefined();
+    expect(service['temporaryPlayerPseudos']).toHaveLength(2);
   });
 
   it('should start placing boats', () => {
@@ -96,8 +98,10 @@ describe('GameInstanceService', () => {
   });
 
   it('should generate the visible player boards', () => {
+    const temporaryPlayerPseudos = ['drakenline0', 'nonma1'];
+
     expect(
-      service['generateVisiblePlayerBoards'](gameConfiguration1().players),
+      service['generateVisiblePlayerBoards'](temporaryPlayerPseudos),
     ).toStrictEqual(visiblePlayerBoards1());
   });
 
@@ -425,5 +429,13 @@ describe('GameInstanceService', () => {
       [1, 3],
       [1, 1],
     ]);
+  });
+
+  it('should generate temporary pseudo for players', () => {
+    const temporaryPlayerPseudos = service['generateTemporaryPlayerPseudos'](
+      gameConfiguration1().players,
+    );
+
+    expect(temporaryPlayerPseudos).toEqual(['drakenline0', 'nonma1']);
   });
 });
