@@ -34,6 +34,7 @@ export default class Weapon implements WeaponType {
   @Column({ default: -1, type: 'integer' })
   public maxAmmunition: number;
 
+  // TASK Update the weapon damage to be just an array of cell
   @Column('json')
   public damageArea: DamageMatrix;
 }

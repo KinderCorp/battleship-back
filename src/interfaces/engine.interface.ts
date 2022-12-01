@@ -2,6 +2,8 @@ import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import Weapon from '@weapon/weapon.entity';
 import { WeaponType } from '@interfaces/weapon.interface';
 
+type TimePerTurn = number;
+
 export enum GameMode {
   OneVersusOne = '1v1',
 }
@@ -15,7 +17,9 @@ export enum GameState {
 
 export type Cell = [number, number];
 
-export type PlayerBoards = Record<string, Cell[]>;
+export type PlayerBoards = {
+  [playerName: string]: Cell[];
+};
 
 export interface GameBoat {
   boatName: string;
@@ -53,7 +57,7 @@ export interface GameConfiguration extends BaseGameConfiguration {
   players: GamePlayer[];
   weapons: OneVersusOneWeapons;
   hasBoatsSafetyZone: boolean;
-  timePerTurn: number;
+  timePerTurn: TimePerTurn;
 }
 
 export type GameBoard = [number[], number[]];
@@ -68,6 +72,13 @@ export interface GameWeapon
 export type GameArsenal = {
   [playerName: string]: GameWeapon[];
 };
+
+export interface Turn {
+  actionRemaining: number;
+  isTurnOf: keyof PlayerBoards;
+  nextPlayer: keyof PlayerBoards;
+  timePerTurn: TimePerTurn;
+}
 
 /**
  * Classic rules for battleship

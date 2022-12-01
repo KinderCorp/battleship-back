@@ -13,6 +13,7 @@ import {
   GameState,
   GameWeapon,
   PlayerBoards,
+  Turn,
 } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
@@ -32,6 +33,7 @@ export default class GameInstanceService {
   private playersFleet: typeof this.gameConfiguration.boats;
   private readonly gameMode!: GameMode;
   private visiblePlayerBoards!: PlayerBoards;
+  private turn!: Turn;
 
   public constructor(
     {
@@ -198,6 +200,20 @@ export default class GameInstanceService {
     shotCells.forEach((shotCell) => {
       this.doesCellContainABoat(targetedPlayer, shotCell);
     });
+
+    if (weapon.ammunitionRemaining > 0) {
+      weapon.ammunitionRemaining -= 1;
+    }
+  }
+
+  /**
+   * Sort 2 dimensions array of numbers by ascending order
+   * @param cells
+   */
+  private sortCells(cells: Cell[], sortBy: 'x' | 'y') {
+    const cellIndex = sortBy === 'x' ? 0 : 1;
+
+    cells.sort((cell1, cell2) => cell1[cellIndex] - cell2[cellIndex]);
   }
 
   public startGame(gameConfiguration: GameConfiguration) {
@@ -260,6 +276,11 @@ export default class GameInstanceService {
     );
 
     targetedBoat.hit.push(targetedCell);
+
+    [targetedBoat.hit, targetedBoat.emplacement].forEach((arrayOfCell) => {
+      this.sortCells(arrayOfCell, 'y');
+      this.sortCells(arrayOfCell, 'x');
+    });
 
     if (radash.isEqual(targetedBoat.hit, targetedBoat.emplacement)) {
       targetedBoat.isSunk = true;

@@ -261,6 +261,13 @@ export const visiblePlayerBoards2: () => PlayerBoards = () => {
   };
 };
 
+export const visiblePlayerBoards3: () => PlayerBoards = () => {
+  return {
+    player0: [],
+    player1: [],
+  };
+};
+
 export const oneVersusOneWeapons1: () => OneVersusOneWeapons = () => {
   const bomb = gameWeaponBomb();
   const triple = gameWeaponTriple();
@@ -309,71 +316,12 @@ const gameWeaponTriple: () => WeaponType = () => {
 };
 
 export const gameArsenal1: () => GameArsenal = () => {
+  const bombWeapon = bomb();
+  const tripleWeapon = triple1();
+
   return {
-    player0: [
-      {
-        ammunitionRemaining: -1,
-        damageArea: {
-          b: [],
-          bl: [],
-          br: [],
-          l: [],
-          o: [0, 0],
-          r: [],
-          t: [],
-          tl: [],
-          tr: [],
-        },
-        name: WeaponName.bomb,
-      },
-      {
-        ammunitionRemaining: 1,
-        damageArea: {
-          b: [1, 0],
-          bl: [],
-          br: [],
-          l: [],
-          o: [0, 0],
-          r: [],
-          t: [-1, 0],
-          tl: [],
-          tr: [],
-        },
-        name: WeaponName.triple,
-      },
-    ],
-    player1: [
-      {
-        ammunitionRemaining: -1,
-        damageArea: {
-          b: [],
-          bl: [],
-          br: [],
-          l: [],
-          o: [0, 0],
-          r: [],
-          t: [],
-          tl: [],
-          tr: [],
-        },
-        name: WeaponName.bomb,
-      },
-      {
-        ammunitionRemaining: 1,
-        damageArea: {
-          b: [1, 0],
-          bl: [],
-          br: [],
-          l: [],
-          o: [0, 0],
-          r: [],
-          t: [-1, 0],
-          tl: [],
-          tr: [],
-        },
-        name: WeaponName.triple,
-      },
-    ],
+    player0: [bombWeapon, tripleWeapon],
+    player1: [bombWeapon, tripleWeapon],
   };
 };
 
@@ -410,5 +358,23 @@ export const fakeWeapon: () => GameWeapon = () => {
       tr: [],
     },
     name: WeaponName.bomb,
+  };
+};
+
+const triple1: () => GameWeapon = () => {
+  return {
+    ammunitionRemaining: 1,
+    damageArea: {
+      b: [1, 0],
+      bl: [],
+      br: [],
+      l: [],
+      o: [0, 0],
+      r: [],
+      t: [-1, 0],
+      tl: [],
+      tr: [],
+    },
+    name: WeaponName.triple,
   };
 };

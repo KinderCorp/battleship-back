@@ -8,12 +8,13 @@ import {
   masterPlayerBoards1,
   visiblePlayerBoards1,
   visiblePlayerBoards2,
+  visiblePlayerBoards3,
 } from '@tests/datasets/game-instance.dataset';
+import { Cell, GameMode, GameState } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
-import { GameMode, GameState } from '@interfaces/engine.interface';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
@@ -178,9 +179,9 @@ describe('GameInstanceService', () => {
     expect(service['playersFleet']['player0'][0]).toStrictEqual({
       boatName: 'destroyer',
       emplacement: [
-        [3, 1],
-        [2, 1],
         [1, 1],
+        [2, 1],
+        [3, 1],
       ],
       hit: [[3, 1]],
       isSunk: false,
@@ -201,9 +202,9 @@ describe('GameInstanceService', () => {
     expect(service['playersFleet']['player0'][0]).toStrictEqual({
       boatName: 'destroyer',
       emplacement: [
-        [3, 1],
-        [2, 1],
         [1, 1],
+        [2, 1],
+        [3, 1],
       ],
       hit: [[3, 1]],
       isSunk: false,
@@ -221,8 +222,8 @@ describe('GameInstanceService', () => {
       }),
     );
     expect(service['playersFleet']['player0'][0].hit).toEqual([
-      [3, 1],
       [2, 1],
+      [3, 1],
     ]);
     expect(service['playersFleet']['player0'][0].isSunk).toEqual(false);
   });
@@ -274,19 +275,91 @@ describe('GameInstanceService', () => {
     );
   });
 
-  it('should shoot', () => {
+  it('should shoot with a bomb weapon', () => {
     service.gameState = GameState.playing;
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
     service['playersFleet'] = gameConfiguration1().boats;
+    service['gameArsenal'] = gameArsenal1();
 
     jest
       .spyOn(gameInstanceValidatorsService, 'validateCellHasNotBeenHit')
       .mockReturnValue(true);
 
+    expect(service['gameArsenal']['player0'][0].ammunitionRemaining).toEqual(
+      -1,
+    );
     expect(service['playersFleet']['player0'][0].hit).toHaveLength(0);
-    expect(() => service.shoot('player0', bomb(), [1, 1])).not.toThrowError();
+    expect(() =>
+      service.shoot('player0', service['gameArsenal']['player0'][0], [1, 1]),
+    ).not.toThrowError();
     expect(service['playersFleet']['player0'][0].hit).toEqual([[1, 1]]);
+    expect(service['gameArsenal']['player0'][0].ammunitionRemaining).toEqual(
+      -1,
+    );
+  });
+
+  it('should shoot with the triple weapon', () => {
+    service.gameState = GameState.playing;
+    service['visiblePlayerBoards'] = visiblePlayerBoards3();
+    service['masterPlayerBoards'] = masterPlayerBoards1();
+    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameArsenal'] = gameArsenal1();
+
+    jest
+      .spyOn(gameInstanceValidatorsService, 'validateCellHasNotBeenHit')
+      .mockReturnValue(true);
+
+    expect(service['gameArsenal']['player0'][1].ammunitionRemaining).toEqual(1);
+    expect(service['playersFleet']['player0'][0].hit).toHaveLength(0);
+    expect(() =>
+      service.shoot('player0', service['gameArsenal']['player0'][1], [2, 1]),
+    ).not.toThrowError();
+    expect(service['playersFleet']['player0'][0].hit).toEqual([
+      [1, 1],
+      [2, 1],
+      [3, 1],
+    ]);
+    expect(service['playersFleet']['player0'][0].isSunk).toEqual(true);
+    expect(service['gameArsenal']['player0'][1].ammunitionRemaining).toEqual(0);
+  });
+
+  it('should shoot with the triple weapon with some cells out of bounds', () => {
+    service.gameState = GameState.playing;
+    service['visiblePlayerBoards'] = visiblePlayerBoards3();
+    service['masterPlayerBoards'] = masterPlayerBoards1();
+    service['playersFleet'] = gameConfiguration1().boats;
+    service['gameArsenal'] = gameArsenal1();
+    const targetedPlayer = 'player0';
+
+    jest
+      .spyOn(gameInstanceValidatorsService, 'validateCellHasNotBeenHit')
+      .mockReturnValue(true);
+
+    expect(
+      service['gameArsenal'][targetedPlayer][1].ammunitionRemaining,
+    ).toEqual(1);
+    expect(service['playersFleet'][targetedPlayer][0].hit).toHaveLength(0);
+    expect(() =>
+      service.shoot(
+        targetedPlayer,
+        service['gameArsenal'][targetedPlayer][1],
+        [3, 1],
+      ),
+    ).not.toThrowError();
+    expect(service['playersFleet'][targetedPlayer][0].hit).toEqual([
+      [2, 1],
+      [3, 1],
+    ]);
+    expect(service['playersFleet'][targetedPlayer][0].isSunk).toEqual(false);
+    expect(
+      service['gameArsenal'][targetedPlayer][1].ammunitionRemaining,
+    ).toEqual(0);
+    expect(service['visiblePlayerBoards'][targetedPlayer]).toEqual([
+      [4, 1],
+      [3, 1],
+      [2, 1],
+    ]);
   });
 
   it('should get shot cells', () => {
@@ -300,6 +373,57 @@ describe('GameInstanceService', () => {
       [6, 5],
       [6, 6],
       [4, 6],
+    ]);
+  });
+
+  it('should sort cells', () => {
+    const horizontalCells1: Cell[] = [
+      [2, 1],
+      [3, 1],
+      [1, 1],
+    ];
+    const horizontalCells2: Cell[] = [
+      [2, 1],
+      [3, 1],
+      [1, 1],
+    ];
+    const verticalCells1: Cell[] = [
+      [1, 2],
+      [1, 3],
+      [1, 1],
+    ];
+    const verticalCells2: Cell[] = [
+      [1, 2],
+      [1, 3],
+      [1, 1],
+    ];
+
+    service['sortCells'](horizontalCells1, 'x');
+    expect(horizontalCells1).toEqual([
+      [1, 1],
+      [2, 1],
+      [3, 1],
+    ]);
+
+    service['sortCells'](verticalCells1, 'y');
+    expect(verticalCells1).toEqual([
+      [1, 1],
+      [1, 2],
+      [1, 3],
+    ]);
+
+    service['sortCells'](horizontalCells2, 'y');
+    expect(horizontalCells2).toEqual([
+      [2, 1],
+      [3, 1],
+      [1, 1],
+    ]);
+
+    service['sortCells'](verticalCells2, 'x');
+    expect(verticalCells2).toEqual([
+      [1, 2],
+      [1, 3],
+      [1, 1],
     ]);
   });
 });
