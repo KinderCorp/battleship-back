@@ -7,6 +7,7 @@ import {
   gameConfiguration1,
   guestPlayer1,
   guestPlayer2,
+  loggedPlayer1,
   masterPlayerBoards1,
   turn1,
   validBoatPlacement1,
@@ -551,24 +552,36 @@ describe('GameInstanceService', () => {
     expect(service['hasPlayerFleetBeenSunk'](playerFleet)).toEqual(false);
   });
 
-  // it('should return false because none fleet have been sunk', () => {
-  //   service['gameConfiguration'] = gameConfiguration1();
+  it('should return false because none fleet have been sunk', () => {
+    service['gameConfiguration'] = gameConfiguration1();
 
-  //   expect(service['hasGameBeenEnded']()).toEqual(false);
-  // });
+    expect(service['isGameOver']()).toEqual(false);
+  });
 
-  // it('should return the end game recap because a fleet have been sunk', () => {
-  //   service['gameConfiguration'] = gameConfiguration1();
-  //   service['gameConfiguration'].boats['drakenline_0'] = [
-  //     validBoatPlacement3(),
-  //     validBoatPlacement3(),
-  //   ];
+  it('should return the end game recap because a fleet have been sunk', () => {
+    service['gameConfiguration'] = gameConfiguration1();
+    service['gameConfiguration'].boats['drakenline_0'] = [
+      validBoatPlacement3(),
+      validBoatPlacement3(),
+    ];
 
-  //   expect(service['hasGameBeenEnded']()).toEqual({
-  //     loser: [guestPlayer2()],
-  //     winner: [guestPlayer_1()],
-  //   });
-  // });
+    expect(service['isGameOver']()).toEqual({
+      loser: [guestPlayer2()],
+      winner: [guestPlayer1()],
+    });
+  });
+
+  it('should return the end game recap with 2 losers because a fleet have been sunk', () => {
+    service['gameConfiguration'] = gameConfiguration1();
+    service['gameConfiguration'].players.push(loggedPlayer1());
+    service['gameConfiguration'].boats['drakenline_0'] = [
+      validBoatPlacement3(),
+      validBoatPlacement3(),
+    ];
+
+    expect(service['isGameOver']()).toEqual({
+      loser: [guestPlayer2(), loggedPlayer1()],
+      winner: [guestPlayer1()],
+    });
+  });
 });
-
-// TASK you need to fix the tests with the systematic use of players

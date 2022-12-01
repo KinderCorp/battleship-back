@@ -3,6 +3,7 @@ import * as radash from 'radash';
 import {
   BaseGameConfiguration,
   Cell,
+  EndGameRecap,
   GameArsenal,
   GameBoard,
   GameBoat,
@@ -12,7 +13,6 @@ import {
   GamePlayer,
   GameState,
   GameWeapon,
-  HasGameBeenEnded,
   PlayerBoards,
   Turn,
 } from '@interfaces/engine.interface';
@@ -52,7 +52,6 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
-  // TASK Use this function in the socket
   private countDownAction(turn: Turn) {
     this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);
 
@@ -90,6 +89,7 @@ export default class GameInstanceService {
   public endGame() {
     this.gameState = GameState.finished;
   }
+
   private endTurn(turn: Turn) {
     turn.isTurnOf = turn.nextPlayer;
     turn.nextPlayer = this.getNextPlayer(
@@ -187,45 +187,42 @@ export default class GameInstanceService {
     return shotCells;
   }
 
-  // TEST add some tests
-  // private hasGameBeenEnded(): HasGameBeenEnded | false {
-  //   const hasGameBeenEnded: HasGameBeenEnded = {
-  //     loser: [],
-  //     winner: [],
-  //   };
-
-  //   Object.entries(this.gameConfiguration.boats).forEach(
-  //     ([playerName, playerFleet]) => {
-  //       const hasPlayerFleetBeenSunk = this.hasPlayerFleetBeenSunk(playerFleet);
-
-  //       if (!hasPlayerFleetBeenSunk) {
-  //         return;
-  //       }
-
-  //       const playerPseudo = playerName.substring(0, separatorIndex);
-
-  //       const winner = this.gameConfiguration.players.find(
-  //         (player) => player.pseudo.toLowerCase() === playerPseudo,
-  //       );
-
-  //       const loser = this.gameConfiguration.players.find(
-  //         (player) => player.pseudo.toLowerCase() !== playerPseudo,
-  //       );
-
-  //       hasGameBeenEnded.winner.push(winner);
-  //       hasGameBeenEnded.loser.push(loser);
-  //     },
-  //   );
-
-  //   if (!hasGameBeenEnded.winner.length) {
-  //     return false;
-  //   }
-
-  //   return hasGameBeenEnded;
-  // }
-
   private hasPlayerFleetBeenSunk(playerFleet: GameBoat[]) {
     return playerFleet.every((boat) => boat.isSunk);
+  }
+
+  private isGameOver(): EndGameRecap | false {
+    const isGameOver: EndGameRecap = {
+      loser: [],
+      winner: [],
+    };
+
+    Object.entries(this.gameConfiguration.boats).forEach(
+      ([playerId, playerFleet]) => {
+        const hasPlayerFleetBeenSunk = this.hasPlayerFleetBeenSunk(playerFleet);
+
+        if (!hasPlayerFleetBeenSunk) {
+          return;
+        }
+
+        const winner = this.gameConfiguration.players.find(
+          (player) => player.id.toLowerCase() === playerId,
+        );
+
+        const losers = this.gameConfiguration.players.filter(
+          (player) => player.id.toLowerCase() !== playerId,
+        );
+
+        isGameOver.winner.push(winner);
+        isGameOver.loser.push(...losers);
+      },
+    );
+
+    if (!isGameOver.winner.length) {
+      return false;
+    }
+
+    return isGameOver;
   }
 
   /**

@@ -70,7 +70,7 @@ export interface Turn {
   nextPlayer: GamePlayer;
 }
 
-export interface HasGameBeenEnded {
+export interface EndGameRecap {
   loser: GamePlayer[];
   winner: GamePlayer[];
 }
