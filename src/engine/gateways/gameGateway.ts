@@ -4,7 +4,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Socket, Server as SocketServer } from 'socket.io';
 import { Logger } from '@nestjs/common';
