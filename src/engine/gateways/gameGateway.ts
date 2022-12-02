@@ -16,7 +16,7 @@ interface Player {
 }
 interface Game {
   id: string;
-  players: Player[]
+  players: Player[];
 }
 
 @WebSocketGateway({ cors: { origin: '*' } })
@@ -37,13 +37,15 @@ export class GameGateway implements OnGatewayConnection {
     this.logger.log(`Socket ${socket.id} disconnected`);
   }
 
-
   @SubscribeMessage('CreateGame')
-  public onCreateGame(@MessageBody() body: Player, @ConnectedSocket() socket: Socket): void {
+  public onCreateGame(
+    @MessageBody() body: Player,
+    @ConnectedSocket() socket: Socket,
+  ): void {
     // Simplified exemple of a new game instance/class
     const newGame: Game = {
       id: 'eb4eae0e-6e6a-43bf-be3f-6c82aca2990d',
-      players: []
+      players: [],
     };
 
     // After verifications, we push the first player in the game's players table and save it
@@ -53,17 +55,19 @@ export class GameGateway implements OnGatewayConnection {
     // Then the first player join the new game room
     // Room's name will probably corresponds to the game.id (we can change it if you want)
     // "console.log(socket.rooms" to see all rooms in which the player (socket) is.
-    socket.join(String(newGame.id))
+    socket.join(String(newGame.id));
 
     // And we return all of this by emiting only to game owner
     this.socketServer.to(socket.id).emit('GameCreated', newGame);
   }
 
-
   @SubscribeMessage('Shoot')
-  public onShoot(@MessageBody() body: Game, @ConnectedSocket() socket: Socket): void {    
+  public onShoot(
+    @MessageBody() body: Game,
+    @ConnectedSocket() socket: Socket,
+  ): void {
     // Check if the game with this id (body) exists (maybe refacto this duplicate code from lines 39-43)
-    const game = this.games.find(game => game.id === body.id);
+    const game = this.games.find((game) => game.id === body.id);
     if (!game) {
       // Throw an error and emit it
       this.socketServer.to(socket.id).emit('GameNotFound');
@@ -72,16 +76,18 @@ export class GameGateway implements OnGatewayConnection {
 
     // Call the game engine and process to validate turn
     // But I haven’t thought about that yet
-    
+
     // Emit the result to the game's room
     this.socketServer.to(game.id).emit('Shooted', game);
   }
 
-
   @SubscribeMessage('JoinGame')
-  public onUserJoin(@MessageBody() body: any, @ConnectedSocket() socket: Socket): void {
+  public onUserJoin(
+    @MessageBody() body: any,
+    @ConnectedSocket() socket: Socket,
+  ): void {
     // Check if the game with this id (body) exists
-    const game = this.games.find(game => game.id === body.gameId);
+    const game = this.games.find((game) => game.id === body.gameId);
     if (!game) {
       // Throw an error and emit it
       this.socketServer.to(socket.id).emit('GameNotFound');
@@ -95,5 +101,5 @@ export class GameGateway implements OnGatewayConnection {
     // Emit the result to the game's room
     socket.join(body.gameId);
     this.socketServer.to(String(body.gameId)).emit('UserJoined', updatedGame);
-  }  
+  }
 }
