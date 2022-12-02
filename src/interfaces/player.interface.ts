@@ -1,9 +1,11 @@
 import { Level } from '@interfaces/level.interface';
 
-export interface GuestPlayer {
+interface BasePlayer {
   id: string;
   pseudo: string;
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface GuestPlayer extends BasePlayer {}
 
 export interface LoggedPlayer extends GuestPlayer {
   level: Level;

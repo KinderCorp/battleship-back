@@ -11,8 +11,6 @@ export enum ApiErrorMessages {
   insertionFailed = 'Fail to insert',
 }
 
-// TASK Create ApiErrorMessages
-
 export enum GameEngineErrorCodes {
   missingPlayer = 'MISSING_PLAYER',
   invalidNumberOfPlayers = 'INVALID_NUMBER_OF_PLAYERS',
@@ -20,6 +18,9 @@ export enum GameEngineErrorCodes {
   missingBoatName = 'MISSING_BOAT_NAME',
   outOfBounds = 'OUT_OF_BOUNDS',
   invalidBoardGameDimensions = 'INVALID_BOARD_GAME_DIMENSIONS',
+  cellAlreadyHit = 'CELL_ALREADY_HIT',
+  gameNotStarted = 'GAME_NOT_STARTED',
+  noAmmunitionRemaining = 'NO_AMMUNITION_REMAINING',
 }
 
 export enum GameEngineErrorMessages {
@@ -30,4 +31,7 @@ export enum GameEngineErrorMessages {
   missingBoatName = 'Missing boat name',
   outOfBounds = 'Out of bounds',
   invalidBoardGameDimensions = 'Invalid board game dimensions',
+  cellAlreadyHit = 'Cell already hit',
+  gameNotStarted = 'The game is not started',
+  noAmmunitionRemaining = 'No ammunition remaining',
 }

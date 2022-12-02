@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import {
-  BoatPlacement,
+  Cell,
   GameBoard,
+  GameBoat,
   GamePlayer,
+  Turn,
 } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
@@ -17,6 +19,19 @@ import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()
 export default class GameInstanceValidatorsService {
+  public validateActionCanBeExecuted(turn: Turn) {
+    if (turn.actionRemaining < 1) {
+      const errorKey = 'noAmmunitionRemaining';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    return true;
+  }
+
   public validateBoardDimensions(boardDimensions: number) {
     if (
       boardDimensions < MIN_BOARD_GAME_DIMENSIONS ||
@@ -31,10 +46,7 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  private validateBoatPlacement(
-    gameBoard: GameBoard,
-    boatPlacement: BoatPlacement,
-  ) {
+  private validateBoatPlacement(gameBoard: GameBoard, boatPlacement: GameBoat) {
     const [xBoardPositions, yBoardPositions] = gameBoard;
 
     // Check if positions are out of bounds
@@ -81,7 +93,7 @@ export default class GameInstanceValidatorsService {
 
   public validateBoatsOfPlayers(
     gameBoard: GameBoard,
-    boatsPlacementOfPlayers: BoatPlacement[][],
+    boatsPlacementOfPlayers: GameBoat[][],
   ) {
     boatsPlacementOfPlayers.forEach((boatPlacements) => {
       boatPlacements.forEach((boatPlacement) => {
@@ -91,11 +103,31 @@ export default class GameInstanceValidatorsService {
 
     return true;
   }
+
+  public validateCellHasNotBeenHit(
+    arrayOfCells: Cell[],
+    [xTargetedCell, yTargetedCell]: Cell,
+  ) {
+    const hasCellAlreadyBeenHit = arrayOfCells.some(
+      ([xVisibleCell, yVisibleCell]) =>
+        xVisibleCell === xTargetedCell && yVisibleCell === yTargetedCell,
+    );
+
+    if (hasCellAlreadyBeenHit) {
+      throw new GameEngineError({
+        code: GameEngineErrorCodes.cellAlreadyHit,
+        message: GameEngineErrorMessages.cellAlreadyHit,
+      });
+    }
+
+    return true;
+  }
+
   public validateNumbersAreAdjacent(arrayOfNumbers: number[]) {
     arrayOfNumbers.sort((a, b) => a - b);
 
-    arrayOfNumbers.forEach((yPosition, index) => {
-      if (index === 0 && yPosition + 1 !== arrayOfNumbers[index + 1]) {
+    arrayOfNumbers.forEach((axisPosition, index) => {
+      if (index === 0 && axisPosition + 1 !== arrayOfNumbers[index + 1]) {
         throw new GameEngineError({
           code: GameEngineErrorCodes.invalidBoat,
           message: GameEngineErrorMessages.invalidBoat,
@@ -105,8 +137,8 @@ export default class GameInstanceValidatorsService {
       const isNotFirstIndex = index > 0 && index < arrayOfNumbers.length - 1;
 
       if (
-        (isNotFirstIndex && yPosition + 1 !== arrayOfNumbers[index + 1]) ||
-        (isNotFirstIndex && yPosition - 1 !== arrayOfNumbers[index - 1])
+        (isNotFirstIndex && axisPosition + 1 !== arrayOfNumbers[index + 1]) ||
+        (isNotFirstIndex && axisPosition - 1 !== arrayOfNumbers[index - 1])
       ) {
         throw new GameEngineError({
           code: GameEngineErrorCodes.invalidBoat,
@@ -128,6 +160,7 @@ export default class GameInstanceValidatorsService {
         message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
       });
     }
+
     return true;
   }
 }

@@ -35,7 +35,7 @@ describe('GameController', () => {
     expect(spy).toHaveBeenCalledWith(gameToInsert);
   });
 
-  it('should insert a game with an guest winner', async () => {
+  it('should insert a game with a guest winner', async () => {
     const gameToInsert: CreateGameDto = {
       loser: '2a322532-6fb2-4e72-818c-37b416ea016b',
       winner: null,
@@ -48,7 +48,7 @@ describe('GameController', () => {
     expect(spy).toHaveBeenCalledWith(gameToInsert);
   });
 
-  it('should insert a game with an guest loser', async () => {
+  it('should insert a game with a guest loser', async () => {
     const gameToInsert: CreateGameDto = {
       loser: '2a322532-6fb2-4e72-818c-37b416ea016b',
       winner: null,

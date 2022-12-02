@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BoatPlacement, GamePlayer } from '@interfaces/engine.interface';
+import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
@@ -14,10 +14,13 @@ import {
   invalidBoatPlacement4,
   invalidBoatPlacement5,
   invalidBoatPlacement6,
+  invalidBoatPlacement7,
   loggedPlayer1,
   loggedPlayer2,
   validBoatPlacement1,
   validBoatPlacement2,
+  validBoatPlacement4,
+  visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
@@ -44,7 +47,17 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat placement', () => {
     expect(
-      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, validBoatPlacement1),
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        validBoatPlacement1(),
+      ),
+    ).toEqual(true);
+
+    expect(
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        validBoatPlacement4(),
+      ),
     ).toEqual(true);
   });
 
@@ -52,7 +65,7 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
-        invalidBoatPlacement1,
+        invalidBoatPlacement1(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -66,7 +79,7 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
-        invalidBoatPlacement2,
+        invalidBoatPlacement2(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -80,7 +93,7 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
-        invalidBoatPlacement3,
+        invalidBoatPlacement3(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -92,7 +105,7 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
-        invalidBoatPlacement4,
+        invalidBoatPlacement4(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -104,7 +117,7 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
-        invalidBoatPlacement5,
+        invalidBoatPlacement5(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -116,7 +129,19 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service['validateBoatPlacement'](
         DEFAULT_BOARD_GAME,
-        invalidBoatPlacement6,
+        invalidBoatPlacement6(),
+      ),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.invalidBoat,
+        message: GameEngineErrorMessages.invalidBoat,
+      }),
+    );
+
+    expect(() =>
+      service['validateBoatPlacement'](
+        DEFAULT_BOARD_GAME,
+        invalidBoatPlacement7(),
       ),
     ).toThrowError(
       new GameEngineError({
@@ -127,9 +152,9 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate boats of players', () => {
-    const boatsPlacement: BoatPlacement[][] = [
-      [validBoatPlacement1, validBoatPlacement2],
-      [validBoatPlacement1, validBoatPlacement2],
+    const boatsPlacement: GameBoat[][] = [
+      [validBoatPlacement1(), validBoatPlacement2()],
+      [validBoatPlacement1(), validBoatPlacement2()],
     ];
 
     expect(
@@ -138,9 +163,9 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should throw an error for invalid boats of players', () => {
-    const boatsPlacement: BoatPlacement[][] = [
-      [validBoatPlacement1, validBoatPlacement2],
-      [validBoatPlacement1, invalidBoatPlacement1],
+    const boatsPlacement: GameBoat[][] = [
+      [validBoatPlacement1(), validBoatPlacement2()],
+      [validBoatPlacement1(), invalidBoatPlacement1()],
     ];
 
     expect(() =>
@@ -154,25 +179,25 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate 2 guest players', () => {
-    const players = [guestPlayer1, guestPlayer2];
+    const players = [guestPlayer1(), guestPlayer2()];
 
     expect(service.validatePlayers(players)).toEqual(true);
   });
 
   it('should validate 2 logged players', () => {
-    const players = [loggedPlayer1, loggedPlayer2];
+    const players = [loggedPlayer1(), loggedPlayer2()];
 
     expect(service.validatePlayers(players)).toEqual(true);
   });
 
   it('should validate 2 mixed players', () => {
-    const players = [guestPlayer1, loggedPlayer1];
+    const players = [guestPlayer1(), loggedPlayer1()];
 
     expect(service.validatePlayers(players)).toEqual(true);
   });
 
   it('should throw a missing player error', () => {
-    const players = [guestPlayer1];
+    const players = [guestPlayer1()];
 
     expect(() => service.validatePlayers(players)).toThrowError(
       new GameEngineError({
@@ -183,7 +208,7 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should throw an invalid number of players error', () => {
-    const players = [guestPlayer1, guestPlayer2, loggedPlayer1];
+    const players = [guestPlayer1(), guestPlayer2(), loggedPlayer1()];
 
     expect(() => service.validatePlayers(players)).toThrowError(
       new GameEngineError({
@@ -224,5 +249,31 @@ describe('GameInstanceValidatorsService', () => {
         message: GameEngineErrorMessages.invalidBoardGameDimensions,
       }),
     );
+  });
+
+  it('should return throw an error because the targeted cell has been already  hit', () => {
+    const visiblePlayerBoards = visiblePlayerBoards2();
+    const arrayOfCells = visiblePlayerBoards['drakenline_0'];
+
+    expect(() =>
+      service.validateCellHasNotBeenHit(arrayOfCells, [1, 1]),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.cellAlreadyHit,
+        message: GameEngineErrorMessages.cellAlreadyHit,
+      }),
+    );
+  });
+
+  it('should return true because the targeted cell has not been already hit', () => {
+    const visiblePlayerBoards = visiblePlayerBoards2();
+    const arrayOfCells = visiblePlayerBoards['drakenline_0'];
+
+    const hasCellAlreadyBeenHit = service.validateCellHasNotBeenHit(
+      arrayOfCells,
+      [1, 10],
+    );
+
+    expect(hasCellAlreadyBeenHit).toEqual(true);
   });
 });

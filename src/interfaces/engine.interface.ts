@@ -1,19 +1,31 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import { IntRange } from '@interfaces/shared.interface';
+import Weapon from '@weapon/weapon.entity';
+import { WeaponType } from '@interfaces/weapon.interface';
 
 export enum GameMode {
   OneVersusOne = '1v1',
 }
 
 export enum GameState {
+  waitingToRival = 'WAITING_TO_RIVAL',
   waitingToStart = 'WAITING_TO_START',
   placingBoats = 'PLACING_BOATS',
   playing = 'PLAYING',
   finished = 'FINISHED',
 }
 
-export interface BoatPlacement {
+export type Cell = [number, number];
+
+export type PlayerBoards = {
+  [playerId: string]: Cell[];
+};
+
+export interface GameBoat {
   boatName: string;
-  emplacement: [number, number][];
+  hit: Cell[];
+  isSunk: boolean;
+  emplacement: Cell[];
 }
 
 export interface BaseGameConfiguration {
@@ -21,14 +33,20 @@ export interface BaseGameConfiguration {
   state: GameState;
 }
 
+export interface GameBoats extends OneVersusOne<GameBoat> {
+  [playerId: string]: GameBoat[];
+}
+
+// TASK Search how to indicate the number of key value pairs
+export type OneVersusOne<T> = {
+  [playerId: string]: T[];
+};
+
 export interface GameConfiguration extends BaseGameConfiguration {
   boardDimensions: number;
-  boats: {
-    player1: BoatPlacement[];
-    player2: BoatPlacement[];
-  };
+  boats: GameBoats;
   players: GamePlayer[];
-  weapons: number[];
+  weapons: OneVersusOne<WeaponType>;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
 }
@@ -37,6 +55,27 @@ export type GameBoard = [number[], number[]];
 
 export type GamePlayer = LoggedPlayer | GuestPlayer;
 
+export interface GameWeapon
+  extends Omit<Weapon, 'id' | 'maxAmmunition' | 'requiredLevel'> {
+  ammunitionRemaining: number;
+}
+
+export type GameArsenal = {
+  [playerId: string]: GameWeapon[];
+};
+
+export interface Turn {
+  actionRemaining: IntRange<0, 2>;
+  isTurnOf: GamePlayer;
+  nextPlayer: GamePlayer;
+}
+
+export interface EndGameRecap {
+  loser: GamePlayer[];
+  winner: GamePlayer[];
+}
+
+// TASK Move this in readme
 /**
  * Classic rules for battleship
  *
