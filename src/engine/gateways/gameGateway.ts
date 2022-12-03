@@ -10,11 +10,18 @@ import { Socket, Server as SocketServer } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 import {
+  BaseGameConfiguration,
   GameBoat,
   GameConfiguration,
+  GameMode,
   GamePlayer,
+  GameState,
   Room,
+  RoomData,
 } from '@interfaces/engine.interface';
+import GameEngine from '@engine/game-engine';
+import GameInstanceService from '@engine/game-instance.service';
+import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 interface Game {
   id: string;
@@ -28,6 +35,11 @@ export class GameGateway implements OnGatewayConnection {
 
   @WebSocketServer()
   public socketServer: SocketServer;
+
+  public constructor(
+    private gameEngine: GameEngine,
+    private gameInstanceValidators: GameInstanceValidatorsService,
+  ) {}
 
   public handleConnection(socket: Socket) {
     this.logger.log(`Socket ${socket.id} connected`);
@@ -45,18 +57,37 @@ export class GameGateway implements OnGatewayConnection {
     @MessageBody() body: GamePlayer,
     @ConnectedSocket() socket: Socket,
   ): void {
-    const newGame: Game = {
-      id: 'eb4eae0e-6e6a-43bf-be3f-6c82aca2990d',
-      players: [],
-    };
-
+    // TASK Add verification of the player object (use class-validator)
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
 
-    newGame.players.push(body);
-    this.games.push(newGame);
-    socket.join(String(newGame.id));
-    this.socketServer.to(socket.id).emit('GameCreated', newGame);
+    const baseGameConfiguration: BaseGameConfiguration = {
+      firstPlayer: body,
+      gameMode: GameMode.OneVersusOne,
+      state: GameState.waitingToStart,
+    };
+
+    const instance = new GameInstanceService(
+      baseGameConfiguration,
+      this.gameInstanceValidators,
+    );
+
+    const room: Room = {
+      instanceId: instance.id,
+    };
+
+    this.gameEngine.addInstance(instance);
+
+    socket.join(String(instance.id));
+    this.socketServer.to(socket.id).emit('GameCreated', room);
+
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
+    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
   }
 
   /**
@@ -64,7 +95,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage('playersReadyToPlaceTheirBoats')
   public onGameConfiguration(
-    @MessageBody() body: Room<Omit<GameConfiguration, 'boats'>>,
+    @MessageBody() body: RoomData<Omit<GameConfiguration, 'boats'>>,
   ): void {
     // TODO: Call all game configurations functions from the game engine service
 
@@ -83,7 +114,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage('playerJoiningGame')
   public onPlayerJoin(
-    @MessageBody() body: Room<GamePlayer>,
+    @MessageBody() body: RoomData<GamePlayer>,
     @ConnectedSocket() socket: Socket,
   ): void {
     const game = this.games.find((game) => game.id === body.instanceId);
@@ -108,7 +139,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage('validatePlayerBoatPlacement')
   public onSettingBoat(
-    @MessageBody() body: Room<GameBoat[][]>,
+    @MessageBody() body: RoomData<GameBoat[][]>,
     @ConnectedSocket() socket: Socket,
   ): void {
     // Create a function to validate boats of the player
@@ -151,7 +182,9 @@ export class GameGateway implements OnGatewayConnection {
    * We check that everything's okay to start the game
    */
   @SubscribeMessage('StartGame')
-  public onStartingGame(@MessageBody() body: Room<GameConfiguration>): void {
+  public onStartingGame(
+    @MessageBody() body: RoomData<GameConfiguration>,
+  ): void {
     // TODO: Call all starting game functions from the game engine service
 
     // We check that everything's okay to start the game

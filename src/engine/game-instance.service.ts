@@ -17,10 +17,13 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
+  DEFAULT_BOARD_GAME,
+  GAME_INSTANCE_UID_LENGTH,
+} from '@shared/game-instance.const';
+import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
-import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
@@ -34,6 +37,7 @@ export default class GameInstanceService {
   private turn!: Turn;
   private visiblePlayerBoards!: PlayerBoards;
   private players: GamePlayer[] = [];
+  public readonly id: string;
 
   public constructor(
     {
@@ -47,6 +51,7 @@ export default class GameInstanceService {
     this._gameState = state;
     // TASK Check player validity before pushing to players
     this.players.push(firstPlayer);
+    this.id = radash.uid(GAME_INSTANCE_UID_LENGTH);
   }
 
   public get gameState(): GameState {

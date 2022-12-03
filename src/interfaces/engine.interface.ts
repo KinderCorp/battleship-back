@@ -77,8 +77,11 @@ export interface EndGameRecap {
   winner: GamePlayer[];
 }
 
-export interface Room<T> {
+export interface Room {
   instanceId: string;
+}
+
+export interface RoomData<T> extends Room {
   data: T;
 }
 
