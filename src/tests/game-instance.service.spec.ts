@@ -1,3 +1,4 @@
+import { GamePlayer } from './../interfaces/engine.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
@@ -24,8 +25,14 @@ import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
+const firstPlayer = {
+  id: '1a21eb98-e697-4ff3-aa0b-055b27f84a15',
+  pseudo: 'Zakary'
+}
+
 const baseGameConfiguration = {
   gameMode: GameMode.OneVersusOne,
+  firstPlayer: firstPlayer,
   state: GameState.waitingToStart,
 };
 
