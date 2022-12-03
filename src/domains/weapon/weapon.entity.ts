@@ -62,6 +62,7 @@ export default class Weapon implements WeaponType {
 //     tl: [-1, -1], // Top left
 //     tr: [-1, 1], // Top right
 //   }
+
 //   const tripleDamages = {
 //     b: [1, 0], // Bottom
 //     bl: [], // Bottom left

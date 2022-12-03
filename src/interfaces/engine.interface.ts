@@ -30,6 +30,7 @@ export interface GameBoat {
 
 export interface BaseGameConfiguration {
   gameMode: GameMode;
+  firstPlayer: GamePlayer;
   state: GameState;
 }
 
@@ -42,7 +43,8 @@ export type OneVersusOne<T> = {
   [playerId: string]: T[];
 };
 
-export interface GameConfiguration extends BaseGameConfiguration {
+export interface GameConfiguration
+  extends Omit<BaseGameConfiguration, 'firstPlayer'> {
   boardDimensions: number;
   boats: GameBoats;
   players: GamePlayer[];
@@ -73,6 +75,11 @@ export interface Turn {
 export interface EndGameRecap {
   loser: GamePlayer[];
   winner: GamePlayer[];
+}
+
+export interface Room<T> {
+  instanceId: string;
+  data: T;
 }
 
 // TASK Move this in readme

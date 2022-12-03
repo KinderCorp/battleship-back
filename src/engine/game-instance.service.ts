@@ -33,16 +33,20 @@ export default class GameInstanceService {
   private readonly gameMode!: GameMode;
   private turn!: Turn;
   private visiblePlayerBoards!: PlayerBoards;
+  private players: GamePlayer[] = [];
 
   public constructor(
     {
       gameMode = GameMode.OneVersusOne,
+      firstPlayer,
       state = GameState.waitingToRival,
     }: BaseGameConfiguration,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
     this.gameMode = gameMode;
     this._gameState = state;
+    // TASK Check player validity before pushing to players
+    this.players.push(firstPlayer);
   }
 
   public get gameState(): GameState {
