@@ -83,10 +83,10 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage('playerJoiningGame')
   public onPlayerJoin(
-    @MessageBody() body: any,
+    @MessageBody() body: Room<GamePlayer>,
     @ConnectedSocket() socket: Socket,
   ): void {
-    const game = this.games.find((game) => game.id === body.gameId);
+    const game = this.games.find((game) => game.id === body.instanceId);
     if (!game) {
       this.socketServer.to(socket.id).emit('GameNotFound');
       return;
@@ -97,8 +97,8 @@ export class GameGateway implements OnGatewayConnection {
     // instance.players.push(new player);
     // If it's a guest player, use his socket id as temporary id
 
-    socket.join(body.gameId);
-    this.socketServer.to(String(body.gameId)).emit('UserJoined', game);
+    socket.join(body.instanceId);
+    this.socketServer.to(String(body.instanceId)).emit('UserJoined', game);
     // After emitting user join event, we wait the game owner to click on "start placing boats" button
   }
 

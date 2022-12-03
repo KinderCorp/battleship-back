@@ -1,4 +1,3 @@
-import { GamePlayer } from './../interfaces/engine.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
@@ -31,8 +30,8 @@ const firstPlayer = {
 };
 
 const baseGameConfiguration = {
-  gameMode: GameMode.OneVersusOne,
   firstPlayer: firstPlayer,
+  gameMode: GameMode.OneVersusOne,
   state: GameState.waitingToStart,
 };
 
