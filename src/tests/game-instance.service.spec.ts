@@ -27,8 +27,8 @@ import GameInstanceValidatorsService from '@engine/game-instance-validators.serv
 
 const firstPlayer = {
   id: '1a21eb98-e697-4ff3-aa0b-055b27f84a15',
-  pseudo: 'Zakary'
-}
+  pseudo: 'Zakary',
+};
 
 const baseGameConfiguration = {
   gameMode: GameMode.OneVersusOne,
