@@ -5,11 +5,14 @@ export default class GameEngine {
 
   public addInstance(instance: GameInstanceService): void {
     this.instances.push(instance);
-    console.log('instances', this.instances);
   }
 
   public destroy(instance: GameInstanceService): void {
     const index = this.instances.indexOf(instance);
     delete this.instances[index];
+  }
+
+  public get(instanceIdToFind: string) {
+    return this.instances.find((instance) => instance.id === instanceIdToFind);
   }
 }

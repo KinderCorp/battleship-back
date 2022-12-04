@@ -36,7 +36,7 @@ export default class GameInstanceService {
   private readonly gameMode!: GameMode;
   private turn!: Turn;
   private visiblePlayerBoards!: PlayerBoards;
-  private players: GamePlayer[] = [];
+  public players: GamePlayer[] = [];
   public readonly id: string;
 
   public constructor(
