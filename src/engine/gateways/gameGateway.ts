@@ -10,28 +10,28 @@ import { Socket, Server as SocketServer } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 import {
-  BaseGameConfiguration,
+  BaseGameSettings,
   GameBoat,
-  GameConfiguration,
   GameMode,
   GamePlayer,
+  GameSettings,
   GameState,
   Room,
   RoomData,
+  ShootParameters,
+  ShotRecap,
+  SocketEventsEmitting,
+  SocketEventsListening,
+  Turn,
 } from '@interfaces/engine.interface';
 import GameEngine from '@engine/game-engine';
+import { GameEngineErrorCodes } from '@interfaces/error.interface';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
-
-interface Game {
-  id: string;
-  players: GamePlayer[];
-}
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class GameGateway implements OnGatewayConnection {
   public logger = new Logger();
-  public games: Game[] = [];
 
   @WebSocketServer()
   public socketServer: SocketServer;
@@ -41,10 +41,16 @@ export class GameGateway implements OnGatewayConnection {
     private gameInstanceValidators: GameInstanceValidatorsService,
   ) {}
 
+  private destroySession(instance: GameInstanceService) {
+    this.socketServer.in(String(instance.id)).socketsLeave(String(instance.id));
+    this.gameEngine.destroy(instance);
+  }
+
   public handleConnection(socket: Socket) {
     this.logger.log(`Socket ${socket.id} connected`);
-    this.socketServer.emit('connected', 'User bien reçu');
+    this.socketServer.emit('connected', `Socket ${socket.id} connected`);
   }
+
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
   }
@@ -52,7 +58,7 @@ export class GameGateway implements OnGatewayConnection {
   /**
    * When a player click on "create game" button
    */
-  @SubscribeMessage('CreateGame')
+  @SubscribeMessage(SocketEventsListening.CREATE_GAME)
   public onCreateGame(
     @MessageBody() body: GamePlayer,
     @ConnectedSocket() socket: Socket,
@@ -61,10 +67,10 @@ export class GameGateway implements OnGatewayConnection {
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
 
-    const baseGameConfiguration: BaseGameConfiguration = {
+    const baseGameConfiguration: BaseGameSettings = {
       firstPlayer: body,
-      gameMode: GameMode.OneVersusOne,
-      state: GameState.waitingToStart,
+      gameMode: GameMode.ONE_VERSUS_ONE,
+      state: GameState.WAITING_TO_START,
     };
 
     const instance = new GameInstanceService(
@@ -79,73 +85,255 @@ export class GameGateway implements OnGatewayConnection {
     this.gameEngine.addInstance(instance);
 
     socket.join(String(instance.id));
-    this.socketServer.to(socket.id).emit('GameCreated', room);
-
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-    // NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
-  }
-
-  /**
-   * When players can place their boats
-   */
-  @SubscribeMessage('playersReadyToPlaceTheirBoats')
-  public onGameConfiguration(
-    @MessageBody() body: RoomData<Omit<GameConfiguration, 'boats'>>,
-  ): void {
-    // TODO: Call all game configurations functions from the game engine service
-
-    // gameInstance.startPlacingBoats()
-    // If everything's okay, players can place their boats
-    // Otherwise, we send an error
 
     this.socketServer
-      .to(String(body.instanceId))
-      .emit('startPlacingBoats', body);
+      .to(socket.id)
+      .emit(SocketEventsEmitting.GAME_CREATED, room);
+
+    // FIXME NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
   }
 
   /**
    * When a player join an existing game
    * @param body a GamePlayer and the game id to join
+   * @param socket
    */
-  @SubscribeMessage('playerJoiningGame')
-  public onPlayerJoin(
+  @SubscribeMessage(SocketEventsListening.PLAYER_JOINING_GAME)
+  public onPlayerJoiningGame(
     @MessageBody() body: RoomData<GamePlayer>,
     @ConnectedSocket() socket: Socket,
   ): void {
     const instance = this.gameEngine.get(body.instanceId);
     if (!instance) {
-      this.socketServer.to(socket.id).emit('GameNotFound');
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
+
       return;
     }
 
-    // Check players length. If length === 2, send an error
-    // validate player before pushing it to players list
-    // instance.players.push(new player);
-    // If it's a guest player, use his socket id as temporary id
+    if (
+      instance.players.length === 2 &&
+      instance.gameMode === GameMode.ONE_VERSUS_ONE
+    ) {
+      this.socketServer
+        .to(String(body.instanceId))
+        .emit(SocketEventsEmitting.ERROR_GAME_IS_FULL);
 
-    const newPlayer = {
-      id: body.data.id ?? socket.id, //ADD SOCKET ID OF THE PLAYER THAT JOINED THE GAME
-      pseudo: body.data.pseudo,
-    };
-    instance.players.push(newPlayer);
+      return;
+    }
+
+    // TASK Add verification of the player object (use class-validator)
+
+    instance.players.push(body.data);
 
     socket.join(body.instanceId);
-    this.socketServer.to(String(body.instanceId)).emit('UserJoined');
+
+    this.socketServer
+      .to(String(body.instanceId))
+      .emit(SocketEventsEmitting.PLAYER_JOINED);
     // After emitting user join event, we wait the game owner to click on "start placing boats" button
+  }
+
+  /**
+   * When players can place their boats
+   */
+  @SubscribeMessage(SocketEventsListening.PLAYER_READY_TO_PLACE_BOATS)
+  public onPlayersReadyToPlaceBoats(
+    @MessageBody() body: RoomData<Omit<GameSettings, 'boats'>>,
+    @ConnectedSocket() socket: Socket,
+  ): void {
+    const instance = this.gameEngine.get(body.instanceId);
+    if (!instance) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
+
+      return;
+    }
+
+    try {
+      instance.startPlacingBoats(body.data);
+
+      this.socketServer
+        .to(String(body.instanceId))
+        .emit(SocketEventsEmitting.START_PLACING_BOATS);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      let eventName: SocketEventsEmitting;
+
+      switch (error['code']) {
+        case GameEngineErrorCodes.invalidBoardGameDimensions:
+          eventName = SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
+          break;
+
+        case GameEngineErrorCodes.missingPlayer:
+          eventName = SocketEventsEmitting.ERROR_MISSING_PLAYER;
+          break;
+
+        case GameEngineErrorCodes.invalidNumberOfPlayers:
+          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
+          break;
+
+        default:
+          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
+          this.destroySession(instance);
+          break;
+      }
+
+      this.socketServer.to(String(body.instanceId)).emit(eventName, error);
+    }
+  }
+
+  /**
+   * When a player clicks on a cell to shoot
+   * @param body contains the targetedPlayer, the weapon, and the origin cell (cell where the player has clicked)
+   * @param socket
+   * @Returns An error if the shot or the result of the shot isn't valid
+   */
+  @SubscribeMessage(SocketEventsListening.SHOOT)
+  public onShoot(
+    @MessageBody() body: RoomData<ShootParameters>,
+    @ConnectedSocket() socket: Socket,
+  ): void {
+    const instance = this.gameEngine.get(body.instanceId);
+    if (!instance) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
+
+      return;
+    }
+
+    try {
+      const shotRecap = instance.shoot(body.data);
+
+      const roomData: RoomData<ShotRecap> = {
+        data: shotRecap,
+        instanceId: instance.id,
+      };
+
+      this.socketServer
+        .to(instance.id)
+        .emit(SocketEventsEmitting.SHOT, roomData);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      let eventName: SocketEventsEmitting;
+
+      switch (error['code']) {
+        case GameEngineErrorCodes.gameNotStarted:
+          eventName = SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
+          break;
+
+        case GameEngineErrorCodes.noAmmunitionRemaining:
+          eventName = SocketEventsEmitting.ERROR_NO_AMMUNITION_REMAINING;
+          break;
+
+        case GameEngineErrorCodes.outOfBounds:
+          eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
+          break;
+
+        case GameEngineErrorCodes.cellAlreadyHit:
+          eventName = SocketEventsEmitting.ERROR_CELL_ALREADY_HIT;
+          break;
+
+        case GameEngineErrorCodes.WEAPON_NOT_FOUND:
+          eventName = SocketEventsEmitting.ERROR_WEAPON_NOT_FOUND;
+          break;
+
+        case GameEngineErrorCodes.PLAYER_NOT_FOUND:
+          eventName = SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND;
+          break;
+
+        default:
+          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
+          this.destroySession(instance);
+          break;
+      }
+
+      this.socketServer.to(String(body.instanceId)).emit(eventName, error);
+    }
+  }
+
+  /**
+   * When all boats have been validated and players are ready, we start the game
+   * We check that everything's okay to start the game
+   */
+  @SubscribeMessage(SocketEventsListening.START_GAME)
+  public onStartGame(
+    @MessageBody() body: Room,
+    @ConnectedSocket() socket: Socket,
+  ): void {
+    const instance = this.gameEngine.get(body.instanceId);
+    if (!instance) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
+
+      return;
+    }
+
+    try {
+      // TASK Check with @MQ about what the front need
+      const turn = instance.startGame();
+
+      const roomData: RoomData<Turn> = {
+        data: turn,
+        instanceId: instance.id,
+      };
+
+      this.socketServer
+        .to(String(body.instanceId))
+        .emit(SocketEventsEmitting.GAME_STARTED, roomData);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      let eventName: SocketEventsEmitting;
+
+      switch (error['code']) {
+        case GameEngineErrorCodes.gameNotStarted:
+          eventName = SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
+          break;
+
+        case GameEngineErrorCodes.invalidBoardGameDimensions:
+          eventName = SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
+          break;
+
+        case GameEngineErrorCodes.missingPlayer:
+          eventName = SocketEventsEmitting.ERROR_MISSING_PLAYER;
+          break;
+
+        case GameEngineErrorCodes.invalidNumberOfPlayers:
+          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
+          break;
+
+        case GameEngineErrorCodes.outOfBounds:
+          eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
+          break;
+
+        case GameEngineErrorCodes.invalidBoat:
+          eventName = SocketEventsEmitting.ERROR_INVALID_BOAT;
+          break;
+
+        default:
+          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
+          this.destroySession(instance);
+          break;
+      }
+
+      this.socketServer.to(String(body.instanceId)).emit(eventName, error);
+    }
   }
 
   /**
    * When a player has placed all his boats
    * @Returns An error if boats are misplaced or send an ok message to continue
    */
-  @SubscribeMessage('validatePlayerBoatPlacement')
-  public onSettingBoat(
-    @MessageBody() body: RoomData<GameBoat[][]>,
+  @SubscribeMessage(SocketEventsListening.VALIDATE_PLAYER_BOATS_PLACEMENT)
+  public onValidatePlayerBoatsPlacement(
+    @MessageBody() body: RoomData<GameBoat[]>,
     @ConnectedSocket() socket: Socket,
   ): void {
     // Create a function to validate boats of the player
@@ -153,51 +341,62 @@ export class GameGateway implements OnGatewayConnection {
     // If the other player is already ready, we emit a different message (e.g. allPlayersHavePlacedTheirBoats)
     // Otherwise, we send an error message to inform the player that his boats are misplaced
 
-    this.socketServer.to(socket.id).emit('boatsAreMisplaced');
-    this.socketServer
-      .to(String(body.instanceId))
-      .emit('onePlayerHasPlacedAllHisBoats', body);
-    this.socketServer
-      .to(String(body.instanceId))
-      .emit('allPlayersHavePlacedTheirBoats', body);
-  }
+    const instance = this.gameEngine.get(body.instanceId);
+    if (!instance) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
 
-  /**
-   * When a player clicks on a cell to shoot
-   * @param body contains the targetedPlayer, the weapon, and the origin cell (cell where the player has clicked)
-   * @Returns An error if shot isn't valid or the result of the shot
-   */
-  @SubscribeMessage('Shoot')
-  public onShoot(
-    @MessageBody() body: Game,
-    @ConnectedSocket() socket: Socket,
-  ): void {
-    const game = this.games.find((game) => game.id === body.id);
-    if (!game) {
-      this.socketServer.to(socket.id).emit('GameNotFound');
       return;
     }
 
-    // TODO: Call the shoot game instance fn and process to validate turn
+    try {
+      this.gameInstanceValidators.validateBoatsOfOnePlayer(
+        instance.board,
+        body.data,
+      );
 
-    this.socketServer.to(game.id).emit('Shooted', game);
-  }
+      instance.fleets[socket.id] = body.data;
 
-  /**
-   * When all boats has been validated and players are ready, we start the game
-   * We check that everything's okay to start the game
-   */
-  @SubscribeMessage('StartGame')
-  public onStartingGame(
-    @MessageBody() body: RoomData<GameConfiguration>,
-  ): void {
-    // TODO: Call all starting game functions from the game engine service
+      let eventName: SocketEventsEmitting;
 
-    // We check that everything's okay to start the game
-    // If everything's okay, we return the first player and we wait his action (shoot event)
-    // Otherwise, we return an error message
+      switch (Object.keys(instance.fleets).length) {
+        case 1:
+          eventName = SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS;
+          break;
 
-    this.socketServer.to(String(body.instanceId)).emit('GameStarted', body);
+        case 2:
+          eventName = SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
+          break;
+
+        default:
+          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
+          break;
+      }
+
+      this.socketServer.to(String(body.instanceId)).emit(eventName);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      let eventName: SocketEventsEmitting;
+
+      switch (error['code']) {
+        case GameEngineErrorCodes.outOfBounds:
+          eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
+          break;
+
+        case GameEngineErrorCodes.invalidBoat:
+          eventName = SocketEventsEmitting.ERROR_INVALID_BOAT;
+          break;
+
+        default:
+          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
+          this.destroySession(instance);
+          break;
+      }
+
+      this.socketServer.to(String(body.instanceId)).emit(eventName, error);
+    }
   }
 }
 
@@ -222,7 +421,7 @@ export class GameGateway implements OnGatewayConnection {
  * 5b. [Back emit event] : GameStarted | ERROR - not defined yet
  *
  * Xa. [Front emit event] : Shoot
- * Xb. [Back emit event] : Shooted / EndGame | ERROR - not defined yet
+ * Xb. [Back emit event] : Shot / EndGame | ERROR - not defined yet
  *
  * 7a. [Front emit event] : CloseRoom
  */

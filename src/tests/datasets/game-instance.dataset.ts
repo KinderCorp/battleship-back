@@ -1,8 +1,8 @@
 import {
   GameArsenal,
   GameBoat,
-  GameConfiguration,
   GameMode,
+  GameSettings,
   GameState,
   GameWeapon,
   OneVersusOne,
@@ -201,7 +201,7 @@ export const loggedPlayer2: () => LoggedPlayer = () => {
   };
 };
 
-export const gameConfiguration1: () => GameConfiguration = () => {
+export const gameConfiguration1: () => GameSettings = () => {
   const boat1 = validBoatPlacement1();
   const boat2 = validBoatPlacement2();
   const boat3 = validBoatPlacement3();
@@ -215,10 +215,10 @@ export const gameConfiguration1: () => GameConfiguration = () => {
       drakenline_0: [boat1, boat3],
       nonma_1: [boat1, boat2],
     },
-    gameMode: GameMode.OneVersusOne,
+    gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,
     players: [guest1, guest2],
-    state: GameState.waitingToStart,
+    state: GameState.WAITING_TO_START,
     timePerTurn: 60,
     weapons: oneVersusOneWeapons,
   };

@@ -1,3 +1,5 @@
+// TASK Reformalise nomenclature
+
 export enum ApiErrorCodes {
   insertionFailed = 'INSERTION_FAILED',
   notFound = 'NOT_FOUND',
@@ -21,6 +23,8 @@ export enum GameEngineErrorCodes {
   cellAlreadyHit = 'CELL_ALREADY_HIT',
   gameNotStarted = 'GAME_NOT_STARTED',
   noAmmunitionRemaining = 'NO_AMMUNITION_REMAINING',
+  WEAPON_NOT_FOUND = 'weapon-not-found',
+  PLAYER_NOT_FOUND = 'player-not-found',
 }
 
 export enum GameEngineErrorMessages {
@@ -34,4 +38,6 @@ export enum GameEngineErrorMessages {
   cellAlreadyHit = 'Cell already hit',
   gameNotStarted = 'The game is not started',
   noAmmunitionRemaining = 'No ammunition remaining',
+  WEAPON_NOT_FOUND = 'The weapon has not been found',
+  PLAYER_NOT_FOUND = 'The player has not been found',
 }

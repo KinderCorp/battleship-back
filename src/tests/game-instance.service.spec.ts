@@ -32,7 +32,7 @@ const firstPlayer = {
 const baseGameConfiguration = {
   firstPlayer: firstPlayer,
   gameMode: GameMode.OneVersusOne,
-  state: GameState.waitingToStart,
+  state: GameState.WAITING_TO_START,
 };
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
@@ -59,7 +59,7 @@ describe('GameInstanceService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(service['gameMode']).toEqual(GameMode.OneVersusOne);
-    expect(service.gameState).toEqual(GameState.waitingToStart);
+    expect(service.gameState).toEqual(GameState.WAITING_TO_START);
   });
 
   it('should start the game', () => {
@@ -76,7 +76,7 @@ describe('GameInstanceService', () => {
     expect(service['visiblePlayerBoards']).toBeDefined();
     expect(service['gameArsenal']).toBeDefined();
     expect(service['turn']).toBeDefined();
-    expect(service.gameState).toEqual(GameState.playing);
+    expect(service.gameState).toEqual(GameState.PLAYING);
   });
 
   it('should start placing boats', () => {
@@ -92,13 +92,13 @@ describe('GameInstanceService', () => {
 
     expect(spyValidateBoard).toHaveBeenCalledTimes(1);
     expect(spyValidatePlayers).toHaveBeenCalledTimes(1);
-    expect(service.gameState).toEqual(GameState.placingBoats);
+    expect(service.gameState).toEqual(GameState.PLACING_BOATS);
   });
 
   it('should end the game', () => {
     service.endGame();
 
-    expect(service.gameState).toEqual(GameState.finished);
+    expect(service.gameState).toEqual(GameState.FINISHED);
   });
 
   it('should generate the master player boards', () => {
@@ -275,7 +275,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should not shoot because no remaining ammunition', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
 
     const weapon = bomb();
     weapon.ammunitionRemaining = 0;
@@ -289,7 +289,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should not shoot because the origin cell is out of bound', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
 
     expect(() => service.shoot(guestPlayer1(), bomb(), [0, 1])).toThrowError(
       new GameEngineError({
@@ -307,7 +307,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should shoot with a bomb weapon', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
     service['gameConfiguration'] = gameConfiguration1();
@@ -340,7 +340,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should shoot with the triple weapon', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
     service['visiblePlayerBoards'] = visiblePlayerBoards1();
     service['masterPlayerBoards'] = masterPlayerBoards1();
     service['gameConfiguration'] = gameConfiguration1();
@@ -379,7 +379,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should shoot with the triple weapon with some cells out of bounds', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
     service['visiblePlayerBoards'] = visiblePlayerBoards1();
     service['masterPlayerBoards'] = masterPlayerBoards1();
     service['gameConfiguration'] = gameConfiguration1();

@@ -91,14 +91,21 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
+  public validateBoatsOfOnePlayer(
+    gameBoard: GameBoard,
+    boatsPlacementOfThePlayer: GameBoat[],
+  ) {
+    boatsPlacementOfThePlayer.forEach((boatPlacement) => {
+      this.validateBoatPlacement(gameBoard, boatPlacement);
+    });
+  }
+
   public validateBoatsOfPlayers(
     gameBoard: GameBoard,
-    boatsPlacementOfPlayers: GameBoat[][],
+    boatsPlacementOfAllPlayers: GameBoat[][],
   ) {
-    boatsPlacementOfPlayers.forEach((boatPlacements) => {
-      boatPlacements.forEach((boatPlacement) => {
-        this.validateBoatPlacement(gameBoard, boatPlacement);
-      });
+    boatsPlacementOfAllPlayers.forEach((boatPlacements) => {
+      this.validateBoatsOfOnePlayer(gameBoard, boatPlacements);
     });
 
     return true;

@@ -1,19 +1,21 @@
 import * as radash from 'radash';
 
 import {
-  BaseGameConfiguration,
+  BaseGameSettings,
   Cell,
   EndGameRecap,
   GameArsenal,
   GameBoard,
   GameBoat,
   GameBoats,
-  GameConfiguration,
   GameMode,
   GamePlayer,
+  GameSettings,
   GameState,
   GameWeapon,
   PlayerBoards,
+  ShootParameters,
+  ShotRecap,
   Turn,
 } from '@interfaces/engine.interface';
 import {
@@ -27,13 +29,15 @@ import {
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
+// TASK Get rid of gameSettings and decompose it
 export default class GameInstanceService {
   private _gameState!: GameState;
-  private board: GameBoard = DEFAULT_BOARD_GAME;
+  public readonly board: GameBoard = DEFAULT_BOARD_GAME;
   private gameArsenal: GameArsenal;
-  private gameConfiguration!: GameConfiguration;
+  public gameSettings!: GameSettings;
+  public fleets: GameBoats = {};
   private masterPlayerBoards!: PlayerBoards;
-  private readonly gameMode!: GameMode;
+  public readonly gameMode!: GameMode;
   private turn!: Turn;
   private visiblePlayerBoards!: PlayerBoards;
   public players: GamePlayer[] = [];
@@ -41,10 +45,10 @@ export default class GameInstanceService {
 
   public constructor(
     {
-      gameMode = GameMode.OneVersusOne,
+      gameMode = GameMode.ONE_VERSUS_ONE,
       firstPlayer,
-      state = GameState.waitingToRival,
-    }: BaseGameConfiguration,
+      state = GameState.WAITING_TO_RIVAL,
+    }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
     this.gameMode = gameMode;
@@ -57,6 +61,7 @@ export default class GameInstanceService {
   public get gameState(): GameState {
     return this._gameState;
   }
+
   public set gameState(value: GameState) {
     this._gameState = value;
   }
@@ -96,14 +101,14 @@ export default class GameInstanceService {
   }
 
   public endGame() {
-    this.gameState = GameState.finished;
+    this.gameState = GameState.FINISHED;
   }
 
   private endTurn(turn: Turn) {
     turn.isTurnOf = turn.nextPlayer;
     turn.nextPlayer = this.getNextPlayer(
       turn.isTurnOf,
-      this.gameConfiguration.players,
+      this.gameSettings.players,
     );
     turn.actionRemaining = 1;
   }
@@ -112,7 +117,7 @@ export default class GameInstanceService {
     return playerBoats.filter((boat) => !boat.isSunk);
   }
 
-  private generateGameArsenal(gameConfiguration: GameConfiguration) {
+  private generateGameArsenal(gameConfiguration: GameSettings) {
     const gameArsenal: GameArsenal = {};
 
     Object.entries(gameConfiguration.weapons).forEach(([playerId, weapons]) => {
@@ -136,17 +141,15 @@ export default class GameInstanceService {
     const playerBoards: PlayerBoards = {};
 
     Object.entries(boats).forEach(([playerId, boats]: [string, GameBoat[]]) => {
-      const arrayOfBoatEmplacement = boats
+      return (playerBoards[playerId] = boats
         .map((boat) => boat.emplacement)
-        .flat(1);
-
-      playerBoards[playerId] = arrayOfBoatEmplacement;
+        .flat(1));
     });
 
     return playerBoards;
   }
 
-  private generateTurns(players: typeof this.gameConfiguration.players): Turn {
+  private generateTurns(players: typeof this.gameSettings.players): Turn {
     const firstPlayer = radash.draw(players);
 
     return {
@@ -169,11 +172,27 @@ export default class GameInstanceService {
 
   private getNextPlayer(
     player: GamePlayer,
-    players: typeof this.gameConfiguration.players,
+    players: typeof this.gameSettings.players,
   ) {
     const nextPlayerIndex = players.indexOf(player) + 1;
 
     return players[nextPlayerIndex] ?? players[0];
+  }
+
+  // TEST this function
+  private getPlayerById(playerId: GamePlayer['id']) {
+    const player = this.players.find((player) => player.id === playerId);
+
+    if (!player) {
+      const errorKey = 'PLAYER_NOT_FOUND';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    return player;
   }
 
   private getShotCells(weapon: GameWeapon, originCell: Cell) {
@@ -196,6 +215,27 @@ export default class GameInstanceService {
     return shotCells;
   }
 
+  // TEST this function
+  private getWeaponByName(
+    weaponName: GameWeapon['name'],
+    targetedPlayer: GamePlayer['id'],
+  ) {
+    const weapon = this.gameArsenal[targetedPlayer].find(
+      (weapon) => weapon.name === weaponName,
+    );
+
+    if (!weapon) {
+      const errorKey = 'WEAPON_NOT_FOUND';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    return weapon;
+  }
+
   private hasPlayerFleetBeenSunk(playerFleet: GameBoat[]) {
     return playerFleet.every((boat) => boat.isSunk);
   }
@@ -206,7 +246,7 @@ export default class GameInstanceService {
       winner: [],
     };
 
-    Object.entries(this.gameConfiguration.boats).forEach(
+    Object.entries(this.gameSettings.boats).forEach(
       ([playerId, playerFleet]) => {
         const hasPlayerFleetBeenSunk = this.hasPlayerFleetBeenSunk(playerFleet);
 
@@ -214,11 +254,11 @@ export default class GameInstanceService {
           return;
         }
 
-        const winner = this.gameConfiguration.players.find(
+        const winner = this.gameSettings.players.find(
           (player) => player.id.toLowerCase() === playerId,
         );
 
-        const losers = this.gameConfiguration.players.filter(
+        const losers = this.gameSettings.players.filter(
           (player) => player.id.toLowerCase() !== playerId,
         );
 
@@ -237,15 +277,11 @@ export default class GameInstanceService {
   /**
    * Make a shot with the specified weapon
    * @param targetedPlayer
-   * @param weapon
+   * @param weaponName
    * @param originCell The cell where the player touch
    */
-  public shoot(
-    targetedPlayer: GamePlayer,
-    weapon: GameWeapon,
-    originCell: Cell,
-  ) {
-    if (this.gameState !== GameState.playing) {
+  public shoot({ targetedPlayerId, weaponName, originCell }: ShootParameters) {
+    if (this.gameState !== GameState.PLAYING) {
       const errorKey = 'gameNotStarted';
 
       throw new GameEngineError({
@@ -253,6 +289,9 @@ export default class GameInstanceService {
         message: GameEngineErrorMessages[errorKey],
       });
     }
+
+    const weapon = this.getWeaponByName(weaponName, targetedPlayerId);
+    const targetedPlayer = this.getPlayerById(targetedPlayerId);
 
     if (weapon.ammunitionRemaining === 0) {
       const errorKey = 'noAmmunitionRemaining';
@@ -278,20 +317,36 @@ export default class GameInstanceService {
       });
     }
 
+    const shotRecap: ShotRecap = {
+      hitCells: [],
+      missCells: [],
+      weapon: weapon,
+    };
+
     const shotCells = this.getShotCells(weapon, originCell);
 
     shotCells.forEach((shotCell) => {
-      this.doesCellContainABoat(targetedPlayer, shotCell);
+      const hasCellBeenHit = this.doesCellContainABoat(
+        targetedPlayer,
+        shotCell,
+      );
+
+      hasCellBeenHit
+        ? shotRecap.hitCells.push(shotCell)
+        : shotRecap.missCells.push(shotCell);
     });
 
     if (weapon.ammunitionRemaining > 0) {
       weapon.ammunitionRemaining -= 1;
     }
+
+    return shotRecap;
   }
 
   /**
    * Sort 2 dimensions array of numbers by ascending order
    * @param cells
+   * @param sortBy
    */
   private sortCells(cells: Cell[], sortBy: 'x' | 'y') {
     const cellIndex = sortBy === 'x' ? 0 : 1;
@@ -299,42 +354,40 @@ export default class GameInstanceService {
     cells.sort((cell1, cell2) => cell1[cellIndex] - cell2[cellIndex]);
   }
 
-  // TASK Create dynamically gameBoard with board dimensions given in gameConfiguration
-  public startGame(gameConfiguration: GameConfiguration) {
+  // TASK Create dynamically gameBoard with board dimensions given in gameSettings
+  public startGame() {
     this.gameInstanceValidatorsService.validateBoardDimensions(
-      gameConfiguration.boardDimensions,
+      this.gameSettings.boardDimensions,
     );
 
     this.gameInstanceValidatorsService.validatePlayers(
-      gameConfiguration.players,
+      this.gameSettings.players,
     );
 
-    const boatsOfPlayers = Object.values(gameConfiguration.boats);
+    const boatsOfPlayers = Object.values(this.gameSettings.boats);
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
       this.board,
       boatsOfPlayers,
     );
 
-    this.gameConfiguration = gameConfiguration;
-
     this.masterPlayerBoards = this.generateMasterPlayerBoards(
-      gameConfiguration.boats,
+      this.gameSettings.boats,
     );
 
     this.visiblePlayerBoards = this.generateVisiblePlayerBoards(
-      this.gameConfiguration.players,
+      this.gameSettings.players,
     );
 
-    this.gameArsenal = this.generateGameArsenal(gameConfiguration);
+    this.gameArsenal = this.generateGameArsenal(this.gameSettings);
 
-    this.turn = this.generateTurns(this.gameConfiguration.players);
+    this.turn = this.generateTurns(this.gameSettings.players);
 
-    this.gameState = GameState.playing;
+    this.gameState = GameState.PLAYING;
+
+    return this.turn;
   }
 
-  public startPlacingBoats(
-    gameConfiguration: Omit<GameConfiguration, 'boats'>,
-  ) {
+  public startPlacingBoats(gameConfiguration: Omit<GameSettings, 'boats'>) {
     this.gameInstanceValidatorsService.validateBoardDimensions(
       gameConfiguration.boardDimensions,
     );
@@ -343,7 +396,7 @@ export default class GameInstanceService {
       gameConfiguration.players,
     );
 
-    this.gameState = GameState.placingBoats;
+    this.gameState = GameState.PLACING_BOATS;
   }
 
   private updatePlayerBoatObject(
@@ -352,7 +405,7 @@ export default class GameInstanceService {
   ) {
     const [xTargetedCell, yTargetedCell] = targetedCell;
 
-    const playerFleet = this.gameConfiguration.boats[targetedPlayer.id];
+    const playerFleet = this.gameSettings.boats[targetedPlayer.id];
 
     const stillInGameBoats = this.findStillInGamePlayerBoats(playerFleet);
 
