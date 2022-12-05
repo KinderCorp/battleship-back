@@ -21,7 +21,7 @@ import GameEngineError from '@shared/game-engine-error';
 export default class GameInstanceValidatorsService {
   public validateActionCanBeExecuted(turn: Turn) {
     if (turn.actionRemaining < 1) {
-      const errorKey = 'noAmmunitionRemaining';
+      const errorKey = 'NO_ACTION_REMAINING';
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],

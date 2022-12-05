@@ -11,6 +11,7 @@ import { Logger } from '@nestjs/common';
 
 import {
   BaseGameSettings,
+  FinalTurnRecap,
   GameBoat,
   GameMode,
   GamePlayer,
@@ -23,6 +24,7 @@ import {
   SocketEventsEmitting,
   SocketEventsListening,
   Turn,
+  TurnRecap,
 } from '@interfaces/engine.interface';
 import GameEngine from '@engine/game-engine';
 import { GameEngineErrorCodes } from '@interfaces/error.interface';
@@ -208,9 +210,25 @@ export class GameGateway implements OnGatewayConnection {
 
     try {
       const shotRecap = instance.shoot(body.data);
+      instance.countDownAction(instance.turn);
 
-      const roomData: RoomData<ShotRecap> = {
-        data: shotRecap,
+      const isGameOver = instance.isGameOver();
+
+      const turnRecapData: TurnRecap = {
+        isGameOver: !!isGameOver,
+        shotRecap: shotRecap,
+        turn: instance.turn,
+      };
+
+      let finalRecapData: null | FinalTurnRecap = null;
+
+      if (isGameOver) {
+        delete turnRecapData.turn;
+        finalRecapData = { ...turnRecapData, podiumRecap: isGameOver };
+      }
+
+      const roomData: RoomData<TurnRecap | FinalTurnRecap> = {
+        data: finalRecapData ?? turnRecapData,
         instanceId: instance.id,
       };
 
@@ -245,6 +263,10 @@ export class GameGateway implements OnGatewayConnection {
 
         case GameEngineErrorCodes.PLAYER_NOT_FOUND:
           eventName = SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND;
+          break;
+
+        case GameEngineErrorCodes.NO_ACTION_REMAINING:
+          eventName = SocketEventsEmitting.ERROR_NO_ACTION_REMAINING;
           break;
 
         default:

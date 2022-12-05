@@ -3,7 +3,6 @@ import * as radash from 'radash';
 import {
   BaseGameSettings,
   Cell,
-  EndGameRecap,
   GameArsenal,
   GameBoard,
   GameBoat,
@@ -14,6 +13,7 @@ import {
   GameState,
   GameWeapon,
   PlayerBoards,
+  PodiumRecap,
   ShootParameters,
   ShotRecap,
   Turn,
@@ -38,7 +38,7 @@ export default class GameInstanceService {
   public fleets: GameBoats = {};
   private masterPlayerBoards!: PlayerBoards;
   public readonly gameMode!: GameMode;
-  private turn!: Turn;
+  public turn!: Turn;
   private visiblePlayerBoards!: PlayerBoards;
   public players: GamePlayer[] = [];
   public readonly id: string;
@@ -66,7 +66,7 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
-  private countDownAction(turn: Turn) {
+  public countDownAction(turn: Turn) {
     this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);
 
     turn.actionRemaining -= 1;
@@ -240,8 +240,8 @@ export default class GameInstanceService {
     return playerFleet.every((boat) => boat.isSunk);
   }
 
-  private isGameOver(): EndGameRecap | false {
-    const isGameOver: EndGameRecap = {
+  public isGameOver(): PodiumRecap | false {
+    const isGameOver: PodiumRecap = {
       loser: [],
       winner: [],
     };

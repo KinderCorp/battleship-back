@@ -72,7 +72,7 @@ export interface Turn {
   nextPlayer: GamePlayer;
 }
 
-export interface EndGameRecap {
+export interface PodiumRecap {
   loser: GamePlayer[];
   winner: GamePlayer[];
 }
@@ -89,6 +89,16 @@ export interface ShootParameters {
   targetedPlayerId: GamePlayer['id'];
   weaponName: GameWeapon['name'];
   originCell: Cell;
+}
+
+export interface TurnRecap {
+  shotRecap: ShotRecap;
+  turn: Turn;
+  isGameOver: boolean;
+}
+
+export interface FinalTurnRecap extends Omit<TurnRecap, 'turn'> {
+  podiumRecap: PodiumRecap;
 }
 
 export interface ShotRecap {
@@ -109,20 +119,21 @@ export enum SocketEventsListening {
 export enum SocketEventsEmitting {
   ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS = 'all-players-have-placed-their-boats',
   END_GAME = 'end-game',
+  ERROR_CELL_ALREADY_HIT = 'error-cell-already-hit',
   ERROR_GAME_IS_FULL = 'error-game-is-full',
   ERROR_GAME_NOT_FOUND = 'error-game-not-found',
-  ERROR_WEAPON_NOT_FOUND = 'error-weapon-not-found',
-  ERROR_PLAYER_NOT_FOUND = 'error-player-not-found',
-  ERROR_INVALID_BOARD_GAME_DIMENSIONS = 'error-invalid-board-game-dimensions',
-  ERROR_INVALID_NUMBER_OF_PLAYERS = 'error-invalid-number-of-players',
-  ERROR_INVALID_BOAT = 'error-invalid-boat',
-  ERROR_MISSING_PLAYER = 'error-missing-player',
   ERROR_GAME_NOT_STARTED = 'error-game-not-started',
-  ERROR_OUT_OF_BOUNDS = 'error-out-of-bounds',
-  ERROR_CELL_ALREADY_HIT = 'error-cell-already-hit',
+  ERROR_INVALID_BOARD_GAME_DIMENSIONS = 'error-invalid-board-game-dimensions',
+  ERROR_INVALID_BOAT = 'error-invalid-boat',
+  ERROR_INVALID_NUMBER_OF_PLAYERS = 'error-invalid-number-of-players',
+  ERROR_MISSING_PLAYER = 'error-missing-player',
+  ERROR_NO_ACTION_REMAINING = 'error-no-action-remaining',
   ERROR_NO_AMMUNITION_REMAINING = 'error-no-ammunition-remaining',
+  ERROR_OUT_OF_BOUNDS = 'error-out-of-bounds',
+  ERROR_PLAYER_NOT_FOUND = 'error-player-not-found',
   ERROR_UNABLE_TO_CREATE_GAME = 'error-unable-to-create-game',
   ERROR_UNKNOWN_SERVER = 'error-unknown-server',
+  ERROR_WEAPON_NOT_FOUND = 'error-weapon-not-found',
   GAME_CREATED = 'game-created',
   GAME_STARTED = 'game-started',
   ONE_PLAYER_HAS_PLACED_HIS_BOATS = 'one-player-has-placed-his-boats',
