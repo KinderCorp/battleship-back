@@ -12,7 +12,7 @@ export enum GameState {
   WAITING_TO_START = 'waiting-to-start',
   PLACING_BOATS = 'placing-boats',
   PLAYING = 'playing',
-  FINISHED = 'FINISHED',
+  FINISHED = 'finished',
 }
 
 export type Cell = [x: number, y: number];
@@ -110,6 +110,7 @@ export enum SocketEventsListening {
   SHOOT = 'shoot',
   START_GAME = 'start-game',
   VALIDATE_PLAYER_BOATS_PLACEMENT = 'validate-player-boats-placement',
+  CLOSE_ROOM = 'close-room',
 }
 
 export enum SocketEventsEmitting {

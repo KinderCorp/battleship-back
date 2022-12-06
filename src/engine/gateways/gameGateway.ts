@@ -47,6 +47,50 @@ export class GameGateway implements OnGatewayConnection {
     this.gameEngine.destroy(instance);
   }
 
+  private getErrorEventName(
+    errorCode: GameEngineErrorCodes,
+    instance: GameInstanceService,
+  ) {
+    switch (errorCode) {
+      case GameEngineErrorCodes.INVALID_BOAT:
+        return SocketEventsEmitting.ERROR_INVALID_BOAT;
+
+      case GameEngineErrorCodes.OUT_OF_BOUNDS:
+        return SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
+
+      case GameEngineErrorCodes.PLAYER_NOT_FOUND:
+        return SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND;
+
+      case GameEngineErrorCodes.GAME_NOT_STARTED:
+        return SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
+
+      case GameEngineErrorCodes.NO_AMMUNITION_REMAINING:
+        return SocketEventsEmitting.ERROR_NO_AMMUNITION_REMAINING;
+
+      case GameEngineErrorCodes.CELL_ALREADY_HIT:
+        return SocketEventsEmitting.ERROR_CELL_ALREADY_HIT;
+
+      case GameEngineErrorCodes.WEAPON_NOT_FOUND:
+        return SocketEventsEmitting.ERROR_WEAPON_NOT_FOUND;
+
+      case GameEngineErrorCodes.NO_ACTION_REMAINING:
+        return SocketEventsEmitting.ERROR_NO_ACTION_REMAINING;
+
+      case GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS:
+        return SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
+
+      case GameEngineErrorCodes.MISSING_PLAYER:
+        return SocketEventsEmitting.ERROR_MISSING_PLAYER;
+
+      case GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS:
+        return SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
+
+      default:
+        this.destroySession(instance);
+        return SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
+    }
+  }
+
   public handleConnection(socket: Socket) {
     this.logger.log(`Socket ${socket.id} connected`);
     this.socketServer.emit('connected', `Socket ${socket.id} connected`);
@@ -54,6 +98,23 @@ export class GameGateway implements OnGatewayConnection {
 
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
+  }
+
+  @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
+  public onCloseRoom(
+    @MessageBody() body: Room,
+    @ConnectedSocket() socket: Socket,
+  ): void {
+    const instance = this.gameEngine.get(body.instanceId);
+    if (!instance) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
+
+      return;
+    }
+
+    this.destroySession(instance);
   }
 
   /**
@@ -160,26 +221,7 @@ export class GameGateway implements OnGatewayConnection {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      let eventName: SocketEventsEmitting;
-
-      switch (error['code']) {
-        case GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS:
-          eventName = SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
-          break;
-
-        case GameEngineErrorCodes.MISSING_PLAYER:
-          eventName = SocketEventsEmitting.ERROR_MISSING_PLAYER;
-          break;
-
-        case GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS:
-          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
-          break;
-
-        default:
-          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
-          this.destroySession(instance);
-          break;
-      }
+      const eventName = this.getErrorEventName(error['code'], instance);
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
@@ -229,48 +271,15 @@ export class GameGateway implements OnGatewayConnection {
         instanceId: instance.id,
       };
 
-      this.socketServer
-        .to(instance.id)
-        .emit(SocketEventsEmitting.SHOT, roomData);
+      const eventName = turnRecapData.isGameOver
+        ? SocketEventsEmitting.END_GAME
+        : SocketEventsEmitting.SHOT;
+
+      this.socketServer.to(instance.id).emit(eventName, roomData);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      let eventName: SocketEventsEmitting;
-
-      switch (error['code']) {
-        case GameEngineErrorCodes.GAME_NOT_STARTED:
-          eventName = SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
-          break;
-
-        case GameEngineErrorCodes.NO_AMMUNITION_REMAINING:
-          eventName = SocketEventsEmitting.ERROR_NO_AMMUNITION_REMAINING;
-          break;
-
-        case GameEngineErrorCodes.OUT_OF_BOUNDS:
-          eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
-          break;
-
-        case GameEngineErrorCodes.CELL_ALREADY_HIT:
-          eventName = SocketEventsEmitting.ERROR_CELL_ALREADY_HIT;
-          break;
-
-        case GameEngineErrorCodes.WEAPON_NOT_FOUND:
-          eventName = SocketEventsEmitting.ERROR_WEAPON_NOT_FOUND;
-          break;
-
-        case GameEngineErrorCodes.PLAYER_NOT_FOUND:
-          eventName = SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND;
-          break;
-
-        case GameEngineErrorCodes.NO_ACTION_REMAINING:
-          eventName = SocketEventsEmitting.ERROR_NO_ACTION_REMAINING;
-          break;
-
-        default:
-          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
-          this.destroySession(instance);
-          break;
-      }
+      const eventName = this.getErrorEventName(error['code'], instance);
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
@@ -295,7 +304,6 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     try {
-      // TASK Check with @MQ about what the front need
       const turn = instance.startGame();
 
       const roomData: RoomData<Turn> = {
@@ -309,38 +317,7 @@ export class GameGateway implements OnGatewayConnection {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      let eventName: SocketEventsEmitting;
-
-      switch (error['code']) {
-        case GameEngineErrorCodes.GAME_NOT_STARTED:
-          eventName = SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
-          break;
-
-        case GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS:
-          eventName = SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
-          break;
-
-        case GameEngineErrorCodes.MISSING_PLAYER:
-          eventName = SocketEventsEmitting.ERROR_MISSING_PLAYER;
-          break;
-
-        case GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS:
-          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
-          break;
-
-        case GameEngineErrorCodes.OUT_OF_BOUNDS:
-          eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
-          break;
-
-        case GameEngineErrorCodes.INVALID_BOAT:
-          eventName = SocketEventsEmitting.ERROR_INVALID_BOAT;
-          break;
-
-        default:
-          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
-          this.destroySession(instance);
-          break;
-      }
+      const eventName = this.getErrorEventName(error['code'], instance);
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
@@ -397,22 +374,7 @@ export class GameGateway implements OnGatewayConnection {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      let eventName: SocketEventsEmitting;
-
-      switch (error['code']) {
-        case GameEngineErrorCodes.OUT_OF_BOUNDS:
-          eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
-          break;
-
-        case GameEngineErrorCodes.INVALID_BOAT:
-          eventName = SocketEventsEmitting.ERROR_INVALID_BOAT;
-          break;
-
-        default:
-          eventName = SocketEventsEmitting.ERROR_UNKNOWN_SERVER;
-          this.destroySession(instance);
-          break;
-      }
+      const eventName = this.getErrorEventName(error['code'], instance);
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
@@ -426,21 +388,21 @@ export class GameGateway implements OnGatewayConnection {
  * 1b. [Back emit event] :  gameCreated | unableToCreateGame
  *
  * 2a. [Front emit event] : playerJoiningGame
- * 2b. [Back emit event] : UserJoined | GameNotFound / RoomComplete
+ * 2b. [Back emit event] : playerJoined | GameNotFound / RoomComplete
  *
  * 3a. [Front emit event] : playersReadyToPlaceBoats
- * 3b. [Back emit event] : startPlacingBoats | ERROR - not defined yet
+ * 3b. [Back emit event] : startPlacingBoats | gameNotFound
  *
  * 4a. [Front emit event] : validatePlayerBoatPlacement
- * 4b. [Back emit event] : onePlayerHasPlacedAllHisBoats | boatsAreMisplaced
+ * 4b. [Back emit event] : onePlayerHasPlacedAllHisBoats | multiple errors
  * 4c. [Front emit event] : validatePlayerBoatPlacement
- * 4d. [Back emit event] : allPlayersHavePlacedTheirBoats | boatsAreMisplaced
+ * 4d. [Back emit event] : allPlayersHavePlacedTheirBoats | multiple errors
  *
  * 5a. [Front emit event] : StartGame
- * 5b. [Back emit event] : GameStarted | ERROR - not defined yet
+ * 5b. [Back emit event] : GameStarted | multiple errors
  *
  * Xa. [Front emit event] : Shoot
- * Xb. [Back emit event] : Shot / EndGame | ERROR - not defined yet
+ * Xb. [Back emit event] : Shot / EndGame | multiple errors
  *
  * 7a. [Front emit event] : CloseRoom
  */
