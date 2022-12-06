@@ -7,9 +7,9 @@ import {
   GameSettings,
   GameState,
   GameWeapon,
-  OneVersusOne,
   PlayerBoards,
   Turn,
+  Versus,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
@@ -254,7 +254,7 @@ export const visiblePlayerBoards2: () => PlayerBoards = () => {
   };
 };
 
-export const oneVersusOneWeapons1: () => OneVersusOne<WeaponType> = () => {
+export const oneVersusOneWeapons1: () => Versus<WeaponType> = () => {
   const bomb = gameWeaponBomb();
   const triple = gameWeaponTriple();
 

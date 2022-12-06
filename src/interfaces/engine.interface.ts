@@ -34,24 +34,22 @@ export interface BaseGameSettings {
   state: GameState;
 }
 
-export interface GameBoats extends OneVersusOne<GameBoat> {
+export interface GameBoats extends Versus<GameBoat> {
   [playerId: string]: GameBoat[];
 }
 
-// TASK Search how to indicate the number of key value pairs
-// TASK This type in misnamed, rename it
-export type OneVersusOne<T> = {
+export type Versus<T> = {
   [playerId: string]: T[];
 };
 
 export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
   boardDimensions: number;
-  weapons: OneVersusOne<WeaponType>;
+  weapons: Versus<WeaponType>;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
 }
 
-export type GameBoard = [number[], number[]];
+export type GameBoard = [x: number[], y: number[]];
 
 export type GamePlayer = LoggedPlayer | GuestPlayer;
 
@@ -139,15 +137,3 @@ export enum SocketEventsEmitting {
   SHOT = 'shot',
   START_PLACING_BOATS = 'start-placing-boats',
 }
-
-// TASK Move comment below in readme
-/**
- * Classic rules for battleship
- *
- * Grid of 10x10 cells
- *
- * 1 boat of 2
- * 2 boat of 3
- * 1 boat of 4
- * 1 boat of 5
- */

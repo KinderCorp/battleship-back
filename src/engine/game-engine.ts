@@ -1,7 +1,7 @@
 import GameInstanceService from '@engine/game-instance.service';
 
 export default class GameEngine {
-  private instances: GameInstanceService[];
+  private instances: GameInstanceService[] = [];
 
   public addInstance(instance: GameInstanceService): void {
     this.instances.push(instance);

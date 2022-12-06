@@ -172,7 +172,6 @@ export default class GameInstanceService {
     return players[nextPlayerIndex] ?? players[0];
   }
 
-  // TEST this function
   private getPlayerById(playerId: GamePlayer['id']) {
     const player = this.players.find((player) => player.id === playerId);
 
@@ -208,7 +207,6 @@ export default class GameInstanceService {
     return shotCells;
   }
 
-  // TEST this function
   private getWeaponByName(
     weaponName: GameWeapon['name'],
     targetedPlayer: GamePlayer['id'],
@@ -273,7 +271,7 @@ export default class GameInstanceService {
    */
   public shoot({ targetedPlayerId, weaponName, originCell }: ShootParameters) {
     if (this.gameState !== GameState.PLAYING) {
-      const errorKey = 'gameNotStarted';
+      const errorKey = 'GAME_NOT_STARTED';
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
@@ -285,7 +283,7 @@ export default class GameInstanceService {
     const targetedPlayer = this.getPlayerById(targetedPlayerId);
 
     if (weapon.ammunitionRemaining === 0) {
-      const errorKey = 'noAmmunitionRemaining';
+      const errorKey = 'NO_AMMUNITION_REMAINING';
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
@@ -300,7 +298,7 @@ export default class GameInstanceService {
       !xBoardPositions.includes(xOriginCell) ||
       !yBoardPositions.includes(yOriginCell)
     ) {
-      const errorKey = 'outOfBounds';
+      const errorKey = 'OUT_OF_BOUNDS';
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
@@ -372,7 +370,7 @@ export default class GameInstanceService {
     return this.turn;
   }
 
-  public startPlacingBoats(gameSettings: Omit<GameSettings, 'boats'>) {
+  public startPlacingBoats(gameSettings: GameSettings) {
     this.gameInstanceValidatorsService.validateBoardDimensions(
       gameSettings.boardDimensions,
     );

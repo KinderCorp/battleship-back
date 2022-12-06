@@ -20,7 +20,6 @@ import {
   Room,
   RoomData,
   ShootParameters,
-  ShotRecap,
   SocketEventsEmitting,
   SocketEventsListening,
   Turn,
@@ -69,14 +68,14 @@ export class GameGateway implements OnGatewayConnection {
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
 
-    const baseGameConfiguration: BaseGameSettings = {
+    const baseGameSettings: BaseGameSettings = {
       firstPlayer: body,
       gameMode: GameMode.ONE_VERSUS_ONE,
       state: GameState.WAITING_TO_START,
     };
 
     const instance = new GameInstanceService(
-      baseGameConfiguration,
+      baseGameSettings,
       this.gameInstanceValidators,
     );
 
@@ -91,8 +90,6 @@ export class GameGateway implements OnGatewayConnection {
     this.socketServer
       .to(socket.id)
       .emit(SocketEventsEmitting.GAME_CREATED, room);
-
-    // FIXME NOT TESTED - IMPOSSIBLE TO MAKE THE FRONT WORK
   }
 
   /**
@@ -142,7 +139,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage(SocketEventsListening.PLAYER_READY_TO_PLACE_BOATS)
   public onPlayersReadyToPlaceBoats(
-    @MessageBody() body: RoomData<Omit<GameSettings, 'boats'>>,
+    @MessageBody() body: RoomData<GameSettings>,
     @ConnectedSocket() socket: Socket,
   ): void {
     const instance = this.gameEngine.get(body.instanceId);
@@ -166,15 +163,15 @@ export class GameGateway implements OnGatewayConnection {
       let eventName: SocketEventsEmitting;
 
       switch (error['code']) {
-        case GameEngineErrorCodes.invalidBoardGameDimensions:
+        case GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS:
           eventName = SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
           break;
 
-        case GameEngineErrorCodes.missingPlayer:
+        case GameEngineErrorCodes.MISSING_PLAYER:
           eventName = SocketEventsEmitting.ERROR_MISSING_PLAYER;
           break;
 
-        case GameEngineErrorCodes.invalidNumberOfPlayers:
+        case GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS:
           eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
           break;
 
@@ -241,19 +238,19 @@ export class GameGateway implements OnGatewayConnection {
       let eventName: SocketEventsEmitting;
 
       switch (error['code']) {
-        case GameEngineErrorCodes.gameNotStarted:
+        case GameEngineErrorCodes.GAME_NOT_STARTED:
           eventName = SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
           break;
 
-        case GameEngineErrorCodes.noAmmunitionRemaining:
+        case GameEngineErrorCodes.NO_AMMUNITION_REMAINING:
           eventName = SocketEventsEmitting.ERROR_NO_AMMUNITION_REMAINING;
           break;
 
-        case GameEngineErrorCodes.outOfBounds:
+        case GameEngineErrorCodes.OUT_OF_BOUNDS:
           eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
           break;
 
-        case GameEngineErrorCodes.cellAlreadyHit:
+        case GameEngineErrorCodes.CELL_ALREADY_HIT:
           eventName = SocketEventsEmitting.ERROR_CELL_ALREADY_HIT;
           break;
 
@@ -315,27 +312,27 @@ export class GameGateway implements OnGatewayConnection {
       let eventName: SocketEventsEmitting;
 
       switch (error['code']) {
-        case GameEngineErrorCodes.gameNotStarted:
+        case GameEngineErrorCodes.GAME_NOT_STARTED:
           eventName = SocketEventsEmitting.ERROR_GAME_NOT_STARTED;
           break;
 
-        case GameEngineErrorCodes.invalidBoardGameDimensions:
+        case GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS:
           eventName = SocketEventsEmitting.ERROR_INVALID_BOARD_GAME_DIMENSIONS;
           break;
 
-        case GameEngineErrorCodes.missingPlayer:
+        case GameEngineErrorCodes.MISSING_PLAYER:
           eventName = SocketEventsEmitting.ERROR_MISSING_PLAYER;
           break;
 
-        case GameEngineErrorCodes.invalidNumberOfPlayers:
+        case GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS:
           eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
           break;
 
-        case GameEngineErrorCodes.outOfBounds:
+        case GameEngineErrorCodes.OUT_OF_BOUNDS:
           eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
           break;
 
-        case GameEngineErrorCodes.invalidBoat:
+        case GameEngineErrorCodes.INVALID_BOAT:
           eventName = SocketEventsEmitting.ERROR_INVALID_BOAT;
           break;
 
@@ -403,11 +400,11 @@ export class GameGateway implements OnGatewayConnection {
       let eventName: SocketEventsEmitting;
 
       switch (error['code']) {
-        case GameEngineErrorCodes.outOfBounds:
+        case GameEngineErrorCodes.OUT_OF_BOUNDS:
           eventName = SocketEventsEmitting.ERROR_OUT_OF_BOUNDS;
           break;
 
-        case GameEngineErrorCodes.invalidBoat:
+        case GameEngineErrorCodes.INVALID_BOAT:
           eventName = SocketEventsEmitting.ERROR_INVALID_BOAT;
           break;
 

@@ -25,6 +25,7 @@ import {
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { WeaponName } from '@interfaces/weapon.interface';
 
 const baseGameConfiguration = {
   firstPlayer: guestPlayer1(),
@@ -121,8 +122,8 @@ describe('GameInstanceService', () => {
       service['doesCellContainABoat'](guestPlayer1(), [1, 1]),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
+        code: GameEngineErrorCodes.CELL_ALREADY_HIT,
+        message: GameEngineErrorMessages.CELL_ALREADY_HIT,
       }),
     );
   });
@@ -216,18 +217,6 @@ describe('GameInstanceService', () => {
     const targetedPlayer = guestPlayer1();
 
     service['updatePlayerBoatObject'](targetedPlayer, [3, 1]);
-
-    expect(service.fleets[targetedPlayer.id][0]).toStrictEqual({
-      boatName: 'destroyer',
-      emplacement: [
-        [1, 1],
-        [2, 1],
-        [3, 1],
-      ],
-      hit: [[3, 1]],
-      isSunk: false,
-    });
-
     service['updatePlayerBoatObject'](targetedPlayer, [2, 1]);
     expect(service.fleets[targetedPlayer.id][0].isSunk).toEqual(false);
 
@@ -235,8 +224,8 @@ describe('GameInstanceService', () => {
       service['updatePlayerBoatObject'](targetedPlayer, [3, 1]),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
+        code: GameEngineErrorCodes.CELL_ALREADY_HIT,
+        message: GameEngineErrorMessages.CELL_ALREADY_HIT,
       }),
     );
     expect(service.fleets[targetedPlayer.id][0].hit).toEqual([
@@ -261,8 +250,8 @@ describe('GameInstanceService', () => {
       }),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.gameNotStarted,
-        message: GameEngineErrorMessages.gameNotStarted,
+        code: GameEngineErrorCodes.GAME_NOT_STARTED,
+        message: GameEngineErrorMessages.GAME_NOT_STARTED,
       }),
     );
   });
@@ -285,8 +274,8 @@ describe('GameInstanceService', () => {
       }),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.noAmmunitionRemaining,
-        message: GameEngineErrorMessages.noAmmunitionRemaining,
+        code: GameEngineErrorCodes.NO_AMMUNITION_REMAINING,
+        message: GameEngineErrorMessages.NO_AMMUNITION_REMAINING,
       }),
     );
   });
@@ -307,8 +296,8 @@ describe('GameInstanceService', () => {
       }),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.outOfBounds,
-        message: GameEngineErrorMessages.outOfBounds,
+        code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+        message: GameEngineErrorMessages.OUT_OF_BOUNDS,
       }),
     );
 
@@ -320,8 +309,8 @@ describe('GameInstanceService', () => {
       }),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.outOfBounds,
-        message: GameEngineErrorMessages.outOfBounds,
+        code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+        message: GameEngineErrorMessages.OUT_OF_BOUNDS,
       }),
     );
   });
@@ -599,5 +588,43 @@ describe('GameInstanceService', () => {
       loser: [guestPlayer2(), loggedPlayer1()],
       winner: [guestPlayer1()],
     });
+  });
+
+  it('should get player by id', () => {
+    service.players = players1();
+
+    expect(service['getPlayerById']('drakenline_0')).toEqual(guestPlayer1());
+  });
+
+  it('should not get player by id', () => {
+    service.players = players1();
+
+    expect(() => service['getPlayerById']('baptiste')).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
+        message: GameEngineErrorMessages.PLAYER_NOT_FOUND,
+      }),
+    );
+  });
+
+  it('should get weapon by name', () => {
+    service['gameArsenal'] = gameArsenal1();
+
+    expect(service['getWeaponByName'](WeaponName.bomb, 'drakenline_0')).toEqual(
+      bomb(),
+    );
+  });
+
+  it('should not get weapon by name', () => {
+    service['gameArsenal'] = gameArsenal1();
+
+    expect(() =>
+      service['getWeaponByName'](WeaponName.drone, 'drakenline_0'),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.WEAPON_NOT_FOUND,
+        message: GameEngineErrorMessages.WEAPON_NOT_FOUND,
+      }),
+    );
   });
 });

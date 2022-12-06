@@ -38,8 +38,8 @@ export default class GameInstanceValidatorsService {
       boardDimensions > MAX_BOARD_GAME_DIMENSIONS
     ) {
       throw new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoardGameDimensions,
-        message: GameEngineErrorMessages.invalidBoardGameDimensions,
+        code: GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS,
+        message: GameEngineErrorMessages.INVALID_BOARD_GAME_DIMENSIONS,
       });
     }
 
@@ -56,8 +56,8 @@ export default class GameInstanceValidatorsService {
 
       if (!isXPositionValid || !isYPositionValid) {
         throw new GameEngineError({
-          code: GameEngineErrorCodes.outOfBounds,
-          message: GameEngineErrorMessages.outOfBounds,
+          code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+          message: GameEngineErrorMessages.OUT_OF_BOUNDS,
         });
       }
     });
@@ -75,8 +75,8 @@ export default class GameInstanceValidatorsService {
 
     if (xPositionsSet.length !== 1 && yPositionsSet.length !== 1) {
       throw new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       });
     }
 
@@ -122,8 +122,8 @@ export default class GameInstanceValidatorsService {
 
     if (hasCellAlreadyBeenHit) {
       throw new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
+        code: GameEngineErrorCodes.CELL_ALREADY_HIT,
+        message: GameEngineErrorMessages.CELL_ALREADY_HIT,
       });
     }
 
@@ -136,8 +136,8 @@ export default class GameInstanceValidatorsService {
     arrayOfNumbers.forEach((axisPosition, index) => {
       if (index === 0 && axisPosition + 1 !== arrayOfNumbers[index + 1]) {
         throw new GameEngineError({
-          code: GameEngineErrorCodes.invalidBoat,
-          message: GameEngineErrorMessages.invalidBoat,
+          code: GameEngineErrorCodes.INVALID_BOAT,
+          message: GameEngineErrorMessages.INVALID_BOAT,
         });
       }
 
@@ -148,8 +148,8 @@ export default class GameInstanceValidatorsService {
         (isNotFirstIndex && axisPosition - 1 !== arrayOfNumbers[index - 1])
       ) {
         throw new GameEngineError({
-          code: GameEngineErrorCodes.invalidBoat,
-          message: GameEngineErrorMessages.invalidBoat,
+          code: GameEngineErrorCodes.INVALID_BOAT,
+          message: GameEngineErrorMessages.INVALID_BOAT,
         });
       }
     });
@@ -159,12 +159,12 @@ export default class GameInstanceValidatorsService {
     if (players.length !== 2) {
       const code =
         players.length === 1
-          ? GameEngineErrorCodes.missingPlayer
-          : GameEngineErrorCodes.invalidNumberOfPlayers;
+          ? GameEngineErrorCodes.MISSING_PLAYER
+          : GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS;
 
       throw new GameEngineError({
         code,
-        message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
+        message: `${GameEngineErrorMessages.INVALID_NUMBER_OF_PLAYERS}.${GameEngineErrorMessages.TWO_PLAYERS_REQUIRED}`,
       });
     }
 
