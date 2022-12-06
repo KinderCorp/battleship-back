@@ -29,7 +29,6 @@ import {
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
-// TASK Get rid of gameSettings and decompose it
 export default class GameInstanceService {
   private _gameState!: GameState;
   public readonly board: GameBoard = DEFAULT_BOARD_GAME;
@@ -106,10 +105,7 @@ export default class GameInstanceService {
 
   private endTurn(turn: Turn) {
     turn.isTurnOf = turn.nextPlayer;
-    turn.nextPlayer = this.getNextPlayer(
-      turn.isTurnOf,
-      this.gameSettings.players,
-    );
+    turn.nextPlayer = this.getNextPlayer(turn.isTurnOf, this.players);
     turn.actionRemaining = 1;
   }
 
@@ -149,7 +145,7 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  private generateTurns(players: typeof this.gameSettings.players): Turn {
+  private generateTurns(players: typeof this.players): Turn {
     const firstPlayer = radash.draw(players);
 
     return {
@@ -170,10 +166,7 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  private getNextPlayer(
-    player: GamePlayer,
-    players: typeof this.gameSettings.players,
-  ) {
+  private getNextPlayer(player: GamePlayer, players: typeof this.players) {
     const nextPlayerIndex = players.indexOf(player) + 1;
 
     return players[nextPlayerIndex] ?? players[0];
@@ -246,26 +239,24 @@ export default class GameInstanceService {
       winner: [],
     };
 
-    Object.entries(this.gameSettings.boats).forEach(
-      ([playerId, playerFleet]) => {
-        const hasPlayerFleetBeenSunk = this.hasPlayerFleetBeenSunk(playerFleet);
+    Object.entries(this.fleets).forEach(([playerId, playerFleet]) => {
+      const hasPlayerFleetBeenSunk = this.hasPlayerFleetBeenSunk(playerFleet);
 
-        if (!hasPlayerFleetBeenSunk) {
-          return;
-        }
+      if (!hasPlayerFleetBeenSunk) {
+        return;
+      }
 
-        const winner = this.gameSettings.players.find(
-          (player) => player.id.toLowerCase() === playerId,
-        );
+      const winner = this.players.find(
+        (player) => player.id.toLowerCase() === playerId,
+      );
 
-        const losers = this.gameSettings.players.filter(
-          (player) => player.id.toLowerCase() !== playerId,
-        );
+      const losers = this.players.filter(
+        (player) => player.id.toLowerCase() !== playerId,
+      );
 
-        isGameOver.winner.push(winner);
-        isGameOver.loser.push(...losers);
-      },
-    );
+      isGameOver.winner.push(winner);
+      isGameOver.loser.push(...losers);
+    });
 
     if (!isGameOver.winner.length) {
       return false;
@@ -360,41 +351,33 @@ export default class GameInstanceService {
       this.gameSettings.boardDimensions,
     );
 
-    this.gameInstanceValidatorsService.validatePlayers(
-      this.gameSettings.players,
-    );
+    this.gameInstanceValidatorsService.validatePlayers(this.players);
 
-    const boatsOfPlayers = Object.values(this.gameSettings.boats);
+    const boatsOfPlayers = Object.values(this.fleets);
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
       this.board,
       boatsOfPlayers,
     );
 
-    this.masterPlayerBoards = this.generateMasterPlayerBoards(
-      this.gameSettings.boats,
-    );
+    this.masterPlayerBoards = this.generateMasterPlayerBoards(this.fleets);
 
-    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(
-      this.gameSettings.players,
-    );
+    this.visiblePlayerBoards = this.generateVisiblePlayerBoards(this.players);
 
     this.gameArsenal = this.generateGameArsenal(this.gameSettings);
 
-    this.turn = this.generateTurns(this.gameSettings.players);
+    this.turn = this.generateTurns(this.players);
 
     this.gameState = GameState.PLAYING;
 
     return this.turn;
   }
 
-  public startPlacingBoats(gameConfiguration: Omit<GameSettings, 'boats'>) {
+  public startPlacingBoats(gameSettings: Omit<GameSettings, 'boats'>) {
     this.gameInstanceValidatorsService.validateBoardDimensions(
-      gameConfiguration.boardDimensions,
+      gameSettings.boardDimensions,
     );
 
-    this.gameInstanceValidatorsService.validatePlayers(
-      gameConfiguration.players,
-    );
+    this.gameInstanceValidatorsService.validatePlayers(this.players);
 
     this.gameState = GameState.PLACING_BOATS;
   }
@@ -405,7 +388,7 @@ export default class GameInstanceService {
   ) {
     const [xTargetedCell, yTargetedCell] = targetedCell;
 
-    const playerFleet = this.gameSettings.boats[targetedPlayer.id];
+    const playerFleet = this.fleets[targetedPlayer.id];
 
     const stillInGameBoats = this.findStillInGamePlayerBoats(playerFleet);
 

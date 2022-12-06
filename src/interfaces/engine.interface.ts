@@ -46,8 +46,6 @@ export type OneVersusOne<T> = {
 
 export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
   boardDimensions: number;
-  boats: GameBoats;
-  players: GamePlayer[];
   weapons: OneVersusOne<WeaponType>;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
