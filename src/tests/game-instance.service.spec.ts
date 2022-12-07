@@ -3,12 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   bomb,
   fakeWeapon,
+  fleets1,
   gameArsenal1,
-  gameConfiguration1,
+  gameSettings1,
   guestPlayer1,
   guestPlayer2,
   loggedPlayer1,
   masterPlayerBoards1,
+  players1,
   turn1,
   validBoatPlacement1,
   validBoatPlacement3,
@@ -23,10 +25,12 @@ import {
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { WeaponName } from '@interfaces/weapon.interface';
 
 const baseGameConfiguration = {
-  gameMode: GameMode.OneVersusOne,
-  state: GameState.waitingToStart,
+  firstPlayer: guestPlayer1(),
+  gameMode: GameMode.ONE_VERSUS_ONE,
+  state: GameState.WAITING_TO_START,
 };
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
@@ -52,25 +56,27 @@ describe('GameInstanceService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(service['gameMode']).toEqual(GameMode.OneVersusOne);
-    expect(service.gameState).toEqual(GameState.waitingToStart);
+    expect(service['gameMode']).toEqual(GameMode.ONE_VERSUS_ONE);
+    expect(service.gameState).toEqual(GameState.WAITING_TO_START);
   });
 
   it('should start the game', () => {
-    const gameConfiguration = gameConfiguration1();
+    const gameSettings = gameSettings1();
+    service['gameSettings'] = gameSettings;
+    service.players = players1();
     const spyValidateBoats = jest
       .spyOn(gameInstanceValidatorsService, 'validateBoatsOfPlayers')
       .mockReturnValue(true);
 
-    service.startGame(gameConfiguration);
+    service.startGame();
 
     expect(spyValidateBoats).toHaveBeenCalledTimes(1);
-    expect(service['gameConfiguration']).toEqual(gameConfiguration);
+    expect(service['gameSettings']).toEqual(gameSettings);
     expect(service['masterPlayerBoards']).toBeDefined();
     expect(service['visiblePlayerBoards']).toBeDefined();
     expect(service['gameArsenal']).toBeDefined();
     expect(service['turn']).toBeDefined();
-    expect(service.gameState).toEqual(GameState.playing);
+    expect(service.gameState).toEqual(GameState.PLAYING);
   });
 
   it('should start placing boats', () => {
@@ -82,23 +88,23 @@ describe('GameInstanceService', () => {
       .spyOn(gameInstanceValidatorsService, 'validatePlayers')
       .mockReturnValue(true);
 
-    service.startPlacingBoats(gameConfiguration1());
+    service.startPlacingBoats(gameSettings1());
 
     expect(spyValidateBoard).toHaveBeenCalledTimes(1);
     expect(spyValidatePlayers).toHaveBeenCalledTimes(1);
-    expect(service.gameState).toEqual(GameState.placingBoats);
+    expect(service.gameState).toEqual(GameState.PLACING_BOATS);
   });
 
   it('should end the game', () => {
     service.endGame();
 
-    expect(service.gameState).toEqual(GameState.finished);
+    expect(service.gameState).toEqual(GameState.FINISHED);
   });
 
   it('should generate the master player boards', () => {
-    expect(
-      service['generateMasterPlayerBoards'](gameConfiguration1().boats),
-    ).toStrictEqual(masterPlayerBoards1());
+    expect(service['generateMasterPlayerBoards'](fleets1())).toStrictEqual(
+      masterPlayerBoards1(),
+    );
   });
 
   it('should generate the visible player boards', () => {
@@ -116,8 +122,8 @@ describe('GameInstanceService', () => {
       service['doesCellContainABoat'](guestPlayer1(), [1, 1]),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
+        code: GameEngineErrorCodes.CELL_ALREADY_HIT,
+        message: GameEngineErrorMessages.CELL_ALREADY_HIT,
       }),
     );
   });
@@ -143,7 +149,8 @@ describe('GameInstanceService', () => {
   it('should add the targeted cell to the visible board and hit a boat', () => {
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['gameConfiguration'] = gameConfiguration1();
+    service['gameSettings'] = gameSettings1();
+    service.fleets = fleets1();
     const targetedPlayer = guestPlayer1();
 
     const doesCellContainABoat = service['doesCellContainABoat'](
@@ -161,8 +168,8 @@ describe('GameInstanceService', () => {
   });
 
   it('should find the boats of the player that are still in game', () => {
-    service['gameConfiguration'] = gameConfiguration1();
-    const playerBoats = service['gameConfiguration']['boats']['drakenline_0'];
+    service.fleets = fleets1();
+    const playerBoats = service.fleets['drakenline_0'];
 
     const stillInGameBoats = service['findStillInGamePlayerBoats'](playerBoats);
 
@@ -181,14 +188,12 @@ describe('GameInstanceService', () => {
   });
 
   it('should update player boat object and not to be sunk at first, then to be sunk', () => {
-    service['gameConfiguration'] = gameConfiguration1();
+    service.fleets = fleets1();
     const targetedPlayer = guestPlayer1();
 
     service['updatePlayerBoatObject'](targetedPlayer, [3, 1]);
 
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0],
-    ).toStrictEqual({
+    expect(service.fleets[targetedPlayer.id][0]).toStrictEqual({
       boatName: 'destroyer',
       emplacement: [
         [1, 1],
@@ -200,112 +205,124 @@ describe('GameInstanceService', () => {
     });
 
     service['updatePlayerBoatObject'](targetedPlayer, [2, 1]);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].isSunk,
-    ).toEqual(false);
+    expect(service.fleets[targetedPlayer.id][0].isSunk).toEqual(false);
 
     service['updatePlayerBoatObject'](targetedPlayer, [1, 1]);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].isSunk,
-    ).toEqual(true);
+    expect(service.fleets[targetedPlayer.id][0].isSunk).toEqual(true);
   });
 
   it('should update player boat object and throw an error because boat is already hit on targeted cell ', () => {
-    service['gameConfiguration'] = gameConfiguration1();
+    service['gameSettings'] = gameSettings1();
+    service.fleets = fleets1();
     const targetedPlayer = guestPlayer1();
 
     service['updatePlayerBoatObject'](targetedPlayer, [3, 1]);
-
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0],
-    ).toStrictEqual({
-      boatName: 'destroyer',
-      emplacement: [
-        [1, 1],
-        [2, 1],
-        [3, 1],
-      ],
-      hit: [[3, 1]],
-      isSunk: false,
-    });
-
     service['updatePlayerBoatObject'](targetedPlayer, [2, 1]);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].isSunk,
-    ).toEqual(false);
+    expect(service.fleets[targetedPlayer.id][0].isSunk).toEqual(false);
 
     expect(() =>
       service['updatePlayerBoatObject'](targetedPlayer, [3, 1]),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
+        code: GameEngineErrorCodes.CELL_ALREADY_HIT,
+        message: GameEngineErrorMessages.CELL_ALREADY_HIT,
       }),
     );
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].hit,
-    ).toEqual([
+    expect(service.fleets[targetedPlayer.id][0].hit).toEqual([
       [2, 1],
       [3, 1],
     ]);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].isSunk,
-    ).toEqual(false);
+    expect(service.fleets[targetedPlayer.id][0].isSunk).toEqual(false);
   });
 
   it('should generate the game arsenal', () => {
-    expect(service['generateGameArsenal'](gameConfiguration1())).toEqual(
+    expect(service['generateGameArsenal'](gameSettings1())).toEqual(
       gameArsenal1(),
     );
   });
 
   it('should not shoot because the game is not started', () => {
-    expect(() => service.shoot(guestPlayer1(), bomb(), [1, 1])).toThrowError(
+    expect(() =>
+      service.shoot({
+        originCell: [1, 1],
+        targetedPlayerId: guestPlayer1().id,
+        weaponName: bomb().name,
+      }),
+    ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.gameNotStarted,
-        message: GameEngineErrorMessages.gameNotStarted,
+        code: GameEngineErrorCodes.GAME_NOT_STARTED,
+        message: GameEngineErrorMessages.GAME_NOT_STARTED,
       }),
     );
   });
 
   it('should not shoot because no remaining ammunition', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
+    service['visiblePlayerBoards'] = visiblePlayerBoards1();
+    service['masterPlayerBoards'] = masterPlayerBoards1();
+    service.players = players1();
+    service.fleets = fleets1();
+    service['gameArsenal'] = gameArsenal1();
 
-    const weapon = bomb();
-    weapon.ammunitionRemaining = 0;
+    service['gameArsenal'][guestPlayer1().id][0].ammunitionRemaining = 0;
 
-    expect(() => service.shoot(guestPlayer1(), weapon, [1, 1])).toThrowError(
+    expect(() =>
+      service.shoot({
+        originCell: [1, 1],
+        targetedPlayerId: guestPlayer1().id,
+        weaponName: service['gameArsenal'][guestPlayer1().id][0].name,
+      }),
+    ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.noAmmunitionRemaining,
-        message: GameEngineErrorMessages.noAmmunitionRemaining,
+        code: GameEngineErrorCodes.NO_AMMUNITION_REMAINING,
+        message: GameEngineErrorMessages.NO_AMMUNITION_REMAINING,
       }),
     );
   });
 
   it('should not shoot because the origin cell is out of bound', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
+    service['visiblePlayerBoards'] = visiblePlayerBoards1();
+    service['masterPlayerBoards'] = masterPlayerBoards1();
+    service.players = players1();
+    service.fleets = fleets1();
+    service['gameArsenal'] = gameArsenal1();
 
-    expect(() => service.shoot(guestPlayer1(), bomb(), [0, 1])).toThrowError(
+    expect(() =>
+      service.shoot({
+        originCell: [0, 1],
+        targetedPlayerId: guestPlayer1().id,
+        weaponName: bomb().name,
+      }),
+    ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.outOfBounds,
-        message: GameEngineErrorMessages.outOfBounds,
+        code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+        message: GameEngineErrorMessages.OUT_OF_BOUNDS,
       }),
     );
 
-    expect(() => service.shoot(guestPlayer1(), bomb(), [1, 0])).toThrowError(
+    expect(() =>
+      service.shoot({
+        originCell: [1, 0],
+        targetedPlayerId: guestPlayer1().id,
+        weaponName: bomb().name,
+      }),
+    ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.outOfBounds,
-        message: GameEngineErrorMessages.outOfBounds,
+        code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+        message: GameEngineErrorMessages.OUT_OF_BOUNDS,
       }),
     );
   });
 
   it('should shoot with a bomb weapon', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
     service['visiblePlayerBoards'] = visiblePlayerBoards2();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['gameConfiguration'] = gameConfiguration1();
     service['gameArsenal'] = gameArsenal1();
+    service.fleets = fleets1();
+    service.players = players1();
+
     const targetedPlayer = guestPlayer1();
 
     jest
@@ -315,29 +332,26 @@ describe('GameInstanceService', () => {
     expect(
       service['gameArsenal'][targetedPlayer.id][0].ammunitionRemaining,
     ).toEqual(-1);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].hit,
-    ).toHaveLength(0);
+    expect(service.fleets[targetedPlayer.id][0].hit).toHaveLength(0);
     expect(() =>
-      service.shoot(
-        targetedPlayer,
-        service['gameArsenal'][targetedPlayer.id][0],
-        [1, 1],
-      ),
+      service.shoot({
+        originCell: [1, 1],
+        targetedPlayerId: targetedPlayer.id,
+        weaponName: service['gameArsenal'][targetedPlayer.id][0].name,
+      }),
     ).not.toThrowError();
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].hit,
-    ).toEqual([[1, 1]]);
+    expect(service.fleets[targetedPlayer.id][0].hit).toEqual([[1, 1]]);
     expect(
       service['gameArsenal'][targetedPlayer.id][0].ammunitionRemaining,
     ).toEqual(-1);
   });
 
   it('should shoot with the triple weapon', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
     service['visiblePlayerBoards'] = visiblePlayerBoards1();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['gameConfiguration'] = gameConfiguration1();
+    service.fleets = fleets1();
+    service.players = players1();
     service['gameArsenal'] = gameArsenal1();
 
     jest
@@ -347,37 +361,32 @@ describe('GameInstanceService', () => {
     expect(
       service['gameArsenal']['drakenline_0'][1].ammunitionRemaining,
     ).toEqual(1);
-    expect(
-      service['gameConfiguration']['boats']['drakenline_0'][0].hit,
-    ).toHaveLength(0);
+    expect(service.fleets['drakenline_0'][0].hit).toHaveLength(0);
     expect(() =>
-      service.shoot(
-        guestPlayer1(),
-        service['gameArsenal']['drakenline_0'][1],
-        [2, 1],
-      ),
+      service.shoot({
+        originCell: [2, 1],
+        targetedPlayerId: guestPlayer1().id,
+        weaponName: service['gameArsenal']['drakenline_0'][1].name,
+      }),
     ).not.toThrowError();
-    expect(
-      service['gameConfiguration']['boats']['drakenline_0'][0].hit,
-    ).toEqual([
+    expect(service.fleets['drakenline_0'][0].hit).toEqual([
       [1, 1],
       [2, 1],
       [3, 1],
     ]);
-    expect(
-      service['gameConfiguration']['boats']['drakenline_0'][0].isSunk,
-    ).toEqual(true);
+    expect(service.fleets['drakenline_0'][0].isSunk).toEqual(true);
     expect(
       service['gameArsenal']['drakenline_0'][1].ammunitionRemaining,
     ).toEqual(0);
   });
 
   it('should shoot with the triple weapon with some cells out of bounds', () => {
-    service.gameState = GameState.playing;
+    service.gameState = GameState.PLAYING;
     service['visiblePlayerBoards'] = visiblePlayerBoards1();
     service['masterPlayerBoards'] = masterPlayerBoards1();
-    service['gameConfiguration'] = gameConfiguration1();
+    service.fleets = fleets1();
     service['gameArsenal'] = gameArsenal1();
+    service.players = players1();
     const targetedPlayer = guestPlayer1();
 
     jest
@@ -387,25 +396,19 @@ describe('GameInstanceService', () => {
     expect(
       service['gameArsenal'][targetedPlayer.id][1].ammunitionRemaining,
     ).toEqual(1);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].hit,
-    ).toHaveLength(0);
+    expect(service.fleets[targetedPlayer.id][0].hit).toHaveLength(0);
     expect(() =>
-      service.shoot(
-        targetedPlayer,
-        service['gameArsenal'][targetedPlayer.id][1],
-        [3, 1],
-      ),
+      service.shoot({
+        originCell: [3, 1],
+        targetedPlayerId: targetedPlayer.id,
+        weaponName: service['gameArsenal'][targetedPlayer.id][1].name,
+      }),
     ).not.toThrowError();
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].hit,
-    ).toEqual([
+    expect(service.fleets[targetedPlayer.id][0].hit).toEqual([
       [2, 1],
       [3, 1],
     ]);
-    expect(
-      service['gameConfiguration']['boats'][targetedPlayer.id][0].isSunk,
-    ).toEqual(false);
+    expect(service.fleets[targetedPlayer.id][0].isSunk).toEqual(false);
     expect(
       service['gameArsenal'][targetedPlayer.id][1].ammunitionRemaining,
     ).toEqual(0);
@@ -520,7 +523,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should end the turn', () => {
-    service['gameConfiguration'] = gameConfiguration1();
+    service['gameSettings'] = gameSettings1();
 
     const expectedTurn = {
       actionRemaining: 1,
@@ -553,14 +556,15 @@ describe('GameInstanceService', () => {
   });
 
   it('should return false because none fleet have been sunk', () => {
-    service['gameConfiguration'] = gameConfiguration1();
+    service['gameSettings'] = gameSettings1();
 
     expect(service['isGameOver']()).toEqual(false);
   });
 
   it('should return the end game recap because a fleet have been sunk', () => {
-    service['gameConfiguration'] = gameConfiguration1();
-    service['gameConfiguration'].boats['drakenline_0'] = [
+    service.fleets = fleets1();
+    service.players = players1();
+    service.fleets['drakenline_0'] = [
       validBoatPlacement3(),
       validBoatPlacement3(),
     ];
@@ -572,9 +576,10 @@ describe('GameInstanceService', () => {
   });
 
   it('should return the end game recap with 2 losers because a fleet have been sunk', () => {
-    service['gameConfiguration'] = gameConfiguration1();
-    service['gameConfiguration'].players.push(loggedPlayer1());
-    service['gameConfiguration'].boats['drakenline_0'] = [
+    service.fleets = fleets1();
+    service.players = players1();
+    service.players.push(loggedPlayer1());
+    service.fleets['drakenline_0'] = [
       validBoatPlacement3(),
       validBoatPlacement3(),
     ];
@@ -583,5 +588,43 @@ describe('GameInstanceService', () => {
       loser: [guestPlayer2(), loggedPlayer1()],
       winner: [guestPlayer1()],
     });
+  });
+
+  it('should get player by id', () => {
+    service.players = players1();
+
+    expect(service['getPlayerById']('drakenline_0')).toEqual(guestPlayer1());
+  });
+
+  it('should not get player by id', () => {
+    service.players = players1();
+
+    expect(() => service['getPlayerById']('baptiste')).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
+        message: GameEngineErrorMessages.PLAYER_NOT_FOUND,
+      }),
+    );
+  });
+
+  it('should get weapon by name', () => {
+    service['gameArsenal'] = gameArsenal1();
+
+    expect(service['getWeaponByName'](WeaponName.bomb, 'drakenline_0')).toEqual(
+      bomb(),
+    );
+  });
+
+  it('should not get weapon by name', () => {
+    service['gameArsenal'] = gameArsenal1();
+
+    expect(() =>
+      service['getWeaponByName'](WeaponName.drone, 'drakenline_0'),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.WEAPON_NOT_FOUND,
+        message: GameEngineErrorMessages.WEAPON_NOT_FOUND,
+      }),
+    );
   });
 });

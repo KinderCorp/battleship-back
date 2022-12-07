@@ -26,17 +26,17 @@ export default class ApiError {
 
   public static NotFoundEntity(entityName: string, message: unknown) {
     return new ApiError({
-      code: ApiErrorCodes.notFoundEntity,
+      code: ApiErrorCodes.NOT_FOUND_ENTITY,
       message,
-      title: `${ApiErrorMessages.notFoundEntity} : ${entityName}`,
+      title: `${ApiErrorMessages.NOT_FOUND_ENTITY} : ${entityName}`,
     });
   }
 
   public static InsertionFailed(entityName: string, message: unknown) {
     return new ApiError({
-      code: ApiErrorCodes.insertionFailed,
+      code: ApiErrorCodes.INSERTION_FAILED,
       message,
-      title: `${ApiErrorMessages.insertionFailed} ${entityName}`,
+      title: `${ApiErrorMessages.INSERTION_FAILED} ${entityName}`,
     });
   }
 
@@ -45,7 +45,7 @@ export default class ApiError {
     validationErrorMessage?: string,
   ): ApiError {
     return new ApiError({
-      code: ApiErrorCodes.wrongParams,
+      code: ApiErrorCodes.WRONG_PARAMS,
       message,
       title:
         validationErrorMessage ??

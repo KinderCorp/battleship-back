@@ -1,13 +1,15 @@
 import {
   GameArsenal,
   GameBoat,
-  GameConfiguration,
+  GameBoats,
   GameMode,
+  GamePlayer,
+  GameSettings,
   GameState,
   GameWeapon,
-  OneVersusOne,
   PlayerBoards,
   Turn,
+  Versus,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
@@ -201,24 +203,14 @@ export const loggedPlayer2: () => LoggedPlayer = () => {
   };
 };
 
-export const gameConfiguration1: () => GameConfiguration = () => {
-  const boat1 = validBoatPlacement1();
-  const boat2 = validBoatPlacement2();
-  const boat3 = validBoatPlacement3();
-  const guest1 = guestPlayer1();
-  const guest2 = guestPlayer2();
+export const gameSettings1: () => GameSettings = () => {
   const oneVersusOneWeapons = oneVersusOneWeapons1();
 
   return {
     boardDimensions: 10,
-    boats: {
-      drakenline_0: [boat1, boat3],
-      nonma_1: [boat1, boat2],
-    },
-    gameMode: GameMode.OneVersusOne,
+    gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,
-    players: [guest1, guest2],
-    state: GameState.waitingToStart,
+    state: GameState.WAITING_TO_START,
     timePerTurn: 60,
     weapons: oneVersusOneWeapons,
   };
@@ -262,7 +254,7 @@ export const visiblePlayerBoards2: () => PlayerBoards = () => {
   };
 };
 
-export const oneVersusOneWeapons1: () => OneVersusOne<WeaponType> = () => {
+export const oneVersusOneWeapons1: () => Versus<WeaponType> = () => {
   const bomb = gameWeaponBomb();
   const triple = gameWeaponTriple();
 
@@ -382,4 +374,22 @@ export const turn1: () => Turn = () => {
     isTurnOf: guestPlayer1(),
     nextPlayer: guestPlayer2(),
   };
+};
+
+export const fleets1: () => GameBoats = () => {
+  const boat1 = validBoatPlacement1();
+  const boat2 = validBoatPlacement2();
+  const boat3 = validBoatPlacement3();
+
+  return {
+    drakenline_0: [boat1, boat3],
+    nonma_1: [boat1, boat2],
+  };
+};
+
+export const players1: () => GamePlayer[] = () => {
+  const guest1 = guestPlayer1();
+  const guest2 = guestPlayer2();
+
+  return [guest1, guest2];
 };

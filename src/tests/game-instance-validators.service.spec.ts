@@ -69,8 +69,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.outOfBounds,
-        message: GameEngineErrorMessages.outOfBounds,
+        code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+        message: GameEngineErrorMessages.OUT_OF_BOUNDS,
       }),
     );
   });
@@ -83,8 +83,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       }),
     );
   });
@@ -97,8 +97,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       }),
     );
 
@@ -109,8 +109,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       }),
     );
 
@@ -121,8 +121,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       }),
     );
 
@@ -133,8 +133,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       }),
     );
 
@@ -145,8 +145,8 @@ describe('GameInstanceValidatorsService', () => {
       ),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoat,
-        message: GameEngineErrorMessages.invalidBoat,
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
       }),
     );
   });
@@ -172,8 +172,8 @@ describe('GameInstanceValidatorsService', () => {
       service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.outOfBounds,
-        message: GameEngineErrorMessages.outOfBounds,
+        code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+        message: GameEngineErrorMessages.OUT_OF_BOUNDS,
       }),
     );
   });
@@ -201,8 +201,8 @@ describe('GameInstanceValidatorsService', () => {
 
     expect(() => service.validatePlayers(players)).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.missingPlayer,
-        message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
+        code: GameEngineErrorCodes.MISSING_PLAYER,
+        message: `${GameEngineErrorMessages.INVALID_NUMBER_OF_PLAYERS}.${GameEngineErrorMessages.TWO_PLAYERS_REQUIRED}`,
       }),
     );
   });
@@ -212,8 +212,8 @@ describe('GameInstanceValidatorsService', () => {
 
     expect(() => service.validatePlayers(players)).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidNumberOfPlayers,
-        message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
+        code: GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS,
+        message: `${GameEngineErrorMessages.INVALID_NUMBER_OF_PLAYERS}.${GameEngineErrorMessages.TWO_PLAYERS_REQUIRED}`,
       }),
     );
   });
@@ -223,8 +223,8 @@ describe('GameInstanceValidatorsService', () => {
 
     expect(() => service.validatePlayers(players)).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidNumberOfPlayers,
-        message: `${GameEngineErrorMessages.invalidNumberOfPlayers}.${GameEngineErrorMessages.twoPlayersRequired}`,
+        code: GameEngineErrorCodes.INVALID_NUMBER_OF_PLAYERS,
+        message: `${GameEngineErrorMessages.INVALID_NUMBER_OF_PLAYERS}.${GameEngineErrorMessages.TWO_PLAYERS_REQUIRED}`,
       }),
     );
   });
@@ -236,8 +236,8 @@ describe('GameInstanceValidatorsService', () => {
   it('should invalidate board dimensions because too small', () => {
     expect(() => service.validateBoardDimensions(4)).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoardGameDimensions,
-        message: GameEngineErrorMessages.invalidBoardGameDimensions,
+        code: GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS,
+        message: GameEngineErrorMessages.INVALID_BOARD_GAME_DIMENSIONS,
       }),
     );
   });
@@ -245,8 +245,8 @@ describe('GameInstanceValidatorsService', () => {
   it('should invalidate board dimensions because too large', () => {
     expect(() => service.validateBoardDimensions(100)).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.invalidBoardGameDimensions,
-        message: GameEngineErrorMessages.invalidBoardGameDimensions,
+        code: GameEngineErrorCodes.INVALID_BOARD_GAME_DIMENSIONS,
+        message: GameEngineErrorMessages.INVALID_BOARD_GAME_DIMENSIONS,
       }),
     );
   });
@@ -259,8 +259,8 @@ describe('GameInstanceValidatorsService', () => {
       service.validateCellHasNotBeenHit(arrayOfCells, [1, 1]),
     ).toThrowError(
       new GameEngineError({
-        code: GameEngineErrorCodes.cellAlreadyHit,
-        message: GameEngineErrorMessages.cellAlreadyHit,
+        code: GameEngineErrorCodes.CELL_ALREADY_HIT,
+        message: GameEngineErrorMessages.CELL_ALREADY_HIT,
       }),
     );
   });
