@@ -15,4 +15,10 @@ export default class GameEngine {
   public get(instanceIdToFind: string) {
     return this.instances.find((instance) => instance.id === instanceIdToFind);
   }
+
+  public getInstanceByPlayerSocketId(playerSocketId: string) {
+    return this.instances.find((instance) =>
+      instance.players.find((player) => player.socketId === playerSocketId),
+    );
+  }
 }

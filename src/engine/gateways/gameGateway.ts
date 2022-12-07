@@ -92,12 +92,21 @@ export class GameGateway implements OnGatewayConnection {
   }
 
   public handleConnection(socket: Socket) {
+    this.socketServer
+      .to(socket.id)
+      .emit('connected', `Socket ${socket.id} connected`);
     this.logger.log(`Socket ${socket.id} connected`);
-    this.socketServer.emit('connected', `Socket ${socket.id} connected`);
   }
 
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
+    const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
+    if (instance) {
+      this.socketServer
+        .to(String(instance.id))
+        .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
+      this.destroySession(instance);
+    }
   }
 
   @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
@@ -134,6 +143,8 @@ export class GameGateway implements OnGatewayConnection {
       gameMode: GameMode.ONE_VERSUS_ONE,
       state: GameState.WAITING_TO_START,
     };
+
+    // getInstanceByPlayerSocketId;
 
     const instance = new GameInstanceService(
       baseGameSettings,
@@ -189,16 +200,23 @@ export class GameGateway implements OnGatewayConnection {
 
     socket.join(body.instanceId);
 
+    // DELETE it is just for test
     this.socketServer
       .to(String(body.instanceId))
-      .emit(SocketEventsEmitting.PLAYER_JOINED);
+      .emit(SocketEventsEmitting.PLAYER_JOINED, {
+        data: {
+          pseudo: 'Rival',
+          socketId: socket.id,
+        },
+        instanceId: body.instanceId,
+      });
     // After emitting user join event, we wait the game owner to click on "start placing boats" button
   }
 
   /**
    * When players can place their boats
    */
-  @SubscribeMessage(SocketEventsListening.PLAYER_READY_TO_PLACE_BOATS)
+  @SubscribeMessage(SocketEventsListening.PLAYERS_READY_TO_PLACE_BOATS)
   public onPlayersReadyToPlaceBoats(
     @MessageBody() body: RoomData<GameSettings>,
     @ConnectedSocket() socket: Socket,

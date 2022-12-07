@@ -106,7 +106,7 @@ export interface ShotRecap {
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',
   PLAYER_JOINING_GAME = 'player-joining-game',
-  PLAYER_READY_TO_PLACE_BOATS = 'player-ready-to-place-boats',
+  PLAYERS_READY_TO_PLACE_BOATS = 'players-ready-to-place-boats',
   SHOOT = 'shoot',
   START_GAME = 'start-game',
   VALIDATE_PLAYER_BOATS_PLACEMENT = 'validate-player-boats-placement',
@@ -134,6 +134,7 @@ export enum SocketEventsEmitting {
   GAME_CREATED = 'game-created',
   GAME_STARTED = 'game-started',
   ONE_PLAYER_HAS_PLACED_HIS_BOATS = 'one-player-has-placed-his-boats',
+  PLAYER_DISCONNECTED = 'player-disconnected',
   PLAYER_JOINED = 'player-joined',
   SHOT = 'shot',
   START_PLACING_BOATS = 'start-placing-boats',
