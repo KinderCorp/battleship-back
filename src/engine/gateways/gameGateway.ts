@@ -138,6 +138,18 @@ export class GameGateway implements OnGatewayConnection {
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
 
+    const existingInstance = this.gameEngine.getInstanceByPlayerSocketId(
+      socket.id,
+    );
+    console.log(existingInstance);
+
+    if (existingInstance) {
+      this.socketServer.to(socket.id).emit(SocketEventsEmitting.GAME_CREATED, {
+        instanceId: existingInstance.id,
+      });
+      return;
+    }
+
     const baseGameSettings: BaseGameSettings = {
       firstPlayer: body,
       gameMode: GameMode.ONE_VERSUS_ONE,
