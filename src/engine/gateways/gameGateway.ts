@@ -141,6 +141,7 @@ export class GameGateway implements OnGatewayConnection {
     const existingInstance = this.gameEngine.getInstanceByPlayerSocketId(
       socket.id,
     );
+    // eslint-disable-next-line no-console
     console.log(existingInstance);
 
     if (existingInstance) {
