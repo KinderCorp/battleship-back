@@ -133,6 +133,7 @@ export class GameGateway implements OnGatewayConnection {
 
     this.destroySession(instance);
   }
+
   /**
    * When a player click on "create game" button
    */
@@ -200,6 +201,15 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer
         .to(String(body.instanceId))
         .emit(SocketEventsEmitting.ERROR_GAME_IS_FULL);
+
+      return;
+    }
+
+    const socketsOfInstance = this.gameEngine.getInstanceSockets(instance);
+    if (socketsOfInstance.includes(socket.id)) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_PLAYER_ALREADY_JOINED);
 
       return;
     }

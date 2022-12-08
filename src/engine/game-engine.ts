@@ -25,4 +25,8 @@ export default class GameEngine {
   public getInstanceLength() {
     return this.instances.length;
   }
+
+  public getInstanceSockets(instance: GameInstanceService) {
+    return instance.players.map((player) => player.socketId);
+  }
 }

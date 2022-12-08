@@ -3,7 +3,7 @@ import { Level } from '@interfaces/level.interface';
 interface BasePlayer {
   id: string;
   pseudo: string;
-  socketId?: string; // TASK It's not optional - Update tests
+  socketId: string;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GuestPlayer extends BasePlayer {}
