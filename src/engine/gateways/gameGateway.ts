@@ -190,22 +190,22 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
-    if (
-      instance.players.length === 2 &&
-      instance.gameMode === GameMode.ONE_VERSUS_ONE
-    ) {
-      this.socketServer
-        .to(String(body.instanceId))
-        .emit(SocketEventsEmitting.ERROR_GAME_IS_FULL);
-
-      return;
-    }
-
     const socketsOfInstance = this.gameEngine.getInstanceSockets(instance);
     if (socketsOfInstance.includes(socket.id)) {
       this.socketServer
         .to(socket.id)
         .emit(SocketEventsEmitting.ERROR_PLAYER_ALREADY_JOINED);
+
+      return;
+    }
+
+    if (
+      instance.players.length === 2 &&
+      instance.gameMode === GameMode.ONE_VERSUS_ONE
+    ) {
+      this.socketServer
+        .to(String(socket.id))
+        .emit(SocketEventsEmitting.ERROR_GAME_IS_FULL);
 
       return;
     }
