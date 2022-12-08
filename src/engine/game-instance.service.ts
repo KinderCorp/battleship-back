@@ -226,13 +226,6 @@ export default class GameInstanceService {
     return player;
   }
 
-  // TEST this function
-  public getRivals(player: GamePlayer) {
-    return this.players.filter(
-      (instancePlayer) => instancePlayer.socketId !== player.socketId,
-    );
-  }
-
   private getShotCells(weapon: GameWeapon, originCell: Cell) {
     const [xOriginCell, yOriginCell] = originCell;
     const shotCells: Cell[] = [];
@@ -359,7 +352,6 @@ export default class GameInstanceService {
     };
 
     const shotCells = this.getShotCells(weapon, originCell);
-
     shotCells.forEach((shotCell) => {
       const hasCellBeenHit = this.doesCellContainABoat(
         targetedPlayer,

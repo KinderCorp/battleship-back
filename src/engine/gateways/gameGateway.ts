@@ -260,7 +260,7 @@ export class GameGateway implements OnGatewayConnection {
     }> = {
       data: {
         gameSettings: instance.gameSettings,
-        players: instance.getRivals(body.data),
+        players: instance.players,
       },
       instanceId: instance.id,
     };
