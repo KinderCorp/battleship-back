@@ -17,13 +17,13 @@ export default class GameEngine {
   }
 
   public getInstanceByPlayerSocketId(playerSocketId: string) {
+    if (!this.instances.length) {
+      return;
+    }
+
     return this.instances.find((instance) =>
       instance.players.find((player) => player.socketId === playerSocketId),
     );
-  }
-
-  public getInstanceLength() {
-    return this.instances.length;
   }
 
   public getInstanceSockets(instance: GameInstanceService) {

@@ -101,10 +101,6 @@ export class GameGateway implements OnGatewayConnection {
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
 
-    if (!this.gameEngine.getInstanceLength()) {
-      return;
-    }
-
     const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
     if (!instance) {
       return;
