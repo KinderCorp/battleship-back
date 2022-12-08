@@ -21,4 +21,8 @@ export default class GameEngine {
       instance.players.find((player) => player.socketId === playerSocketId),
     );
   }
+
+  public getInstanceLength() {
+    return this.instances.length;
+  }
 }

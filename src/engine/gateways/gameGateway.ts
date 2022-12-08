@@ -100,14 +100,23 @@ export class GameGateway implements OnGatewayConnection {
 
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
-    const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
-    if (instance) {
-      this.socketServer
-        .to(String(instance.id))
-        .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
-      this.destroySession(instance);
+
+    if (!this.gameEngine.getInstanceLength()) {
+      return;
     }
+
+    const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
+    if (!instance) {
+      return;
+    }
+
+    this.socketServer
+      .to(String(instance.id))
+      .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
+
+    this.destroySession(instance);
   }
+
   @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
   public onCloseRoom(
     @MessageBody() body: Room,
