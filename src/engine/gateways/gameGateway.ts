@@ -272,13 +272,11 @@ export class GameGateway implements OnGatewayConnection {
 
   /**
    * When players can place their boats
+   * Only the admin player can send this event
    */
   @SubscribeMessage(SocketEventsListening.PLAYERS_READY_TO_PLACE_BOATS)
-  public onPlayersReadyToPlaceBoats(
-    @MessageBody() body: RoomData<GameSettings>,
-    @ConnectedSocket() socket: Socket,
-  ): void {
-    const instance = this.gameEngine.get(body.instanceId);
+  public onPlayersReadyToPlaceBoats(@ConnectedSocket() socket: Socket): void {
+    const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
     if (!instance) {
       this.socketServer
         .to(socket.id)
@@ -287,18 +285,26 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
+    const player = instance.getPlayerByAnyId(socket.id);
+    if (!player.isAdmin) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_PLAYER_IS_NOT_ADMIN);
+      return;
+    }
+
     try {
-      instance.startPlacingBoats(body.data);
+      instance.startPlacingBoats(instance.gameSettings);
 
       this.socketServer
-        .to(String(body.instanceId))
+        .to(String(instance.id))
         .emit(SocketEventsEmitting.START_PLACING_BOATS);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const eventName = this.getErrorEventName(error['code'], instance);
 
-      this.socketServer.to(String(body.instanceId)).emit(eventName, error);
+      this.socketServer.to(String(instance.id)).emit(eventName, error);
     }
   }
 

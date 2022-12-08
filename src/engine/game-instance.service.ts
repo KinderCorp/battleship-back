@@ -192,6 +192,7 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
+  // TEST This function
   private getMaximumPlayers(gameMode: GameMode): MaxNumberOfPlayers {
     switch (gameMode) {
       case GameMode.ONE_VERSUS_ONE:
@@ -211,8 +212,13 @@ export default class GameInstanceService {
     return players[nextPlayerIndex] ?? players[0];
   }
 
-  private getPlayerById(playerId: GamePlayer['id']) {
-    const player = this.players.find((player) => player.id === playerId);
+  // TEST find with socketId
+  public getPlayerByAnyId(
+    playerAnyId: GamePlayer['id'] | GamePlayer['socketId'],
+  ) {
+    const player = this.players.find(
+      (player) => player.id === playerAnyId || player.socketId === playerAnyId,
+    );
 
     if (!player) {
       const errorKey = 'PLAYER_NOT_FOUND';
@@ -319,7 +325,7 @@ export default class GameInstanceService {
     }
 
     const weapon = this.getWeaponByName(weaponName, targetedPlayerId);
-    const targetedPlayer = this.getPlayerById(targetedPlayerId);
+    const targetedPlayer = this.getPlayerByAnyId(targetedPlayerId);
 
     if (weapon.ammunitionRemaining === 0) {
       const errorKey = 'NO_AMMUNITION_REMAINING';

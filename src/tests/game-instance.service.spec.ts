@@ -595,13 +595,13 @@ describe('GameInstanceService', () => {
   it('should get player by id', () => {
     service.players = players1();
 
-    expect(service['getPlayerById']('drakenline_0')).toEqual(guestPlayer1());
+    expect(service['getPlayerByAnyId']('drakenline_0')).toEqual(guestPlayer1());
   });
 
   it('should not get player by id', () => {
     service.players = players1();
 
-    expect(() => service['getPlayerById']('baptiste')).toThrowError(
+    expect(() => service['getPlayerByAnyId']('baptiste')).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
         message: GameEngineErrorMessages.PLAYER_NOT_FOUND,

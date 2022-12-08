@@ -127,6 +127,7 @@ export enum SocketEventsEmitting {
   ERROR_NO_AMMUNITION_REMAINING = 'error-no-ammunition-remaining',
   ERROR_OUT_OF_BOUNDS = 'error-out-of-bounds',
   ERROR_PLAYER_ALREADY_JOINED = 'error-player-already-joined',
+  ERROR_PLAYER_IS_NOT_ADMIN = 'error-player-is-not-admin',
   ERROR_PLAYER_NOT_FOUND = 'error-player-not-found',
   ERROR_UNABLE_TO_CREATE_GAME = 'error-unable-to-create-game',
   ERROR_UNKNOWN_SERVER = 'error-unknown-server',
