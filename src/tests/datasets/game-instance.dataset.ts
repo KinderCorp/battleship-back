@@ -5,11 +5,9 @@ import {
   GameMode,
   GamePlayer,
   GameSettings,
-  GameState,
   GameWeapon,
   PlayerBoards,
   Turn,
-  Versus,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
@@ -214,7 +212,6 @@ export const gameSettings1: () => GameSettings = () => {
     boardDimensions: 10,
     gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,
-    state: GameState.WAITING_TO_START,
     timePerTurn: 60,
     weapons: oneVersusOneWeapons,
   };
@@ -258,14 +255,8 @@ export const visiblePlayerBoards2: () => PlayerBoards = () => {
   };
 };
 
-export const oneVersusOneWeapons1: () => Versus<WeaponType> = () => {
-  const bomb = gameWeaponBomb();
-  const triple = gameWeaponTriple();
-
-  return {
-    drakenline_0: [bomb, triple],
-    nonma_1: [bomb, triple],
-  };
+export const oneVersusOneWeapons1: () => WeaponType[] = () => {
+  return [gameWeaponBomb(), gameWeaponTriple()];
 };
 
 const gameWeaponBomb: () => WeaponType = () => {

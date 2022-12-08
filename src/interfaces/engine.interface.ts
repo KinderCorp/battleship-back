@@ -31,7 +31,6 @@ export interface GameBoat {
 export interface BaseGameSettings {
   gameMode: GameMode;
   firstPlayer: GamePlayer;
-  state: GameState;
 }
 
 export interface GameBoats extends Versus<GameBoat> {
@@ -44,7 +43,7 @@ export type Versus<T> = {
 
 export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
   boardDimensions: number;
-  weapons: Versus<WeaponType>;
+  weapons: WeaponType[];
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
 }
@@ -142,3 +141,5 @@ export enum SocketEventsEmitting {
   SHOT = 'shot',
   START_PLACING_BOATS = 'start-placing-boats',
 }
+
+export type MaxNumberOfPlayers = 2;

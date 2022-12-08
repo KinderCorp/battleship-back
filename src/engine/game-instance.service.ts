@@ -1,4 +1,4 @@
-import * as radash from 'radash';
+import { draw, isEqual, uid } from 'radash';
 
 import {
   BaseGameSettings,
@@ -12,6 +12,7 @@ import {
   GameSettings,
   GameState,
   GameWeapon,
+  MaxNumberOfPlayers,
   PlayerBoards,
   PodiumRecap,
   ShootParameters,
@@ -28,12 +29,13 @@ import {
 } from '@interfaces/error.interface';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { WeaponName } from '@interfaces/weapon.interface';
 
 export default class GameInstanceService {
   private _gameState!: GameState;
   public readonly board: GameBoard = DEFAULT_BOARD_GAME;
   private gameArsenal: GameArsenal;
-  public gameSettings!: GameSettings;
+  public gameSettings: GameSettings;
   public fleets: GameBoats = {};
   private masterPlayerBoards!: PlayerBoards;
   public readonly gameMode!: GameMode;
@@ -41,20 +43,44 @@ export default class GameInstanceService {
   private visiblePlayerBoards!: PlayerBoards;
   public players: GamePlayer[] = [];
   public readonly id!: string;
+  public readonly maxNumberOfPlayers: MaxNumberOfPlayers;
 
   public constructor(
-    {
-      gameMode = GameMode.ONE_VERSUS_ONE,
-      firstPlayer,
-      state = GameState.WAITING_TO_RIVAL,
-    }: BaseGameSettings,
+    { gameMode = GameMode.ONE_VERSUS_ONE, firstPlayer }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
-    this.gameMode = gameMode;
-    this._gameState = state;
+    this._gameState = GameState.WAITING_TO_RIVAL;
+    this.maxNumberOfPlayers = this.getMaximumPlayers(gameMode);
+
     // TASK Check player validity before pushing to players
     this.players.push(firstPlayer);
-    this.id = radash.uid(GAME_INSTANCE_UID_LENGTH);
+    this.id = uid(GAME_INSTANCE_UID_LENGTH);
+
+    // TASK Make this dynamically
+    this.gameSettings = {
+      boardDimensions: 10,
+      gameMode: gameMode,
+      hasBoatsSafetyZone: false,
+      timePerTurn: 60,
+      weapons: [
+        {
+          damageArea: {
+            b: [],
+            bl: [],
+            br: [],
+            l: [],
+            o: [0, 0],
+            r: [],
+            t: [],
+            tl: [],
+            tr: [],
+          },
+          id: 1,
+          maxAmmunition: -1,
+          name: WeaponName.bomb,
+        },
+      ],
+    };
   }
 
   public get gameState(): GameState {
@@ -113,16 +139,16 @@ export default class GameInstanceService {
     return playerBoats.filter((boat) => !boat.isSunk);
   }
 
-  private generateGameArsenal(gameConfiguration: GameSettings) {
+  private generateGameArsenal(gameSettings: GameSettings) {
     const gameArsenal: GameArsenal = {};
 
-    Object.entries(gameConfiguration.weapons).forEach(([playerId, weapons]) => {
-      weapons.forEach((weapon) => {
-        if (!gameArsenal[playerId]) {
-          gameArsenal[playerId] = [];
+    gameSettings.weapons.forEach((weapon) => {
+      this.players.forEach((player) => {
+        if (!gameArsenal[player.id]) {
+          gameArsenal[player.id] = [];
         }
 
-        gameArsenal[playerId].push({
+        gameArsenal[player.id].push({
           ammunitionRemaining: weapon.maxAmmunition,
           damageArea: weapon.damageArea,
           name: weapon.name,
@@ -146,7 +172,7 @@ export default class GameInstanceService {
   }
 
   private generateTurns(players: typeof this.players): Turn {
-    const firstPlayer = radash.draw(players);
+    const firstPlayer = draw(players);
 
     return {
       actionRemaining: 1,
@@ -164,6 +190,19 @@ export default class GameInstanceService {
     });
 
     return playerBoards;
+  }
+
+  private getMaximumPlayers(gameMode: GameMode): MaxNumberOfPlayers {
+    switch (gameMode) {
+      case GameMode.ONE_VERSUS_ONE:
+        return 2;
+
+      default:
+        throw new GameEngineError({
+          code: GameEngineErrorCodes.INVALID_GAME_MODE,
+          message: GameEngineErrorMessages.INVALID_GAME_MODE,
+        });
+    }
   }
 
   private getNextPlayer(player: GamePlayer, players: typeof this.players) {
@@ -185,6 +224,13 @@ export default class GameInstanceService {
     }
 
     return player;
+  }
+
+  // TEST this function
+  public getRivals(player: GamePlayer) {
+    return this.players.filter(
+      (instancePlayer) => instancePlayer.socketId !== player.socketId,
+    );
   }
 
   private getShotCells(weapon: GameWeapon, originCell: Cell) {
@@ -410,7 +456,7 @@ export default class GameInstanceService {
       this.sortCells(arrayOfCell, 'x');
     });
 
-    if (radash.isEqual(targetedBoat.hit, targetedBoat.emplacement)) {
+    if (isEqual(targetedBoat.hit, targetedBoat.emplacement)) {
       targetedBoat.isSunk = true;
     }
   }

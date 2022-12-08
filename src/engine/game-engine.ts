@@ -1,4 +1,7 @@
+import { Socket } from 'socket.io';
+
 import GameInstanceService from '@engine/game-instance.service';
+import { GameState } from '@interfaces/engine.interface';
 
 export default class GameEngine {
   private instances: GameInstanceService[] = [];
@@ -28,5 +31,21 @@ export default class GameEngine {
 
   public getInstanceSockets(instance: GameInstanceService) {
     return instance.players.map((player) => player.socketId);
+  }
+
+  public validateSessionCanBeDestroyed(
+    instance: GameInstanceService,
+    socket: Socket,
+  ): boolean {
+    const player = instance.players.find(
+      (player) => player.socketId === socket.id,
+    );
+
+    return (
+      player.isAdmin ||
+      [GameState.WAITING_TO_RIVAL, GameState.WAITING_TO_START].includes(
+        instance.gameState,
+      )
+    );
   }
 }

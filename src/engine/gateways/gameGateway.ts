@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server as SocketServer } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { uid } from 'radash';
 
 import {
   BaseGameSettings,
@@ -98,6 +99,7 @@ export class GameGateway implements OnGatewayConnection {
     this.logger.log(`Socket ${socket.id} connected`);
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
 
@@ -109,6 +111,15 @@ export class GameGateway implements OnGatewayConnection {
     this.socketServer
       .to(String(instance.id))
       .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
+
+    const sessionCanBeDestroyed = this.gameEngine.validateSessionCanBeDestroyed(
+      instance,
+      socket,
+    );
+
+    if (!sessionCanBeDestroyed) {
+      return;
+    }
 
     this.destroySession(instance);
   }
@@ -148,9 +159,13 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     const baseGameSettings: BaseGameSettings = {
-      firstPlayer: body,
+      firstPlayer: {
+        id: body.id ?? uid(20),
+        isAdmin: true,
+        pseudo: body.pseudo,
+        socketId: socket.id,
+      },
       gameMode: GameMode.ONE_VERSUS_ONE,
-      state: GameState.WAITING_TO_START,
     };
 
     const instance = new GameInstanceService(
@@ -214,6 +229,10 @@ export class GameGateway implements OnGatewayConnection {
 
     instance.players.push(body.data);
 
+    if (instance.players.length === instance.maxNumberOfPlayers) {
+      instance.gameState = GameState.WAITING_TO_START;
+    }
+
     socket.join(body.instanceId);
 
     // Send to others players and not the sender that a player has joined
@@ -228,7 +247,7 @@ export class GameGateway implements OnGatewayConnection {
     }> = {
       data: {
         gameSettings: instance.gameSettings,
-        players: instance.players,
+        players: instance.getRivals(body.data),
       },
       instanceId: instance.id,
     };
@@ -237,6 +256,7 @@ export class GameGateway implements OnGatewayConnection {
       .to(String(socket.id))
       .emit(SocketEventsEmitting.GAME_INFORMATION, roomData);
   }
+
   /**
    * When players can place their boats
    */
@@ -268,6 +288,7 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
   }
+
   /**
    * When a player clicks on a cell to shoot
    * @param body contains the targetedPlayer, the weapon, and the origin cell (cell where the player has clicked)
@@ -325,6 +346,7 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
   }
+
   /**
    * When all boats have been validated and players are ready, we start the game
    * We check that everything's okay to start the game
@@ -362,6 +384,7 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
   }
+
   /**
    * When a player has placed all his boats
    * @Returns An error if boats are misplaced or send an ok message to continue

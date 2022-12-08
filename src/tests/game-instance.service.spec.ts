@@ -30,7 +30,7 @@ import { WeaponName } from '@interfaces/weapon.interface';
 const baseGameConfiguration = {
   firstPlayer: guestPlayer1(),
   gameMode: GameMode.ONE_VERSUS_ONE,
-  state: GameState.WAITING_TO_START,
+  state: GameState.WAITING_TO_RIVAL,
 };
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
@@ -56,8 +56,8 @@ describe('GameInstanceService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(service['gameMode']).toEqual(GameMode.ONE_VERSUS_ONE);
-    expect(service.gameState).toEqual(GameState.WAITING_TO_START);
+    expect(service.gameSettings.gameMode).toEqual(GameMode.ONE_VERSUS_ONE);
+    expect(service.gameState).toEqual(GameState.WAITING_TO_RIVAL);
   });
 
   it('should start the game', () => {
@@ -236,6 +236,8 @@ describe('GameInstanceService', () => {
   });
 
   it('should generate the game arsenal', () => {
+    service.players = players1();
+
     expect(service['generateGameArsenal'](gameSettings1())).toEqual(
       gameArsenal1(),
     );
