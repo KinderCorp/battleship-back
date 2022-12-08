@@ -9,7 +9,7 @@ export default class GameEngine {
 
   public destroy(instance: GameInstanceService): void {
     const index = this.instances.indexOf(instance);
-    delete this.instances[index];
+    this.instances.splice(index, 1);
   }
 
   public get(instanceIdToFind: string) {
