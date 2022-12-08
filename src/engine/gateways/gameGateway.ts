@@ -255,12 +255,12 @@ export class GameGateway implements OnGatewayConnection {
 
     // Send game information to the sender only
     const rivalRoomData: RoomData<{
-      gameSettings: GameSettings;
       players: GamePlayer[];
+      settings: GameSettings;
     }> = {
       data: {
-        gameSettings: instance.gameSettings,
         players: instance.players,
+        settings: instance.gameSettings,
       },
       instanceId: instance.id,
     };
