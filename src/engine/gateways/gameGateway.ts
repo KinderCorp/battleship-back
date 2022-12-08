@@ -108,7 +108,6 @@ export class GameGateway implements OnGatewayConnection {
       this.destroySession(instance);
     }
   }
-
   @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
   public onCloseRoom(
     @MessageBody() body: Room,
@@ -125,7 +124,6 @@ export class GameGateway implements OnGatewayConnection {
 
     this.destroySession(instance);
   }
-
   /**
    * When a player click on "create game" button
    */
@@ -138,16 +136,8 @@ export class GameGateway implements OnGatewayConnection {
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
 
-    const existingInstance = this.gameEngine.getInstanceByPlayerSocketId(
-      socket.id,
-    );
-    // eslint-disable-next-line no-console
-    console.log(existingInstance);
-
-    if (existingInstance) {
-      this.socketServer.to(socket.id).emit(SocketEventsEmitting.GAME_CREATED, {
-        instanceId: existingInstance.id,
-      });
+    const playerCanCreateInstance = this.validatePlayerCanJoinInstance(socket);
+    if (!playerCanCreateInstance) {
       return;
     }
 
@@ -157,20 +147,18 @@ export class GameGateway implements OnGatewayConnection {
       state: GameState.WAITING_TO_START,
     };
 
-    // getInstanceByPlayerSocketId;
-
     const instance = new GameInstanceService(
       baseGameSettings,
       this.gameInstanceValidators,
     );
 
-    const room: Room = {
-      instanceId: instance.id,
-    };
-
     this.gameEngine.addInstance(instance);
 
     socket.join(String(instance.id));
+
+    const room: Room = {
+      instanceId: instance.id,
+    };
 
     this.socketServer
       .to(socket.id)
@@ -213,19 +201,27 @@ export class GameGateway implements OnGatewayConnection {
 
     socket.join(body.instanceId);
 
-    // DELETE it is just for test
-    this.socketServer
-      .to(String(body.instanceId))
-      .emit(SocketEventsEmitting.PLAYER_JOINED, {
-        data: {
-          pseudo: 'Rival',
-          socketId: socket.id,
-        },
-        instanceId: body.instanceId,
-      });
-    // After emitting user join event, we wait the game owner to click on "start placing boats" button
-  }
+    // Send to others players and not the sender that a player has joined
+    socket.broadcast
+      .to(String(instance.id))
+      .emit(SocketEventsEmitting.PLAYER_JOINED, body.data);
 
+    // Send game information to the sender only
+    const roomData: RoomData<{
+      gameSettings: GameSettings;
+      players: GamePlayer[];
+    }> = {
+      data: {
+        gameSettings: instance.gameSettings,
+        players: instance.players,
+      },
+      instanceId: instance.id,
+    };
+
+    this.socketServer
+      .to(String(socket.id))
+      .emit(SocketEventsEmitting.GAME_INFORMATION, roomData);
+  }
   /**
    * When players can place their boats
    */
@@ -257,7 +253,6 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
   }
-
   /**
    * When a player clicks on a cell to shoot
    * @param body contains the targetedPlayer, the weapon, and the origin cell (cell where the player has clicked)
@@ -315,7 +310,6 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
   }
-
   /**
    * When all boats have been validated and players are ready, we start the game
    * We check that everything's okay to start the game
@@ -353,7 +347,6 @@ export class GameGateway implements OnGatewayConnection {
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
   }
-
   /**
    * When a player has placed all his boats
    * @Returns An error if boats are misplaced or send an ok message to continue
@@ -387,6 +380,7 @@ export class GameGateway implements OnGatewayConnection {
 
       let eventName: SocketEventsEmitting;
 
+      // TASK Rewrite this check to make it dynamic depending the amount of players
       switch (Object.keys(instance.fleets).length) {
         case 1:
           eventName = SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS;
@@ -409,6 +403,24 @@ export class GameGateway implements OnGatewayConnection {
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
+  }
+
+  private validatePlayerCanJoinInstance(socket: Socket) {
+    const existingInstance = this.gameEngine.getInstanceByPlayerSocketId(
+      socket.id,
+    );
+
+    if (!existingInstance) {
+      return true;
+    }
+
+    this.socketServer
+      .to(socket.id)
+      .emit(SocketEventsEmitting.GAME_ALREADY_CREATED, {
+        instanceId: existingInstance.id,
+      });
+
+    return false;
   }
 }
 

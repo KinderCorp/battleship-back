@@ -40,7 +40,7 @@ export default class GameInstanceService {
   public turn!: Turn;
   private visiblePlayerBoards!: PlayerBoards;
   public players: GamePlayer[] = [];
-  public readonly id: string;
+  public readonly id!: string;
 
   public constructor(
     {
