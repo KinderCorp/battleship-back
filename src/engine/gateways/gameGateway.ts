@@ -228,7 +228,14 @@ export class GameGateway implements OnGatewayConnection {
 
     // TASK Add verification of the player object (use class-validator)
 
-    instance.players.push(body.data);
+    const newPlayer: GamePlayer = {
+      id: body.data.id ?? uid(20),
+      isAdmin: false,
+      pseudo: body.data.pseudo,
+      socketId: socket.id,
+    };
+
+    instance.players.push(newPlayer);
 
     if (instance.players.length === instance.maxNumberOfPlayers) {
       instance.gameState = GameState.WAITING_TO_START;
@@ -236,13 +243,18 @@ export class GameGateway implements OnGatewayConnection {
 
     socket.join(body.instanceId);
 
+    const senderRoomData: RoomData<GamePlayer> = {
+      data: newPlayer,
+      instanceId: instance.id,
+    };
+
     // Send to others players and not the sender that a player has joined
     socket.broadcast
       .to(String(instance.id))
-      .emit(SocketEventsEmitting.PLAYER_JOINED, body);
+      .emit(SocketEventsEmitting.PLAYER_JOINED, senderRoomData);
 
     // Send game information to the sender only
-    const roomData: RoomData<{
+    const rivalRoomData: RoomData<{
       gameSettings: GameSettings;
       players: GamePlayer[];
     }> = {
@@ -255,7 +267,7 @@ export class GameGateway implements OnGatewayConnection {
 
     this.socketServer
       .to(String(socket.id))
-      .emit(SocketEventsEmitting.GAME_INFORMATION, roomData);
+      .emit(SocketEventsEmitting.GAME_INFORMATION, rivalRoomData);
   }
 
   /**
