@@ -219,7 +219,7 @@ export class GameGateway implements OnGatewayConnection {
     // Send to others players and not the sender that a player has joined
     socket.broadcast
       .to(String(instance.id))
-      .emit(SocketEventsEmitting.PLAYER_JOINED, body.data);
+      .emit(SocketEventsEmitting.PLAYER_JOINED, body);
 
     // Send game information to the sender only
     const roomData: RoomData<{
