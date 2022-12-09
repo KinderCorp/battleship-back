@@ -192,7 +192,6 @@ export default class GameInstanceService {
     return playerBoards;
   }
 
-  // TEST This function
   private getMaximumPlayers(gameMode: GameMode): MaxNumberOfPlayers {
     switch (gameMode) {
       case GameMode.ONE_VERSUS_ONE:
@@ -212,7 +211,6 @@ export default class GameInstanceService {
     return players[nextPlayerIndex] ?? players[0];
   }
 
-  // TEST find with socketId
   public getPlayerByAnyId(
     playerAnyId: GamePlayer['id'] | GamePlayer['socketId'],
   ) {

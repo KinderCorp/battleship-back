@@ -435,22 +435,10 @@ export class GameGateway implements OnGatewayConnection {
 
       instance.fleets[socket.id] = body.data;
 
-      let eventName: SocketEventsEmitting;
-
-      // TASK Rewrite this check to make it dynamic depending the amount of players
-      switch (Object.keys(instance.fleets).length) {
-        case 1:
-          eventName = SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS;
-          break;
-
-        case 2:
-          eventName = SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
-          break;
-
-        default:
-          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
-          break;
-      }
+      const eventName =
+        Object.keys(instance.fleets).length < instance.maxNumberOfPlayers
+          ? SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS
+          : SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
 
       this.socketServer.to(String(body.instanceId)).emit(eventName);
 

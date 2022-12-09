@@ -592,10 +592,13 @@ describe('GameInstanceService', () => {
     });
   });
 
-  it('should get player by id', () => {
+  it('should get player by any id', () => {
     service.players = players1();
 
     expect(service['getPlayerByAnyId']('drakenline_0')).toEqual(guestPlayer1());
+    expect(service['getPlayerByAnyId']('wFH34DKHHdQLlanXAAA2')).toEqual(
+      guestPlayer2(),
+    );
   });
 
   it('should not get player by id', () => {
@@ -626,6 +629,21 @@ describe('GameInstanceService', () => {
       new GameEngineError({
         code: GameEngineErrorCodes.WEAPON_NOT_FOUND,
         message: GameEngineErrorMessages.WEAPON_NOT_FOUND,
+      }),
+    );
+  });
+
+  it('should get the maximum amount of player', () => {
+    expect(service['getMaximumPlayers'](GameMode.ONE_VERSUS_ONE)).toEqual(2);
+  });
+
+  it('should not get the maximum amount of player', () => {
+    expect(() =>
+      service['getMaximumPlayers']('blabl' as GameMode),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.INVALID_GAME_MODE,
+        message: GameEngineErrorMessages.INVALID_GAME_MODE,
       }),
     );
   });
