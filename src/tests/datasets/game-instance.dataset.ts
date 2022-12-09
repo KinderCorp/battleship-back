@@ -166,7 +166,7 @@ export const guestPlayer1: () => GuestPlayer = () => {
     id: 'drakenline_0',
     isAdmin: false,
     pseudo: 'Drakenline',
-    socketId: 'wFH34DKHHdQLlanXAAA1',
+    socketId: 'wFH34DKHHdQAlanXAAA1',
   };
 };
 
@@ -175,7 +175,7 @@ export const guestPlayer2: () => GuestPlayer = () => {
     id: 'nonma_1',
     isAdmin: false,
     pseudo: 'Nonma',
-    socketId: 'wFH34DKHHdQLlanXAAA2',
+    socketId: 'wFH34DKHHdQAlanXAAA2',
   };
 };
 
@@ -189,7 +189,7 @@ export const loggedPlayer1: () => LoggedPlayer = () => {
       rank: 1,
     },
     pseudo: 'Nonma',
-    socketId: 'wFH34DKHHdQLlanXAAA3',
+    socketId: 'wFH34DKHHdQAlanXAAA3',
     xp: 110,
   };
 };
@@ -204,7 +204,7 @@ export const loggedPlayer2: () => LoggedPlayer = () => {
       rank: 1,
     },
     pseudo: 'Mwrlz',
-    socketId: 'wFH34DKHHdQLlanXAAA4',
+    socketId: 'wFH34DKHHdQAlanXAAA4',
     xp: 160,
   };
 };

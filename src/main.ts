@@ -36,7 +36,7 @@ async function bootstrap() {
 
   await app.listen(process.env.API_PORT, async () => {
     logger.log(`
-    ***********************************************************
+    *********************************************************** 
     |  🛫 The API is listening on ${await app.getUrl()}/api/  |
     |                          –––                            |
     |  📚 Swagger available on ${await app.getUrl()}/docs     |

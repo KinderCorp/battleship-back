@@ -7,8 +7,8 @@ type Enumerate<
 
 /**
  * Create a range of numbers
- * The first argument is include in the range
- * The second argument is exclude from the range
+ * The first argument is included in the range
+ * The second argument is excluded from the range
  */
 export type IntRange<F extends number, T extends number> = Exclude<
   Enumerate<T>,
