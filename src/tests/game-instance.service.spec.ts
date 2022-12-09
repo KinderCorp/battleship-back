@@ -30,7 +30,7 @@ import { WeaponName } from '@interfaces/weapon.interface';
 const baseGameConfiguration = {
   firstPlayer: guestPlayer1(),
   gameMode: GameMode.ONE_VERSUS_ONE,
-  state: GameState.WAITING_TO_START,
+  state: GameState.WAITING_TO_RIVAL,
 };
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
@@ -56,8 +56,8 @@ describe('GameInstanceService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(service['gameMode']).toEqual(GameMode.ONE_VERSUS_ONE);
-    expect(service.gameState).toEqual(GameState.WAITING_TO_START);
+    expect(service.gameSettings.gameMode).toEqual(GameMode.ONE_VERSUS_ONE);
+    expect(service.gameState).toEqual(GameState.WAITING_TO_RIVAL);
   });
 
   it('should start the game', () => {
@@ -236,6 +236,8 @@ describe('GameInstanceService', () => {
   });
 
   it('should generate the game arsenal', () => {
+    service.players = players1();
+
     expect(service['generateGameArsenal'](gameSettings1())).toEqual(
       gameArsenal1(),
     );
@@ -590,16 +592,19 @@ describe('GameInstanceService', () => {
     });
   });
 
-  it('should get player by id', () => {
+  it('should get player by any id', () => {
     service.players = players1();
 
-    expect(service['getPlayerById']('drakenline_0')).toEqual(guestPlayer1());
+    expect(service['getPlayerByAnyId']('drakenline_0')).toEqual(guestPlayer1());
+    expect(service['getPlayerByAnyId']('wFH34DKHHdQLlanXAAA2')).toEqual(
+      guestPlayer2(),
+    );
   });
 
   it('should not get player by id', () => {
     service.players = players1();
 
-    expect(() => service['getPlayerById']('baptiste')).toThrowError(
+    expect(() => service['getPlayerByAnyId']('baptiste')).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
         message: GameEngineErrorMessages.PLAYER_NOT_FOUND,
@@ -624,6 +629,21 @@ describe('GameInstanceService', () => {
       new GameEngineError({
         code: GameEngineErrorCodes.WEAPON_NOT_FOUND,
         message: GameEngineErrorMessages.WEAPON_NOT_FOUND,
+      }),
+    );
+  });
+
+  it('should get the maximum amount of player', () => {
+    expect(service['getMaximumPlayers'](GameMode.ONE_VERSUS_ONE)).toEqual(2);
+  });
+
+  it('should not get the maximum amount of player', () => {
+    expect(() =>
+      service['getMaximumPlayers']('blabl' as GameMode),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.INVALID_GAME_MODE,
+        message: GameEngineErrorMessages.INVALID_GAME_MODE,
       }),
     );
   });

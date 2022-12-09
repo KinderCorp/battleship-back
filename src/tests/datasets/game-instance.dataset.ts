@@ -5,11 +5,9 @@ import {
   GameMode,
   GamePlayer,
   GameSettings,
-  GameState,
   GameWeapon,
   PlayerBoards,
   Turn,
-  Versus,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
@@ -166,14 +164,18 @@ export const invalidBoatPlacement7: () => GameBoat = () => {
 export const guestPlayer1: () => GuestPlayer = () => {
   return {
     id: 'drakenline_0',
+    isAdmin: false,
     pseudo: 'Drakenline',
+    socketId: 'wFH34DKHHdQLlanXAAA1',
   };
 };
 
 export const guestPlayer2: () => GuestPlayer = () => {
   return {
     id: 'nonma_1',
+    isAdmin: false,
     pseudo: 'Nonma',
+    socketId: 'wFH34DKHHdQLlanXAAA2',
   };
 };
 
@@ -181,11 +183,13 @@ export const loggedPlayer1: () => LoggedPlayer = () => {
   return {
     character: 'assets/character/1.webp',
     id: '4fdec5bd-db9d-4134-bfba-c817af87c906',
+    isAdmin: false,
     level: {
       media: 'assets/level/1.webp',
       rank: 1,
     },
     pseudo: 'Nonma',
+    socketId: 'wFH34DKHHdQLlanXAAA3',
     xp: 110,
   };
 };
@@ -194,11 +198,13 @@ export const loggedPlayer2: () => LoggedPlayer = () => {
   return {
     character: 'assets/character/1.webp',
     id: 'ed100997-2d11-4e38-baf7-bef2021b484b',
+    isAdmin: false,
     level: {
       media: 'assets/level/1.webp',
       rank: 1,
     },
     pseudo: 'Mwrlz',
+    socketId: 'wFH34DKHHdQLlanXAAA4',
     xp: 160,
   };
 };
@@ -210,7 +216,6 @@ export const gameSettings1: () => GameSettings = () => {
     boardDimensions: 10,
     gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,
-    state: GameState.WAITING_TO_START,
     timePerTurn: 60,
     weapons: oneVersusOneWeapons,
   };
@@ -254,14 +259,8 @@ export const visiblePlayerBoards2: () => PlayerBoards = () => {
   };
 };
 
-export const oneVersusOneWeapons1: () => Versus<WeaponType> = () => {
-  const bomb = gameWeaponBomb();
-  const triple = gameWeaponTriple();
-
-  return {
-    drakenline_0: [bomb, triple],
-    nonma_1: [bomb, triple],
-  };
+export const oneVersusOneWeapons1: () => WeaponType[] = () => {
+  return [gameWeaponBomb(), gameWeaponTriple()];
 };
 
 const gameWeaponBomb: () => WeaponType = () => {

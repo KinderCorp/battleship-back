@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server as SocketServer } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { uid } from 'radash';
 
 import {
   BaseGameSettings,
@@ -92,12 +93,35 @@ export class GameGateway implements OnGatewayConnection {
   }
 
   public handleConnection(socket: Socket) {
+    this.socketServer
+      .to(socket.id)
+      .emit('connected', `Socket ${socket.id} connected`);
     this.logger.log(`Socket ${socket.id} connected`);
-    this.socketServer.emit('connected', `Socket ${socket.id} connected`);
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
+
+    const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
+    if (!instance) {
+      return;
+    }
+
+    this.socketServer
+      .to(String(instance.id))
+      .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
+
+    const sessionCanBeDestroyed = this.gameEngine.validateSessionCanBeDestroyed(
+      instance,
+      socket,
+    );
+
+    if (!sessionCanBeDestroyed) {
+      return;
+    }
+
+    this.destroySession(instance);
   }
 
   @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
@@ -129,10 +153,19 @@ export class GameGateway implements OnGatewayConnection {
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
 
+    const playerCanCreateInstance = this.validatePlayerCanJoinInstance(socket);
+    if (!playerCanCreateInstance) {
+      return;
+    }
+
     const baseGameSettings: BaseGameSettings = {
-      firstPlayer: body,
+      firstPlayer: {
+        id: body.id ?? uid(20),
+        isAdmin: true,
+        pseudo: body.pseudo,
+        socketId: socket.id,
+      },
       gameMode: GameMode.ONE_VERSUS_ONE,
-      state: GameState.WAITING_TO_START,
     };
 
     const instance = new GameInstanceService(
@@ -140,13 +173,14 @@ export class GameGateway implements OnGatewayConnection {
       this.gameInstanceValidators,
     );
 
-    const room: Room = {
-      instanceId: instance.id,
-    };
-
     this.gameEngine.addInstance(instance);
 
     socket.join(String(instance.id));
+
+    const room: RoomData<GamePlayer> = {
+      data: baseGameSettings.firstPlayer,
+      instanceId: instance.id,
+    };
 
     this.socketServer
       .to(socket.id)
@@ -172,12 +206,21 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
+    const socketsOfInstance = this.gameEngine.getInstanceSockets(instance);
+    if (socketsOfInstance.includes(socket.id)) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_PLAYER_ALREADY_JOINED);
+
+      return;
+    }
+
     if (
       instance.players.length === 2 &&
       instance.gameMode === GameMode.ONE_VERSUS_ONE
     ) {
       this.socketServer
-        .to(String(body.instanceId))
+        .to(String(socket.id))
         .emit(SocketEventsEmitting.ERROR_GAME_IS_FULL);
 
       return;
@@ -185,25 +228,55 @@ export class GameGateway implements OnGatewayConnection {
 
     // TASK Add verification of the player object (use class-validator)
 
-    instance.players.push(body.data);
+    const newPlayer: GamePlayer = {
+      id: body.data.id ?? uid(20),
+      isAdmin: false,
+      pseudo: body.data.pseudo,
+      socketId: socket.id,
+    };
+
+    instance.players.push(newPlayer);
+
+    if (instance.players.length === instance.maxNumberOfPlayers) {
+      instance.gameState = GameState.WAITING_TO_START;
+    }
 
     socket.join(body.instanceId);
 
+    const senderRoomData: RoomData<GamePlayer> = {
+      data: newPlayer,
+      instanceId: instance.id,
+    };
+
+    // Send to others players and not the sender that a player has joined
+    socket.broadcast
+      .to(String(instance.id))
+      .emit(SocketEventsEmitting.PLAYER_JOINED, senderRoomData);
+
+    // Send game information to the sender only
+    const rivalRoomData: RoomData<{
+      players: GamePlayer[];
+      settings: GameSettings;
+    }> = {
+      data: {
+        players: instance.players,
+        settings: instance.gameSettings,
+      },
+      instanceId: instance.id,
+    };
+
     this.socketServer
-      .to(String(body.instanceId))
-      .emit(SocketEventsEmitting.PLAYER_JOINED);
-    // After emitting user join event, we wait the game owner to click on "start placing boats" button
+      .to(String(socket.id))
+      .emit(SocketEventsEmitting.GAME_INFORMATION, rivalRoomData);
   }
 
   /**
    * When players can place their boats
+   * Only the admin player can send this event
    */
-  @SubscribeMessage(SocketEventsListening.PLAYER_READY_TO_PLACE_BOATS)
-  public onPlayersReadyToPlaceBoats(
-    @MessageBody() body: RoomData<GameSettings>,
-    @ConnectedSocket() socket: Socket,
-  ): void {
-    const instance = this.gameEngine.get(body.instanceId);
+  @SubscribeMessage(SocketEventsListening.PLAYERS_READY_TO_PLACE_BOATS)
+  public onPlayersReadyToPlaceBoats(@ConnectedSocket() socket: Socket): void {
+    const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
     if (!instance) {
       this.socketServer
         .to(socket.id)
@@ -212,18 +285,26 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
+    const player = instance.getPlayerByAnyId(socket.id);
+    if (!player.isAdmin) {
+      this.socketServer
+        .to(socket.id)
+        .emit(SocketEventsEmitting.ERROR_PLAYER_IS_NOT_ADMIN);
+      return;
+    }
+
     try {
-      instance.startPlacingBoats(body.data);
+      instance.startPlacingBoats(instance.gameSettings);
 
       this.socketServer
-        .to(String(body.instanceId))
+        .to(String(instance.id))
         .emit(SocketEventsEmitting.START_PLACING_BOATS);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const eventName = this.getErrorEventName(error['code'], instance);
 
-      this.socketServer.to(String(body.instanceId)).emit(eventName, error);
+      this.socketServer.to(String(instance.id)).emit(eventName, error);
     }
   }
 
@@ -354,21 +435,10 @@ export class GameGateway implements OnGatewayConnection {
 
       instance.fleets[socket.id] = body.data;
 
-      let eventName: SocketEventsEmitting;
-
-      switch (Object.keys(instance.fleets).length) {
-        case 1:
-          eventName = SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS;
-          break;
-
-        case 2:
-          eventName = SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
-          break;
-
-        default:
-          eventName = SocketEventsEmitting.ERROR_INVALID_NUMBER_OF_PLAYERS;
-          break;
-      }
+      const eventName =
+        Object.keys(instance.fleets).length < instance.maxNumberOfPlayers
+          ? SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS
+          : SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
 
       this.socketServer.to(String(body.instanceId)).emit(eventName);
 
@@ -378,6 +448,24 @@ export class GameGateway implements OnGatewayConnection {
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
+  }
+
+  private validatePlayerCanJoinInstance(socket: Socket) {
+    const existingInstance = this.gameEngine.getInstanceByPlayerSocketId(
+      socket.id,
+    );
+
+    if (!existingInstance) {
+      return true;
+    }
+
+    this.socketServer
+      .to(socket.id)
+      .emit(SocketEventsEmitting.GAME_ALREADY_CREATED, {
+        instanceId: existingInstance.id,
+      });
+
+    return false;
   }
 }
 
