@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoatName } from '@interfaces/boat.interface';
 
 import {
   bomb,
@@ -12,8 +13,8 @@ import {
   masterPlayerBoards1,
   players1,
   turn1,
-  validBoatPlacement1,
-  validBoatPlacement3,
+  validFrigate,
+  validRaft,
   visiblePlayerBoards1,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
@@ -175,7 +176,7 @@ describe('GameInstanceService', () => {
 
     expect(stillInGameBoats).toStrictEqual([
       {
-        boatName: 'destroyer',
+        boatName: BoatName.RAFT,
         emplacement: [
           [3, 1],
           [2, 1],
@@ -194,7 +195,7 @@ describe('GameInstanceService', () => {
     service['updatePlayerBoatObject'](targetedPlayer, [3, 1]);
 
     expect(service.fleets[targetedPlayer.id][0]).toStrictEqual({
-      boatName: 'destroyer',
+      boatName: BoatName.RAFT,
       emplacement: [
         [1, 1],
         [2, 1],
@@ -524,13 +525,13 @@ describe('GameInstanceService', () => {
   });
 
   it('should return true because the player fleet has been sunk', () => {
-    const playerFleet = [validBoatPlacement3(), validBoatPlacement3()];
+    const playerFleet = [validFrigate(), validFrigate()];
 
     expect(service['hasPlayerFleetBeenSunk'](playerFleet)).toEqual(true);
   });
 
   it('should return false because the player fleet has been sunk', () => {
-    const playerFleet = [validBoatPlacement1(), validBoatPlacement3()];
+    const playerFleet = [validRaft(), validFrigate()];
 
     expect(service['hasPlayerFleetBeenSunk'](playerFleet)).toEqual(false);
   });
@@ -544,10 +545,7 @@ describe('GameInstanceService', () => {
   it('should return the end game recap because a fleet have been sunk', () => {
     service.fleets = fleets1();
     service.players = players1();
-    service.fleets['drakenline_0'] = [
-      validBoatPlacement3(),
-      validBoatPlacement3(),
-    ];
+    service.fleets['drakenline_0'] = [validFrigate(), validFrigate()];
 
     expect(service['isGameOver']()).toEqual({
       loser: [guestPlayer2()],
@@ -559,10 +557,7 @@ describe('GameInstanceService', () => {
     service.fleets = fleets1();
     service.players = players1();
     service.players.push(loggedPlayer1());
-    service.fleets['drakenline_0'] = [
-      validBoatPlacement3(),
-      validBoatPlacement3(),
-    ];
+    service.fleets['drakenline_0'] = [validFrigate(), validFrigate()];
 
     expect(service['isGameOver']()).toEqual({
       loser: [guestPlayer2(), loggedPlayer1()],

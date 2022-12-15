@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import {
+  DEFAULT_AUTHORISED_FLEET,
+  DEFAULT_BOARD_GAME,
+} from '@shared/game-instance.const';
 import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
@@ -8,23 +12,24 @@ import {
 import {
   guestPlayer1,
   guestPlayer2,
-  invalidBoatPlacement1,
   invalidBoatPlacement2,
   invalidBoatPlacement3,
   invalidBoatPlacement4,
   invalidBoatPlacement5,
   invalidBoatPlacement6,
   invalidBoatPlacement7,
+  invalidGalley1,
   loggedPlayer1,
   loggedPlayer2,
-  validBoatPlacement1,
-  validBoatPlacement2,
-  validBoatPlacement4,
+  validGalley,
+  validPlayerFleet,
+  validRaft,
+  validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { shuffle } from 'radash';
 
 // npm run test:unit -- src/tests/game-instance-validators.service.spec.ts --watch
 
@@ -47,26 +52,17 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat placement', () => {
     expect(
-      service['validateBoatPlacement'](
-        DEFAULT_BOARD_GAME,
-        validBoatPlacement1(),
-      ),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, validRaft()),
     ).toEqual(true);
 
     expect(
-      service['validateBoatPlacement'](
-        DEFAULT_BOARD_GAME,
-        validBoatPlacement4(),
-      ),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, validShallop()),
     ).toEqual(true);
   });
 
   it('should throw an error for out of bounds placement', () => {
     expect(() =>
-      service['validateBoatPlacement'](
-        DEFAULT_BOARD_GAME,
-        invalidBoatPlacement1(),
-      ),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, invalidGalley1()),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.OUT_OF_BOUNDS,
@@ -152,24 +148,35 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate boats of players', () => {
+    jest.spyOn(service, 'validateAuthorisedFleet').mockReturnValue(true);
+
     const boatsPlacement: GameBoat[][] = [
-      [validBoatPlacement1(), validBoatPlacement2()],
-      [validBoatPlacement1(), validBoatPlacement2()],
+      [validRaft(), validGalley()],
+      [validRaft(), validGalley()],
     ];
 
     expect(
-      service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
+      service.validateBoatsOfPlayers(
+        DEFAULT_AUTHORISED_FLEET,
+        DEFAULT_BOARD_GAME,
+        boatsPlacement,
+      ),
     ).toEqual(true);
   });
 
   it('should throw an error for invalid boats of players', () => {
+    jest.spyOn(service, 'validateAuthorisedFleet').mockReturnValue(true);
     const boatsPlacement: GameBoat[][] = [
-      [validBoatPlacement1(), validBoatPlacement2()],
-      [validBoatPlacement1(), invalidBoatPlacement1()],
+      [validRaft(), validGalley()],
+      [validRaft(), invalidGalley1()],
     ];
 
     expect(() =>
-      service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
+      service.validateBoatsOfPlayers(
+        DEFAULT_AUTHORISED_FLEET,
+        DEFAULT_BOARD_GAME,
+        boatsPlacement,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.OUT_OF_BOUNDS,
@@ -275,5 +282,35 @@ describe('GameInstanceValidatorsService', () => {
     );
 
     expect(hasCellAlreadyBeenHit).toEqual(true);
+  });
+
+  it('should validate authorised fleet', () => {
+    expect(
+      service.validateAuthorisedFleet(
+        DEFAULT_AUTHORISED_FLEET,
+        validPlayerFleet(),
+      ),
+    ).toEqual(true);
+    expect(
+      service.validateAuthorisedFleet(
+        DEFAULT_AUTHORISED_FLEET,
+        shuffle(validPlayerFleet()),
+      ),
+    ).toEqual(true);
+  });
+
+  it('should not validate authorised fleet', () => {
+    const errorKey = 'UNAUTHORISED_FLEET';
+    expect(() =>
+      service.validateAuthorisedFleet(
+        DEFAULT_AUTHORISED_FLEET,
+        validPlayerFleet().slice(2),
+      ),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      }),
+    );
   });
 });

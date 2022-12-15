@@ -1,4 +1,5 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import { BoatName } from '@interfaces/boat.interface';
 import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
 import { WeaponType } from '@interfaces/weapon.interface';
@@ -42,10 +43,11 @@ export type Versus<T> = {
 };
 
 export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
+  authorisedFleet: AuthorisedFleet;
   boardDimensions: number;
-  weapons: WeaponType[];
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
+  weapons: WeaponType[];
 }
 
 export type GameBoard = [x: number[], y: number[]];
@@ -101,6 +103,16 @@ export interface ShotRecap {
   missCells: Cell[];
   weapon: GameWeapon;
 }
+
+export type AuthorisedFleet = {
+  authorisedNumber: number;
+  boat: { length: number; name: BoatName; src: string; width: number };
+}[];
+
+export type PlayersWithSettings = {
+  players: GamePlayer[];
+  settings: GameSettings;
+};
 
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',

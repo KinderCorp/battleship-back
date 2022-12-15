@@ -21,6 +21,7 @@ export enum GameEngineErrorCodes {
   NO_AMMUNITION_REMAINING = 'no-ammunition-remaining',
   OUT_OF_BOUNDS = 'out-of-bounds',
   PLAYER_NOT_FOUND = 'player-not-found',
+  UNAUTHORISED_FLEET = 'unauthorised-fleet',
   WEAPON_NOT_FOUND = 'weapon-not-found',
 }
 
@@ -36,5 +37,6 @@ export enum GameEngineErrorMessages {
   OUT_OF_BOUNDS = 'Out of bounds',
   PLAYER_NOT_FOUND = 'The player has not been found',
   TWO_PLAYERS_REQUIRED = 'A game requires 2 players',
+  UNAUTHORISED_FLEET = 'The fleet is unauthorised',
   WEAPON_NOT_FOUND = 'The weapon has not been found',
 }

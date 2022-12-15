@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { isEqual } from 'radash';
 
 import {
+  AuthorisedFleet,
   Cell,
   GameBoard,
   GameBoat,
@@ -8,13 +10,14 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
-import {
+  DEFAULT_AUTHORISED_FLEET,
   MAX_BOARD_GAME_DIMENSIONS,
   MIN_BOARD_GAME_DIMENSIONS,
 } from '@shared/game-instance.const';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
 import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()
@@ -22,6 +25,43 @@ export default class GameInstanceValidatorsService {
   public validateActionCanBeExecuted(turn: Turn) {
     if (turn.actionRemaining < 1) {
       const errorKey = 'NO_ACTION_REMAINING';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    return true;
+  }
+
+  public validateAuthorisedFleet(
+    authorisedFleet: AuthorisedFleet,
+    playerFleet: GameBoat[],
+  ) {
+    const expectedReducedAuthorisedFleet = authorisedFleet.reduce(
+      (acc, currentValue) => {
+        acc[currentValue.boat.name] = currentValue.authorisedNumber;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const actualReducedAuthorisedFleet = playerFleet.reduce(
+      (acc, currentValue) => {
+        const { boatName } = currentValue;
+        acc[boatName] = playerFleet.filter(
+          (boat) => boat.boatName === currentValue.boatName,
+        ).length;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    if (
+      !isEqual(expectedReducedAuthorisedFleet, actualReducedAuthorisedFleet)
+    ) {
+      const errorKey = 'UNAUTHORISED_FLEET';
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
@@ -92,20 +132,23 @@ export default class GameInstanceValidatorsService {
   }
 
   public validateBoatsOfOnePlayer(
+    authorisedFleet: AuthorisedFleet,
     gameBoard: GameBoard,
-    boatsPlacementOfThePlayer: GameBoat[],
+    playerFleet: GameBoat[],
   ) {
-    boatsPlacementOfThePlayer.forEach((boatPlacement) => {
+    playerFleet.forEach((boatPlacement) => {
       this.validateBoatPlacement(gameBoard, boatPlacement);
+      this.validateAuthorisedFleet(authorisedFleet, playerFleet);
     });
   }
 
   public validateBoatsOfPlayers(
+    authorisedFleet: AuthorisedFleet,
     gameBoard: GameBoard,
-    boatsPlacementOfAllPlayers: GameBoat[][],
+    playersFleet: GameBoat[][],
   ) {
-    boatsPlacementOfAllPlayers.forEach((boatPlacements) => {
-      this.validateBoatsOfOnePlayer(gameBoard, boatPlacements);
+    playersFleet.forEach((boatPlacements) => {
+      this.validateBoatsOfOnePlayer(authorisedFleet, gameBoard, boatPlacements);
     });
 
     return true;

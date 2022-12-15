@@ -20,6 +20,7 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
+  DEFAULT_AUTHORISED_FLEET,
   DEFAULT_BOARD_GAME,
   GAME_INSTANCE_UID_LENGTH,
 } from '@shared/game-instance.const';
@@ -58,6 +59,7 @@ export default class GameInstanceService {
 
     // TASK Make this dynamically
     this.gameSettings = {
+      authorisedFleet: DEFAULT_AUTHORISED_FLEET,
       boardDimensions: 10,
       gameMode: gameMode,
       hasBoatsSafetyZone: false,
@@ -395,6 +397,7 @@ export default class GameInstanceService {
 
     const boatsOfPlayers = Object.values(this.fleets);
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
+      this.gameSettings.authorisedFleet,
       this.board,
       boatsOfPlayers,
     );
