@@ -40,5 +40,5 @@ export class CreateWeaponDto implements CreateDtoInterface {
   })
   @IsNotEmpty()
   @IsObject()
-  public damage!: DamageMatrix;
+  public damageArea!: DamageMatrix;
 }

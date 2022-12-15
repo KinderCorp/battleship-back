@@ -66,17 +66,7 @@ export default class GameInstanceService {
       timePerTurn: 60,
       weapons: [
         {
-          damageArea: {
-            b: [],
-            bl: [],
-            br: [],
-            l: [],
-            o: [0, 0],
-            r: [],
-            t: [],
-            tl: [],
-            tr: [],
-          },
+          damageArea: [[0, 0]],
           id: 1,
           maxAmmunition: -1,
           name: WeaponName.BOMB,
