@@ -70,9 +70,9 @@ export const validShallop: () => GameBoat = () => {
   };
 };
 
-export const invalidBoatPlacement1: () => GameBoat = () => {
+export const invalidGalley1: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
+    boatName: BoatName.GALLEY,
     emplacement: [
       [11, 3],
       [2, 4],

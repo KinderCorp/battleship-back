@@ -8,13 +8,13 @@ import {
 import {
   guestPlayer1,
   guestPlayer2,
-  invalidBoatPlacement1,
   invalidBoatPlacement2,
   invalidBoatPlacement3,
   invalidBoatPlacement4,
   invalidBoatPlacement5,
   invalidBoatPlacement6,
   invalidBoatPlacement7,
+  invalidGalley1,
   loggedPlayer1,
   loggedPlayer2,
   validGalley,
@@ -59,10 +59,7 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should throw an error for out of bounds placement', () => {
     expect(() =>
-      service['validateBoatPlacement'](
-        DEFAULT_BOARD_GAME,
-        invalidBoatPlacement1(),
-      ),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, invalidGalley1()),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.OUT_OF_BOUNDS,
@@ -148,6 +145,8 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate boats of players', () => {
+    jest.spyOn(service, 'validateAuthorisedFleet').mockReturnValue(true);
+
     const boatsPlacement: GameBoat[][] = [
       [validRaft(), validGalley()],
       [validRaft(), validGalley()],
@@ -159,9 +158,10 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should throw an error for invalid boats of players', () => {
+    jest.spyOn(service, 'validateAuthorisedFleet').mockReturnValue(true);
     const boatsPlacement: GameBoat[][] = [
       [validRaft(), validGalley()],
-      [validRaft(), invalidBoatPlacement1()],
+      [validRaft(), invalidGalley1()],
     ];
 
     expect(() =>
