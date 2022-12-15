@@ -15,9 +15,9 @@ export const GAME_INSTANCE_UID_LENGTH = 20;
  * INFO This const is temporary
  * Remove this const when Api calls are done
  */
-export const DEFAULT_AUTHORIZED_FLEET = [
+export const DEFAULT_AUTHORISED_FLEET = [
   {
-    authorizedNumber: 4,
+    authorisedNumber: 4,
     boat: {
       length: 1,
       name: BoatName.RAFT,
@@ -26,7 +26,7 @@ export const DEFAULT_AUTHORIZED_FLEET = [
     },
   },
   {
-    authorizedNumber: 3,
+    authorisedNumber: 3,
     boat: {
       length: 2,
       name: BoatName.SHALLOP,
@@ -35,7 +35,7 @@ export const DEFAULT_AUTHORIZED_FLEET = [
     },
   },
   {
-    authorizedNumber: 2,
+    authorisedNumber: 2,
     boat: {
       length: 3,
       name: BoatName.FRIGATE,
@@ -44,7 +44,7 @@ export const DEFAULT_AUTHORIZED_FLEET = [
     },
   },
   {
-    authorizedNumber: 1,
+    authorisedNumber: 1,
     boat: {
       length: 4,
       name: BoatName.GALLEY,

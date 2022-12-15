@@ -12,7 +12,7 @@ import {
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
 import { BoatName } from '@interfaces/boat.interface';
-import { DEFAULT_AUTHORIZED_FLEET } from '@shared/game-instance.const';
+import { DEFAULT_AUTHORISED_FLEET } from '@shared/game-instance.const';
 
 // INFO Datasets must be functions to ensure that the values don't mutate
 export const validRaft: () => GameBoat = () => {
@@ -212,7 +212,7 @@ export const gameSettings1: () => GameSettings = () => {
   const oneVersusOneWeapons = oneVersusOneWeapons1();
 
   return {
-    authorisedFleet: DEFAULT_AUTHORIZED_FLEET,
+    authorisedFleet: DEFAULT_AUTHORISED_FLEET,
     boardDimensions: 10,
     gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,

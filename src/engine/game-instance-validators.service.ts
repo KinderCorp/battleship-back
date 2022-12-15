@@ -9,7 +9,7 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
-  DEFAULT_AUTHORIZED_FLEET,
+  DEFAULT_AUTHORISED_FLEET,
   MAX_BOARD_GAME_DIMENSIONS,
   MIN_BOARD_GAME_DIMENSIONS,
 } from '@shared/game-instance.const';
@@ -35,9 +35,9 @@ export default class GameInstanceValidatorsService {
   }
 
   public validateAuthorisedFleet(playerFleet: GameBoat[]) {
-    const expectedReducedAuthorisedFleet = DEFAULT_AUTHORIZED_FLEET.reduce(
+    const expectedReducedAuthorisedFleet = DEFAULT_AUTHORISED_FLEET.reduce(
       (acc, currentValue) => {
-        acc[currentValue.boat.name] = currentValue.authorizedNumber;
+        acc[currentValue.boat.name] = currentValue.authorisedNumber;
         return acc;
       },
       {} as Record<string, number>,
