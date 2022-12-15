@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import {
+  DEFAULT_AUTHORISED_FLEET,
+  DEFAULT_BOARD_GAME,
+} from '@shared/game-instance.const';
 import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
@@ -23,7 +27,6 @@ import {
   validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { shuffle } from 'radash';
@@ -153,7 +156,11 @@ describe('GameInstanceValidatorsService', () => {
     ];
 
     expect(
-      service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
+      service.validateBoatsOfPlayers(
+        DEFAULT_AUTHORISED_FLEET,
+        DEFAULT_BOARD_GAME,
+        boatsPlacement,
+      ),
     ).toEqual(true);
   });
 
@@ -165,7 +172,11 @@ describe('GameInstanceValidatorsService', () => {
     ];
 
     expect(() =>
-      service.validateBoatsOfPlayers(DEFAULT_BOARD_GAME, boatsPlacement),
+      service.validateBoatsOfPlayers(
+        DEFAULT_AUTHORISED_FLEET,
+        DEFAULT_BOARD_GAME,
+        boatsPlacement,
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.OUT_OF_BOUNDS,
@@ -274,16 +285,27 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate authorised fleet', () => {
-    expect(service.validateAuthorisedFleet(validPlayerFleet())).toEqual(true);
     expect(
-      service.validateAuthorisedFleet(shuffle(validPlayerFleet())),
+      service.validateAuthorisedFleet(
+        DEFAULT_AUTHORISED_FLEET,
+        validPlayerFleet(),
+      ),
+    ).toEqual(true);
+    expect(
+      service.validateAuthorisedFleet(
+        DEFAULT_AUTHORISED_FLEET,
+        shuffle(validPlayerFleet()),
+      ),
     ).toEqual(true);
   });
 
   it('should not validate authorised fleet', () => {
     const errorKey = 'UNAUTHORISED_FLEET';
     expect(() =>
-      service.validateAuthorisedFleet(validPlayerFleet().slice(2)),
+      service.validateAuthorisedFleet(
+        DEFAULT_AUTHORISED_FLEET,
+        validPlayerFleet().slice(2),
+      ),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes[errorKey],

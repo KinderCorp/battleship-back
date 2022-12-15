@@ -397,6 +397,7 @@ export default class GameInstanceService {
 
     const boatsOfPlayers = Object.values(this.fleets);
     this.gameInstanceValidatorsService.validateBoatsOfPlayers(
+      this.gameSettings.authorisedFleet,
       this.board,
       boatsOfPlayers,
     );

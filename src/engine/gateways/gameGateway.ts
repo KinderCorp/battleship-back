@@ -435,6 +435,7 @@ export class GameGateway implements OnGatewayConnection {
 
     try {
       this.gameInstanceValidators.validateBoatsOfOnePlayer(
+        instance.gameSettings.authorisedFleet,
         instance.board,
         body.data,
       );

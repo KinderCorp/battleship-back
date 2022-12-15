@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { isEqual } from 'radash';
 
 import {
+  AuthorisedFleet,
   Cell,
   GameBoard,
   GameBoat,
@@ -34,8 +35,11 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  public validateAuthorisedFleet(playerFleet: GameBoat[]) {
-    const expectedReducedAuthorisedFleet = DEFAULT_AUTHORISED_FLEET.reduce(
+  public validateAuthorisedFleet(
+    authorisedFleet: AuthorisedFleet,
+    playerFleet: GameBoat[],
+  ) {
+    const expectedReducedAuthorisedFleet = authorisedFleet.reduce(
       (acc, currentValue) => {
         acc[currentValue.boat.name] = currentValue.authorisedNumber;
         return acc;
@@ -128,21 +132,23 @@ export default class GameInstanceValidatorsService {
   }
 
   public validateBoatsOfOnePlayer(
+    authorisedFleet: AuthorisedFleet,
     gameBoard: GameBoard,
     playerFleet: GameBoat[],
   ) {
     playerFleet.forEach((boatPlacement) => {
       this.validateBoatPlacement(gameBoard, boatPlacement);
-      this.validateAuthorisedFleet(playerFleet);
+      this.validateAuthorisedFleet(authorisedFleet, playerFleet);
     });
   }
 
   public validateBoatsOfPlayers(
+    authorisedFleet: AuthorisedFleet,
     gameBoard: GameBoard,
     playersFleet: GameBoat[][],
   ) {
     playersFleet.forEach((boatPlacements) => {
-      this.validateBoatsOfOnePlayer(gameBoard, boatPlacements);
+      this.validateBoatsOfOnePlayer(authorisedFleet, gameBoard, boatPlacements);
     });
 
     return true;
