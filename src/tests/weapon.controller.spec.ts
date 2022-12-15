@@ -25,17 +25,7 @@ describe('WeaponController', () => {
 
   it('should insert a weapon', async () => {
     const weaponToInsert: CreateWeaponDto = {
-      damage: {
-        b: [],
-        bl: [],
-        br: [],
-        l: [],
-        o: [],
-        r: [],
-        t: [],
-        tl: [],
-        tr: [],
-      },
+      damageArea: [],
       maxAmmunition: -1,
       name: WeaponName.BOMB,
       requiredLevel: 1,

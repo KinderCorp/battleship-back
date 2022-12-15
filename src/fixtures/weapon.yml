@@ -3,43 +3,30 @@ items:
   weapon1:
     name: 'bomb'
     requiredLevel: '@level1'
-    damageArea:
-      { b: [], bl: [], br: [], l: [], m: [0, 0], r: [], t: [], tl: [], tr: [] }
+    damageArea: [ [ 0, 0 ] ]
   weapon2:
     name: 'triple'
     requiredLevel: '@level2'
     maxAmmunition: '2'
-    damageArea:
-      {
-        b: [1, 0],
-        bl: [],
-        br: [],
-        l: [],
-        m: [0, 0],
-        r: [],
-        t: [-1, 0],
-        tl: [],
-        tr: [],
-      }
+    damageArea: [ [ 1, 0 ],
+                  [ 0, 0 ],
+                  [ -1, 0 ], ]
   weapon3:
     name: 'drone'
     requiredLevel: '@level2'
     maxAmmunition: '2'
-    damageArea:
-      { b: [], bl: [], br: [], l: [], m: [], r: [], t: [], tl: [], tr: [] }
+    damageArea: [ ]
   weapon4:
     name: 'nuclear'
     requiredLevel: '@level3'
     maxAmmunition: '1'
-    damageArea:
-      {
-        b: [1, 0],
-        bl: [1, -1],
-        br: [1, 1],
-        l: [0, -1],
-        m: [0, 0],
-        r: [0, 1],
-        t: [-1, 0],
-        tl: [-1, -1],
-        tr: [-1, 1],
-      }
+    damageArea: [ [ 1, 0 ],
+                  [ 1, -1 ],
+                  [ 1, 1 ],
+                  [ 0, -1 ],
+                  [ 0, 0 ],
+                  [ 0, 1 ],
+                  [ -1, 0 ],
+                  [ -1, -1 ],
+                  [ -1, 1 ], ]
+

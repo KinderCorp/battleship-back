@@ -10,14 +10,13 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
-  DEFAULT_AUTHORISED_FLEET,
-  MAX_BOARD_GAME_DIMENSIONS,
-  MIN_BOARD_GAME_DIMENSIONS,
-} from '@shared/game-instance.const';
-import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
+import {
+  MAX_BOARD_GAME_DIMENSIONS,
+  MIN_BOARD_GAME_DIMENSIONS,
+} from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()

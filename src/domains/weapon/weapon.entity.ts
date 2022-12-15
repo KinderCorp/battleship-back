@@ -34,55 +34,6 @@ export default class Weapon implements WeaponType {
   @Column({ default: -1, type: 'integer' })
   public maxAmmunition: number;
 
-  // TASK Update the weapon damage to be just an array of cell
   @Column('json')
   public damageArea: DamageMatrix;
 }
-
-// const regularDamages = {
-//     b: [],// Bottom
-//     bl: [],// Bottom left
-//     br: [],// Bottom right
-//     l: [],// Left
-//     o: [0, 0],// Origin - where the player click/touch
-//     r: [],// Right
-//     t: [],// Top
-//     tl: [],// Top left
-//     tr: []// Top right
-//   }
-
-//   const nuclearDamages = {
-//     b: [1, 0], // Bottom
-//     bl: [1, -1], // Bottom left
-//     br: [1, 1], // Bottom right
-//     l: [0, -1], // Left
-//     o: [0, 0], // Origin - where the player click/touch
-//     r: [0, 1], // Right
-//     t: [-1, 0], // Top
-//     tl: [-1, -1], // Top left
-//     tr: [-1, 1], // Top right
-//   }
-
-//   const tripleDamages = {
-//     b: [1, 0], // Bottom
-//     bl: [], // Bottom left
-//     br: [], // Bottom right
-//     l: [], // Left
-//     o: [0, 0], // Origin - where the player click/touch
-//     r: [], // Right
-//     t: [-1, 0], // Top
-//     tl: [], // Top left
-//     tr: [], // Top right
-//   }
-
-// const droneDamages = {
-//   b: [],// Bottom
-//   bl: [],// Bottom left
-//   br: [],// Bottom right
-//   l: [],// Left
-//   o: [],// Origin - where the player click/touch
-//   r: [],// Right
-//   t: [],// Top
-//   tl: [],// Top left
-//   tr: []// Top right
-// }

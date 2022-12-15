@@ -265,17 +265,7 @@ export const oneVersusOneWeapons1: () => WeaponType[] = () => {
 
 const gameWeaponBomb: () => WeaponType = () => {
   return {
-    damageArea: {
-      b: [],
-      bl: [],
-      br: [],
-      l: [],
-      o: [0, 0],
-      r: [],
-      t: [],
-      tl: [],
-      tr: [],
-    },
+    damageArea: [[0, 0]],
     id: 1,
     maxAmmunition: -1,
     name: WeaponName.BOMB,
@@ -285,17 +275,12 @@ const gameWeaponBomb: () => WeaponType = () => {
 
 const gameWeaponTriple: () => WeaponType = () => {
   return {
-    damageArea: {
-      b: [1, 0],
-      bl: [],
-      br: [],
-      l: [],
-      o: [0, 0],
-      r: [],
-      t: [-1, 0],
-      tl: [],
-      tr: [],
-    },
+    damageArea: [
+      [1, 0],
+      [0, 0],
+      [-1, 0],
+    ],
+
     id: 2,
     maxAmmunition: 1,
     name: WeaponName.TRIPLE,
@@ -316,17 +301,7 @@ export const gameArsenal1: () => GameArsenal = () => {
 export const bomb: () => GameWeapon = () => {
   return {
     ammunitionRemaining: -1,
-    damageArea: {
-      b: [],
-      bl: [],
-      br: [],
-      l: [],
-      o: [0, 0],
-      r: [],
-      t: [],
-      tl: [],
-      tr: [],
-    },
+    damageArea: [[0, 0]],
     name: WeaponName.BOMB,
   };
 };
@@ -334,17 +309,16 @@ export const bomb: () => GameWeapon = () => {
 export const fakeWeapon: () => GameWeapon = () => {
   return {
     ammunitionRemaining: -1,
-    damageArea: {
-      b: [1, -1],
-      bl: [0, 0],
-      br: [2, 4],
-      l: [0, 1],
-      o: [],
-      r: [1, 0],
-      t: [1, 1],
-      tl: [-1, 1],
-      tr: [],
-    },
+    damageArea: [
+      [1, -1],
+      [0, 0],
+      [2, 4],
+      [0, 1],
+      [1, 0],
+      [1, 1],
+      [-1, 1],
+    ],
+
     name: WeaponName.BOMB,
   };
 };
@@ -352,17 +326,11 @@ export const fakeWeapon: () => GameWeapon = () => {
 const triple1: () => GameWeapon = () => {
   return {
     ammunitionRemaining: 1,
-    damageArea: {
-      b: [1, 0],
-      bl: [],
-      br: [],
-      l: [],
-      o: [0, 0],
-      r: [],
-      t: [-1, 0],
-      tl: [],
-      tr: [],
-    },
+    damageArea: [
+      [1, 0],
+      [0, 0],
+      [-1, 0],
+    ],
     name: WeaponName.TRIPLE,
   };
 };

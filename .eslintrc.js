@@ -25,6 +25,7 @@ module.exports = {
         },
       },
     ],
+    '@typescript-eslint/no-unused-vars': 'error',
     'default-param-last': ['error'],
     'import/no-import-module-exports': 'error',
     'no-console': ['error'],
