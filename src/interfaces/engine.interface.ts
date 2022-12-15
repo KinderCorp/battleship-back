@@ -109,6 +109,11 @@ export type AuthorisedFleet = {
   boat: { length: number; name: BoatName; src: string; width: number };
 }[];
 
+export type PlayersWithSettings = {
+  players: GamePlayer[];
+  settings: GameSettings;
+};
+
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',
   PLAYER_JOINING_GAME = 'player-joining-game',

@@ -16,8 +16,8 @@ import {
   GameBoat,
   GameMode,
   GamePlayer,
-  GameSettings,
   GameState,
+  PlayersWithSettings,
   Room,
   RoomData,
   ShootParameters,
@@ -177,10 +177,7 @@ export class GameGateway implements OnGatewayConnection {
 
     socket.join(String(instance.id));
 
-    const room: RoomData<{
-      players: GamePlayer[];
-      settings: GameSettings;
-    }> = {
+    const room: RoomData<PlayersWithSettings> = {
       data: {
         players: [baseGameSettings.firstPlayer],
         settings: instance.gameSettings,
@@ -260,10 +257,7 @@ export class GameGateway implements OnGatewayConnection {
       .emit(SocketEventsEmitting.PLAYER_JOINED, senderRoomData);
 
     // Send game information to the sender only
-    const rivalRoomData: RoomData<{
-      players: GamePlayer[];
-      settings: GameSettings;
-    }> = {
+    const rivalRoomData: RoomData<PlayersWithSettings> = {
       data: {
         players: instance.players,
         settings: instance.gameSettings,
