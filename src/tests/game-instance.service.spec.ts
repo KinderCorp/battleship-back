@@ -593,7 +593,7 @@ describe('GameInstanceService', () => {
   it('should get weapon by name', () => {
     service['gameArsenal'] = gameArsenal1();
 
-    expect(service['getWeaponByName'](WeaponName.bomb, 'drakenline_0')).toEqual(
+    expect(service['getWeaponByName'](WeaponName.BOMB, 'drakenline_0')).toEqual(
       bomb(),
     );
   });
@@ -602,7 +602,7 @@ describe('GameInstanceService', () => {
     service['gameArsenal'] = gameArsenal1();
 
     expect(() =>
-      service['getWeaponByName'](WeaponName.drone, 'drakenline_0'),
+      service['getWeaponByName'](WeaponName.DRONE, 'drakenline_0'),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.WEAPON_NOT_FOUND,

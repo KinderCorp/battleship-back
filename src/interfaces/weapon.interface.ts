@@ -13,10 +13,10 @@ export interface DamageMatrix {
 }
 
 export enum WeaponName {
-  bomb = 'BOMB',
-  drone = 'DRONE',
-  nuclear = 'NUCLEAR',
-  triple = 'TRIPLE',
+  BOMB = 'bomb',
+  DRONE = 'drone',
+  NUCLEAR = 'nuclear',
+  TRIPLE = 'triple',
 }
 
 export interface WeaponType {
