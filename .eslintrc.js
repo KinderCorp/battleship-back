@@ -25,9 +25,8 @@ module.exports = {
         },
       },
     ],
-    'default-param-last': ['warn'],
-    'import/no-cycle': 0,
-    'import/no-import-module-exports': 'warn',
+    'default-param-last': ['error'],
+    'import/no-import-module-exports': 'error',
     'no-console': ['error'],
     'no-param-reassign': ['error', { props: false }],
     'no-restricted-imports': [
@@ -37,7 +36,7 @@ module.exports = {
       },
     ],
     'object-shorthand': ['off'],
-    'prefer-destructuring': ['warn'],
+    'prefer-destructuring': ['error'],
     'sort-class-members/sort-class-members': [
       'error',
       {

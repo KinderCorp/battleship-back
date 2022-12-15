@@ -435,12 +435,26 @@ export class GameGateway implements OnGatewayConnection {
 
       instance.fleets[socket.id] = body.data;
 
+      const newPlayerReady = instance.players.find(
+        (player) => player.socketId === socket.id,
+      );
+      if (!newPlayerReady) {
+        this.socketServer
+          .to(socket.id)
+          .emit(SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND);
+      }
+
+      const roomData: RoomData<GamePlayer> = {
+        data: newPlayerReady,
+        instanceId: instance.id,
+      };
+
       const eventName =
         Object.keys(instance.fleets).length < instance.maxNumberOfPlayers
           ? SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS
           : SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
 
-      this.socketServer.to(String(body.instanceId)).emit(eventName);
+      this.socketServer.to(String(roomData)).emit(eventName);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
