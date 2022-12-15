@@ -46,6 +46,7 @@ export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
   weapons: WeaponType[];
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
+  authorisedFleet: object[]; // TASK Precise type later, when API calls are done
 }
 
 export type GameBoard = [x: number[], y: number[]];

@@ -177,8 +177,14 @@ export class GameGateway implements OnGatewayConnection {
 
     socket.join(String(instance.id));
 
-    const room: RoomData<GamePlayer> = {
-      data: baseGameSettings.firstPlayer,
+    const room: RoomData<{
+      players: GamePlayer[];
+      settings: GameSettings;
+    }> = {
+      data: {
+        players: [baseGameSettings.firstPlayer],
+        settings: instance.gameSettings,
+      },
       instanceId: instance.id,
     };
 
