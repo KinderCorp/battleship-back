@@ -77,7 +77,7 @@ export default class GameInstanceService {
           },
           id: 1,
           maxAmmunition: -1,
-          name: WeaponName.bomb,
+          name: WeaponName.BOMB,
         },
       ],
     };

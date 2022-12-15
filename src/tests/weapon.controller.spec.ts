@@ -37,7 +37,7 @@ describe('WeaponController', () => {
         tr: [],
       },
       maxAmmunition: -1,
-      name: WeaponName.bomb,
+      name: WeaponName.BOMB,
       requiredLevel: 1,
     };
 

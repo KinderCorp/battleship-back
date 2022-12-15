@@ -278,7 +278,7 @@ const gameWeaponBomb: () => WeaponType = () => {
     },
     id: 1,
     maxAmmunition: -1,
-    name: WeaponName.bomb,
+    name: WeaponName.BOMB,
     requiredLevel: 1,
   };
 };
@@ -298,7 +298,7 @@ const gameWeaponTriple: () => WeaponType = () => {
     },
     id: 2,
     maxAmmunition: 1,
-    name: WeaponName.triple,
+    name: WeaponName.TRIPLE,
     requiredLevel: 1,
   };
 };
@@ -327,7 +327,7 @@ export const bomb: () => GameWeapon = () => {
       tl: [],
       tr: [],
     },
-    name: WeaponName.bomb,
+    name: WeaponName.BOMB,
   };
 };
 
@@ -345,7 +345,7 @@ export const fakeWeapon: () => GameWeapon = () => {
       tl: [-1, 1],
       tr: [],
     },
-    name: WeaponName.bomb,
+    name: WeaponName.BOMB,
   };
 };
 
@@ -363,7 +363,7 @@ const triple1: () => GameWeapon = () => {
       tl: [],
       tr: [],
     },
-    name: WeaponName.triple,
+    name: WeaponName.TRIPLE,
   };
 };
 
