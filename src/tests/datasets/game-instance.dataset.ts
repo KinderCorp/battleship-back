@@ -11,14 +11,13 @@ import {
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
+import { BoatName } from '@interfaces/boat.interface';
+import { DEFAULT_AUTHORIZED_FLEET } from '@shared/game-instance.const';
 
 // INFO Datasets must be functions to ensure that the values don't mutate
-
-const validBoatName = 'destroyer';
-
-export const validBoatPlacement1: () => GameBoat = () => {
+export const validRaft: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.RAFT,
     emplacement: [
       [3, 1],
       [2, 1],
@@ -29,9 +28,9 @@ export const validBoatPlacement1: () => GameBoat = () => {
   };
 };
 
-export const validBoatPlacement2: () => GameBoat = () => {
+export const validGalley: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.GALLEY,
     emplacement: [
       [1, 5],
       [1, 4],
@@ -42,9 +41,9 @@ export const validBoatPlacement2: () => GameBoat = () => {
   };
 };
 
-export const validBoatPlacement3: () => GameBoat = () => {
+export const validFrigate: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.FRIGATE,
     emplacement: [
       [5, 5],
       [5, 4],
@@ -59,9 +58,9 @@ export const validBoatPlacement3: () => GameBoat = () => {
   };
 };
 
-export const validBoatPlacement4: () => GameBoat = () => {
+export const validShallop: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 5],
       [1, 4],
@@ -73,7 +72,7 @@ export const validBoatPlacement4: () => GameBoat = () => {
 
 export const invalidBoatPlacement1: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [11, 3],
       [2, 4],
@@ -86,7 +85,7 @@ export const invalidBoatPlacement1: () => GameBoat = () => {
 
 export const invalidBoatPlacement2: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [2, 3],
       [2, 4],
@@ -99,7 +98,7 @@ export const invalidBoatPlacement2: () => GameBoat = () => {
 
 export const invalidBoatPlacement3: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [2, 3],
       [2, 5],
@@ -112,7 +111,7 @@ export const invalidBoatPlacement3: () => GameBoat = () => {
 
 export const invalidBoatPlacement4: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [2, 3],
       [2, 3],
@@ -125,7 +124,7 @@ export const invalidBoatPlacement4: () => GameBoat = () => {
 
 export const invalidBoatPlacement5: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 3],
       [4, 3],
@@ -138,7 +137,7 @@ export const invalidBoatPlacement5: () => GameBoat = () => {
 
 export const invalidBoatPlacement6: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 3],
       [3, 3],
@@ -151,7 +150,7 @@ export const invalidBoatPlacement6: () => GameBoat = () => {
 
 export const invalidBoatPlacement7: () => GameBoat = () => {
   return {
-    boatName: validBoatName,
+    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 3],
       [3, 3],
@@ -213,6 +212,7 @@ export const gameSettings1: () => GameSettings = () => {
   const oneVersusOneWeapons = oneVersusOneWeapons1();
 
   return {
+    authorisedFleet: DEFAULT_AUTHORIZED_FLEET,
     boardDimensions: 10,
     gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,
@@ -376,9 +376,9 @@ export const turn1: () => Turn = () => {
 };
 
 export const fleets1: () => GameBoats = () => {
-  const boat1 = validBoatPlacement1();
-  const boat2 = validBoatPlacement2();
-  const boat3 = validBoatPlacement3();
+  const boat1 = validRaft();
+  const boat2 = validGalley();
+  const boat3 = validFrigate();
 
   return {
     drakenline_0: [boat1, boat3],
@@ -391,4 +391,19 @@ export const players1: () => GamePlayer[] = () => {
   const guest2 = guestPlayer2();
 
   return [guest1, guest2];
+};
+
+export const validPlayerFleet: () => GameBoat[] = () => {
+  return [
+    validRaft(),
+    validRaft(),
+    validRaft(),
+    validRaft(),
+    validShallop(),
+    validShallop(),
+    validShallop(),
+    validFrigate(),
+    validFrigate(),
+    validGalley(),
+  ];
 };

@@ -17,14 +17,16 @@ import {
   invalidBoatPlacement7,
   loggedPlayer1,
   loggedPlayer2,
-  validBoatPlacement1,
-  validBoatPlacement2,
-  validBoatPlacement4,
+  validGalley,
+  validPlayerFleet,
+  validRaft,
+  validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
 import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { shuffle } from 'radash';
 
 // npm run test:unit -- src/tests/game-instance-validators.service.spec.ts --watch
 
@@ -47,17 +49,11 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat placement', () => {
     expect(
-      service['validateBoatPlacement'](
-        DEFAULT_BOARD_GAME,
-        validBoatPlacement1(),
-      ),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, validRaft()),
     ).toEqual(true);
 
     expect(
-      service['validateBoatPlacement'](
-        DEFAULT_BOARD_GAME,
-        validBoatPlacement4(),
-      ),
+      service['validateBoatPlacement'](DEFAULT_BOARD_GAME, validShallop()),
     ).toEqual(true);
   });
 
@@ -153,8 +149,8 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boats of players', () => {
     const boatsPlacement: GameBoat[][] = [
-      [validBoatPlacement1(), validBoatPlacement2()],
-      [validBoatPlacement1(), validBoatPlacement2()],
+      [validRaft(), validGalley()],
+      [validRaft(), validGalley()],
     ];
 
     expect(
@@ -164,8 +160,8 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should throw an error for invalid boats of players', () => {
     const boatsPlacement: GameBoat[][] = [
-      [validBoatPlacement1(), validBoatPlacement2()],
-      [validBoatPlacement1(), invalidBoatPlacement1()],
+      [validRaft(), validGalley()],
+      [validRaft(), invalidBoatPlacement1()],
     ];
 
     expect(() =>
@@ -275,5 +271,24 @@ describe('GameInstanceValidatorsService', () => {
     );
 
     expect(hasCellAlreadyBeenHit).toEqual(true);
+  });
+
+  it('should validate authorised fleet', () => {
+    expect(service.validateAuthorisedFleet(validPlayerFleet())).toEqual(true);
+    expect(
+      service.validateAuthorisedFleet(shuffle(validPlayerFleet())),
+    ).toEqual(true);
+  });
+
+  it('should not validate authorised fleet', () => {
+    const errorKey = 'UNAUTHORISED_FLEET';
+    expect(() =>
+      service.validateAuthorisedFleet(validPlayerFleet().slice(2)),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      }),
+    );
   });
 });
