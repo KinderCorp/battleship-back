@@ -26,12 +26,9 @@ import {
   Turn,
   TurnRecap,
 } from '@interfaces/engine.interface';
-import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
 import GameEngine from '@engine/game-engine';
-import GameEngineError from '@shared/game-engine-error';
+import { GameEngineErrorCodes } from '@interfaces/error.interface';
+import GameEngineValidatorsService from '@engine/game-engine-validators.service';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
@@ -45,6 +42,7 @@ export class GameGateway implements OnGatewayConnection {
   public constructor(
     private gameEngine: GameEngine,
     private gameInstanceValidators: GameInstanceValidatorsService,
+    private gameEngineValidators: GameEngineValidatorsService,
   ) {}
 
   private destroySession(instance: GameInstanceService) {
@@ -100,6 +98,7 @@ export class GameGateway implements OnGatewayConnection {
     }
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public handleConnection(socket: Socket) {
     this.socketServer
       .to(socket.id)
@@ -117,12 +116,6 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     const disconnectedPlayer = instance.getPlayerByAnyId(socket.id);
-    if (!disconnectedPlayer) {
-      throw new GameEngineError({
-        code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
-        message: GameEngineErrorMessages.PLAYER_NOT_FOUND,
-      });
-    }
 
     const roomData: RoomData<GamePlayer> = {
       data: disconnectedPlayer,
@@ -133,10 +126,8 @@ export class GameGateway implements OnGatewayConnection {
       .to(String(instance.id))
       .emit(SocketEventsEmitting.PLAYER_DISCONNECTED, roomData);
 
-    const sessionCanBeDestroyed = this.gameEngine.validateSessionCanBeDestroyed(
-      instance,
-      socket,
-    );
+    const sessionCanBeDestroyed =
+      this.gameEngineValidators.validateSessionCanBeDestroyed(instance, socket);
 
     if (!sessionCanBeDestroyed) {
       return;
@@ -450,8 +441,6 @@ export class GameGateway implements OnGatewayConnection {
         body.data,
       );
 
-      instance.fleets[socket.id] = body.data;
-
       const newPlayerReady = instance.players.find(
         (player) => player.socketId === socket.id,
       );
@@ -460,6 +449,8 @@ export class GameGateway implements OnGatewayConnection {
           .to(socket.id)
           .emit(SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND);
       }
+
+      instance.fleets[newPlayerReady.id] = body.data;
 
       const roomData: RoomData<GamePlayer> = {
         data: newPlayerReady,
@@ -475,7 +466,9 @@ export class GameGateway implements OnGatewayConnection {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      const eventName = this.getErrorEventName(error['code'], instance);
+      const eventName = error['code']
+        ? this.getErrorEventName(error['code'], instance)
+        : SocketEventsEmitting.ERROR_NOT_HANDLED;
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }

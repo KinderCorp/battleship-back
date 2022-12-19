@@ -136,6 +136,7 @@ export enum SocketEventsEmitting {
   ERROR_INVALID_BOAT = 'error-invalid-boat',
   ERROR_INVALID_NUMBER_OF_PLAYERS = 'error-invalid-number-of-players',
   ERROR_MISSING_PLAYER = 'error-missing-player',
+  ERROR_NOT_HANDLED = 'error-not-handled',
   ERROR_NO_ACTION_REMAINING = 'error-no-action-remaining',
   ERROR_NO_AMMUNITION_REMAINING = 'error-no-ammunition-remaining',
   ERROR_OUT_OF_BOUNDS = 'error-out-of-bounds',

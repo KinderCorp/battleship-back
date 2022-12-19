@@ -163,7 +163,7 @@ export const invalidBoatPlacement7: () => GameBoat = () => {
 export const guestPlayer1: () => GuestPlayer = () => {
   return {
     id: 'drakenline_0',
-    isHost: false,
+    isHost: true,
     pseudo: 'Drakenline',
     socketId: 'wFH34DKHHdQAlanXAAA1',
   };
