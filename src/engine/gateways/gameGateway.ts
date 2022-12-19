@@ -490,11 +490,17 @@ export class GameGateway implements OnGatewayConnection {
       return true;
     }
 
+    const roomData: RoomData<PlayersWithSettings> = {
+      data: {
+        players: existingInstance.players,
+        settings: existingInstance.gameSettings,
+      },
+      instanceId: existingInstance.id,
+    };
+
     this.socketServer
       .to(socket.id)
-      .emit(SocketEventsEmitting.GAME_ALREADY_CREATED, {
-        instanceId: existingInstance.id,
-      });
+      .emit(SocketEventsEmitting.GAME_ALREADY_CREATED, roomData);
 
     return false;
   }
