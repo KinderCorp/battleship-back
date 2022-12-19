@@ -26,8 +26,12 @@ import {
   Turn,
   TurnRecap,
 } from '@interfaces/engine.interface';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
 import GameEngine from '@engine/game-engine';
-import { GameEngineErrorCodes } from '@interfaces/error.interface';
+import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
@@ -112,9 +116,22 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
+    const disconnectedPlayer = instance.getPlayerByAnyId(socket.id);
+    if (!disconnectedPlayer) {
+      throw new GameEngineError({
+        code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
+        message: GameEngineErrorMessages.PLAYER_NOT_FOUND,
+      });
+    }
+
+    const roomData: RoomData<GamePlayer> = {
+      data: disconnectedPlayer,
+      instanceId: instance.id,
+    };
+
     this.socketServer
       .to(String(instance.id))
-      .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
+      .emit(SocketEventsEmitting.PLAYER_DISCONNECTED, roomData);
 
     const sessionCanBeDestroyed = this.gameEngine.validateSessionCanBeDestroyed(
       instance,
