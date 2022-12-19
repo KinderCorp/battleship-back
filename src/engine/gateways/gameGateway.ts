@@ -44,6 +44,10 @@ export class GameGateway implements OnGatewayConnection {
   ) {}
 
   private destroySession(instance: GameInstanceService) {
+    this.socketServer
+      .to(String(instance.id))
+      .emit(SocketEventsEmitting.CLOSED_ROOM);
+
     this.socketServer.in(String(instance.id)).socketsLeave(String(instance.id));
     this.gameEngine.destroy(instance);
   }
@@ -413,11 +417,6 @@ export class GameGateway implements OnGatewayConnection {
     @MessageBody() body: RoomData<GameBoat[]>,
     @ConnectedSocket() socket: Socket,
   ): void {
-    // Create a function to validate boats of the player
-    // If everything's okay, we send an ok message to notify the client that one player is ready to start
-    // If the other player is already ready, we emit a different message (e.g. allPlayersHavePlacedTheirBoats)
-    // Otherwise, we send an error message to inform the player that his boats are misplaced
-
     const instance = this.gameEngine.get(body.instanceId);
     if (!instance) {
       this.socketServer
