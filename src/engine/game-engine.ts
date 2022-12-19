@@ -33,6 +33,8 @@ export default class GameEngine {
     return instance.players.map((player) => player.socketId);
   }
 
+  // TEST to add
+  // TASK To move in a file name game-engine-validators.service.ts
   public validateSessionCanBeDestroyed(
     instance: GameInstanceService,
     socket: Socket,
@@ -42,8 +44,8 @@ export default class GameEngine {
     );
 
     return (
-      player.isAdmin ||
-      [GameState.WAITING_TO_RIVAL, GameState.WAITING_TO_START].includes(
+      player.isHost ||
+      ![GameState.WAITING_TO_RIVAL, GameState.WAITING_TO_START].includes(
         instance.gameState,
       )
     );

@@ -182,7 +182,7 @@ export class GameGateway implements OnGatewayConnection {
     const baseGameSettings: BaseGameSettings = {
       firstPlayer: {
         id: body.id ?? uid(20),
-        isAdmin: true,
+        isHost: true,
         pseudo: body.pseudo,
         socketId: socket.id,
       },
@@ -254,7 +254,7 @@ export class GameGateway implements OnGatewayConnection {
 
     const newPlayer: GamePlayer = {
       id: body.data.id ?? uid(20),
-      isAdmin: false,
+      isHost: false,
       pseudo: body.data.pseudo,
       socketId: socket.id,
     };
@@ -307,7 +307,7 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     const player = instance.getPlayerByAnyId(socket.id);
-    if (!player.isAdmin) {
+    if (!player.isHost) {
       this.socketServer
         .to(socket.id)
         .emit(SocketEventsEmitting.ERROR_PLAYER_IS_NOT_ADMIN);
