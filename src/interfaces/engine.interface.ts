@@ -106,7 +106,7 @@ export interface ShotRecap {
 
 export type AuthorisedFleet = {
   authorisedNumber: number;
-  boat: { length: number; name: BoatName; src: string; width: number };
+  boat: { lengthCell: number; name: BoatName; src: string; widthCell: number };
 }[];
 
 export type PlayersWithSettings = {

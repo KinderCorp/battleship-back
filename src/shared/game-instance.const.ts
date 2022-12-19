@@ -19,37 +19,37 @@ export const DEFAULT_AUTHORISED_FLEET: AuthorisedFleet = [
   {
     authorisedNumber: 4,
     boat: {
-      length: 1,
+      lengthCell: 1,
       name: BoatName.RAFT,
       src: '/images/boats/boat-1x1.png',
-      width: 1,
+      widthCell: 1,
     },
   },
   {
     authorisedNumber: 3,
     boat: {
-      length: 2,
+      lengthCell: 2,
       name: BoatName.SHALLOP,
       src: '/images/boats/boat-2x1.png',
-      width: 1,
+      widthCell: 1,
     },
   },
   {
     authorisedNumber: 2,
     boat: {
-      length: 3,
+      lengthCell: 3,
       name: BoatName.FRIGATE,
       src: '/images/boats/boat-3x1.png',
-      width: 1,
+      widthCell: 1,
     },
   },
   {
     authorisedNumber: 1,
     boat: {
-      length: 4,
+      lengthCell: 4,
       name: BoatName.GALLEY,
       src: '/images/boats/boat-4x1.png',
-      width: 1,
+      widthCell: 1,
     },
   },
 ];
