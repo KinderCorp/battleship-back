@@ -1,25 +1,36 @@
 #!/bin/bash
 
+RED="\e[00;31m"
+BOLD_RED="\e[01;31m"
+GREEN="\e[00;32m"
+YELLOW="\e[00;33m"
+BOLD_YELLOW="\e[01;33m"
+BLUE="\e[00;94m"
+BOLD_GREEN="\e[01;32m"
+END_COLOR="\e[0m"
+
 options=(
     "test"
     "initialise base app"
 )
 
-PS3="Which fixture do you want to load ?"
-
+PS3=$'\e[01;94mWhich fixture do you want to load ? \e[00;37m(1 or 2) \e[01;94m: \e[0m'
+printf "${YELLOW}";
 select option in "${options[@]}"
 do
-    echo $option
+    printf "${BLUE}You chose : ${BOLD_GREEN}$option\\n${END_COLOR}";
 
     case $option in
       "test") path="test" ;;
       "initialise base app") path="base" ;;
-      *) echo "error" ; exit 1;;
+      *) printf "${BOLD_RED}error${END_COLOR}" ; exit 1;;
     esac
 
-    read -p "$1 ([y] or [n|N]): "
+printf "${BOLD_RED}Are you sure ? ${YELLOW}y or ${BOLD_YELLOW}N${END_COLOR} : "
+read
+    printf "${BOLD_GREEN}";
     case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes \\nLoading fixtures ..."
+        y|yes) printf "\\n${GREEN}Loading fixtures ...${END_COLOR}\\n"
 
          if [ $path == "base" ]
          then
@@ -50,6 +61,6 @@ do
 
          fi;
          exit 0;;
-        *)     echo "no" ;;
+        *)     echo "no"; exit 0 ;;
     esac
 done
