@@ -14,6 +14,8 @@ options=(
     "initialise base app"
 )
 
+echo $'🔸 \e[1;4;35mFixture Loader\e[0m 🔸  \\n'
+
 PS3=$'\e[01;94mWhich fixture do you want to load ? \e[00;37m(1 or 2) \e[01;94m: \e[0m'
 printf "${YELLOW}";
 select option in "${options[@]}"
