@@ -7,8 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "fixture:load:test": "sh bin/fixtures-load-test.sh",
-    "fixture:load:base": "sh bin/fixtures-load-base.sh",
+    "fixture:load": "sh bin/fixtures-load.sh",
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
