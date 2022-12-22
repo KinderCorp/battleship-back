@@ -2,7 +2,7 @@ import { Level } from '@interfaces/level.interface';
 
 interface BasePlayer {
   id: string;
-  isAdmin: boolean;
+  isHost: boolean;
   pseudo: string;
   socketId: string;
 }

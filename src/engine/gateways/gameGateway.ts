@@ -28,6 +28,7 @@ import {
 } from '@interfaces/engine.interface';
 import GameEngine from '@engine/game-engine';
 import { GameEngineErrorCodes } from '@interfaces/error.interface';
+import GameEngineValidatorsService from '@engine/game-engine-validators.service';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
@@ -41,9 +42,14 @@ export class GameGateway implements OnGatewayConnection {
   public constructor(
     private gameEngine: GameEngine,
     private gameInstanceValidators: GameInstanceValidatorsService,
+    private gameEngineValidators: GameEngineValidatorsService,
   ) {}
 
   private destroySession(instance: GameInstanceService) {
+    this.socketServer
+      .to(String(instance.id))
+      .emit(SocketEventsEmitting.CLOSED_ROOM);
+
     this.socketServer.in(String(instance.id)).socketsLeave(String(instance.id));
     this.gameEngine.destroy(instance);
   }
@@ -92,6 +98,7 @@ export class GameGateway implements OnGatewayConnection {
     }
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public handleConnection(socket: Socket) {
     this.socketServer
       .to(socket.id)
@@ -108,14 +115,19 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
+    const disconnectedPlayer = instance.getPlayerByAnyId(socket.id);
+
+    const roomData: RoomData<GamePlayer> = {
+      data: disconnectedPlayer,
+      instanceId: instance.id,
+    };
+
     this.socketServer
       .to(String(instance.id))
-      .emit(SocketEventsEmitting.PLAYER_DISCONNECTED);
+      .emit(SocketEventsEmitting.PLAYER_DISCONNECTED, roomData);
 
-    const sessionCanBeDestroyed = this.gameEngine.validateSessionCanBeDestroyed(
-      instance,
-      socket,
-    );
+    const sessionCanBeDestroyed =
+      this.gameEngineValidators.validateSessionCanBeDestroyed(instance, socket);
 
     if (!sessionCanBeDestroyed) {
       return;
@@ -161,7 +173,7 @@ export class GameGateway implements OnGatewayConnection {
     const baseGameSettings: BaseGameSettings = {
       firstPlayer: {
         id: body.id ?? uid(20),
-        isAdmin: true,
+        isHost: true,
         pseudo: body.pseudo,
         socketId: socket.id,
       },
@@ -233,7 +245,7 @@ export class GameGateway implements OnGatewayConnection {
 
     const newPlayer: GamePlayer = {
       id: body.data.id ?? uid(20),
-      isAdmin: false,
+      isHost: false,
       pseudo: body.data.pseudo,
       socketId: socket.id,
     };
@@ -286,7 +298,7 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     const player = instance.getPlayerByAnyId(socket.id);
-    if (!player.isAdmin) {
+    if (!player.isHost) {
       this.socketServer
         .to(socket.id)
         .emit(SocketEventsEmitting.ERROR_PLAYER_IS_NOT_ADMIN);
@@ -413,11 +425,6 @@ export class GameGateway implements OnGatewayConnection {
     @MessageBody() body: RoomData<GameBoat[]>,
     @ConnectedSocket() socket: Socket,
   ): void {
-    // Create a function to validate boats of the player
-    // If everything's okay, we send an ok message to notify the client that one player is ready to start
-    // If the other player is already ready, we emit a different message (e.g. allPlayersHavePlacedTheirBoats)
-    // Otherwise, we send an error message to inform the player that his boats are misplaced
-
     const instance = this.gameEngine.get(body.instanceId);
     if (!instance) {
       this.socketServer
@@ -434,8 +441,6 @@ export class GameGateway implements OnGatewayConnection {
         body.data,
       );
 
-      instance.fleets[socket.id] = body.data;
-
       const newPlayerReady = instance.players.find(
         (player) => player.socketId === socket.id,
       );
@@ -444,6 +449,8 @@ export class GameGateway implements OnGatewayConnection {
           .to(socket.id)
           .emit(SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND);
       }
+
+      instance.fleets[newPlayerReady.id] = body.data;
 
       const roomData: RoomData<GamePlayer> = {
         data: newPlayerReady,
@@ -459,7 +466,9 @@ export class GameGateway implements OnGatewayConnection {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      const eventName = this.getErrorEventName(error['code'], instance);
+      const eventName = error['code']
+        ? this.getErrorEventName(error['code'], instance)
+        : SocketEventsEmitting.ERROR_NOT_HANDLED;
 
       this.socketServer.to(String(body.instanceId)).emit(eventName, error);
     }
@@ -474,11 +483,17 @@ export class GameGateway implements OnGatewayConnection {
       return true;
     }
 
+    const roomData: RoomData<PlayersWithSettings> = {
+      data: {
+        players: existingInstance.players,
+        settings: existingInstance.gameSettings,
+      },
+      instanceId: existingInstance.id,
+    };
+
     this.socketServer
       .to(socket.id)
-      .emit(SocketEventsEmitting.GAME_ALREADY_CREATED, {
-        instanceId: existingInstance.id,
-      });
+      .emit(SocketEventsEmitting.GAME_ALREADY_CREATED, roomData);
 
     return false;
   }

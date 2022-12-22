@@ -106,7 +106,7 @@ export interface ShotRecap {
 
 export type AuthorisedFleet = {
   authorisedNumber: number;
-  boat: { length: number; name: BoatName; src: string; width: number };
+  boat: { lengthCell: number; name: BoatName; src: string; widthCell: number };
 }[];
 
 export type PlayersWithSettings = {
@@ -126,6 +126,7 @@ export enum SocketEventsListening {
 
 export enum SocketEventsEmitting {
   ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS = 'all-players-have-placed-their-boats',
+  CLOSED_ROOM = 'closed-room',
   END_GAME = 'end-game',
   ERROR_CELL_ALREADY_HIT = 'error-cell-already-hit',
   ERROR_GAME_IS_FULL = 'error-game-is-full',
@@ -135,6 +136,7 @@ export enum SocketEventsEmitting {
   ERROR_INVALID_BOAT = 'error-invalid-boat',
   ERROR_INVALID_NUMBER_OF_PLAYERS = 'error-invalid-number-of-players',
   ERROR_MISSING_PLAYER = 'error-missing-player',
+  ERROR_NOT_HANDLED = 'error-not-handled',
   ERROR_NO_ACTION_REMAINING = 'error-no-action-remaining',
   ERROR_NO_AMMUNITION_REMAINING = 'error-no-ammunition-remaining',
   ERROR_OUT_OF_BOUNDS = 'error-out-of-bounds',

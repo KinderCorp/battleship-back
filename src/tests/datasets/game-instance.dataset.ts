@@ -163,7 +163,7 @@ export const invalidBoatPlacement7: () => GameBoat = () => {
 export const guestPlayer1: () => GuestPlayer = () => {
   return {
     id: 'drakenline_0',
-    isAdmin: false,
+    isHost: true,
     pseudo: 'Drakenline',
     socketId: 'wFH34DKHHdQAlanXAAA1',
   };
@@ -172,7 +172,7 @@ export const guestPlayer1: () => GuestPlayer = () => {
 export const guestPlayer2: () => GuestPlayer = () => {
   return {
     id: 'nonma_1',
-    isAdmin: false,
+    isHost: false,
     pseudo: 'Nonma',
     socketId: 'wFH34DKHHdQAlanXAAA2',
   };
@@ -182,7 +182,7 @@ export const loggedPlayer1: () => LoggedPlayer = () => {
   return {
     character: 'assets/character/1.webp',
     id: '4fdec5bd-db9d-4134-bfba-c817af87c906',
-    isAdmin: false,
+    isHost: false,
     level: {
       media: 'assets/level/1.webp',
       rank: 1,
@@ -197,7 +197,7 @@ export const loggedPlayer2: () => LoggedPlayer = () => {
   return {
     character: 'assets/character/1.webp',
     id: 'ed100997-2d11-4e38-baf7-bef2021b484b',
-    isAdmin: false,
+    isHost: false,
     level: {
       media: 'assets/level/1.webp',
       rank: 1,
