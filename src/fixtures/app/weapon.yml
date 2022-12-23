@@ -1,0 +1,32 @@
+entity: Weapon
+items:
+  weapon1:
+    name: 'bomb'
+    requiredLevel: '@level1'
+    damageArea: [ [ 0, 0 ] ]
+  weapon2:
+    name: 'triple'
+    requiredLevel: '@level2'
+    maxAmmunition: '1'
+    damageArea: [ [ 1, 0 ],
+                  [ 0, 0 ],
+                  [ -1, 0 ], ]
+  weapon3:
+    name: 'drone'
+    requiredLevel: '@level2'
+    maxAmmunition: '1'
+    damageArea: [ ]
+  weapon4:
+    name: 'nuclear'
+    requiredLevel: '@level3'
+    maxAmmunition: '1'
+    damageArea: [ [ 1, 0 ],
+                  [ 1, -1 ],
+                  [ 1, 1 ],
+                  [ 0, -1 ],
+                  [ 0, 0 ],
+                  [ 0, 1 ],
+                  [ -1, 0 ],
+                  [ -1, -1 ],
+                  [ -1, 1 ], ]
+

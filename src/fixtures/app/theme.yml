@@ -1,0 +1,4 @@
+entity: Theme
+items:
+  theme1:
+    name: 'Classic'
