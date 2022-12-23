@@ -436,6 +436,7 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     try {
+      // TASK Transform received data
       this.gameInstanceValidators.validateBoatsOfOnePlayer(
         instance.gameSettings.authorisedFleet,
         instance.board,
