@@ -5,6 +5,7 @@ import ApiError from '@shared/api-error';
 import Character from '@character/character.entity';
 import CharacterService from '@character/character.service';
 import { CreateCharacterDto } from '@dto/character.dto';
+import { InsertedEntity } from '@interfaces/shared.interface';
 
 const entityName = 'Character';
 
@@ -21,7 +22,7 @@ export default class CharacterController {
   })
   public async insert(
     @Body() character: CreateCharacterDto,
-  ): Promise<Character> {
+  ): Promise<InsertedEntity<Character>> {
     try {
       return await this.characterService.insert(character);
     } catch (error) {

@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   Length,
@@ -38,4 +39,14 @@ export class CreateUserDto implements CreateDtoInterface {
   @IsOptional()
   @IsBoolean()
   public hasBeenConfirmed?: boolean;
+
+  @ApiProperty({ default: 1, required: false })
+  @IsOptional()
+  @IsNumber()
+  public level?: number;
+
+  @ApiProperty({ default: 1, required: false })
+  @IsOptional()
+  @IsNumber()
+  public character?: number;
 }
