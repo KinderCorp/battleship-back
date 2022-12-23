@@ -50,6 +50,7 @@ export default class GameInstanceService {
     { gameMode = GameMode.ONE_VERSUS_ONE, firstPlayer }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
+    this.gameMode = gameMode;
     this._gameState = GameState.WAITING_TO_RIVAL;
     this.maxNumberOfPlayers = this.getMaximumPlayers(gameMode);
 
