@@ -1,7 +1,8 @@
-import { CreateWeaponDto } from '@dto/weapon.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { CreateWeaponDto } from '@dto/weapon.dto';
+import { InsertedEntity } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
 import WeaponRepository from '@weapon/weapon.repository';
 
@@ -20,7 +21,9 @@ export default class WeaponService {
     return await this.weaponRepository.findOneById(id);
   }
 
-  public async insert(weapon: CreateWeaponDto): Promise<Weapon> {
+  public async insert(
+    weapon: CreateWeaponDto,
+  ): Promise<InsertedEntity<Weapon>> {
     return this.weaponRepository.insert(weapon);
   }
 }
