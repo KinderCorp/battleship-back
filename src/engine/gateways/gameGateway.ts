@@ -136,6 +136,8 @@ export class GameGateway implements OnGatewayConnection {
     this.destroySession(instance);
   }
 
+  // TASK Add onLeaveRoom
+  // TASK HE NEVER COMPLETELY KILL THE GAME SO YOU NEED TO HANDLE DISCONNECT HERE TOO
   @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
   public onCloseRoom(
     @MessageBody() body: Room,
