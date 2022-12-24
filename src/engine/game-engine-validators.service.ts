@@ -1,7 +1,7 @@
-import GameInstanceService from '@engine/game-instance.service';
-import { GamePlayer, GameState } from '@interfaces/engine.interface';
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
+
+import { GamePlayer, GameState } from '@interfaces/engine.interface';
+import GameInstanceService from '@engine/game-instance.service';
 
 @Injectable()
 export default class GameEngineValidatorsService {
