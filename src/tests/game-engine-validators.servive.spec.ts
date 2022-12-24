@@ -1,6 +1,5 @@
 import { GameMode, GameState } from '@interfaces/engine.interface';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Socket } from 'socket.io';
 
 import { guestPlayer1, players1 } from '@tests/datasets/game-instance.dataset';
 import GameEngineValidatorsService from '@engine/game-engine-validators.service';
@@ -42,10 +41,7 @@ describe('GameEngineValidatorsService', () => {
     gameInstance.players = players1();
 
     expect(
-      service.validateSessionCanBeDestroyed(
-        gameInstance,
-        players1()[0] as unknown as Socket,
-      ),
+      service.validateSessionCanBeDestroyed(gameInstance, players1().at(0)),
     ).toBeTruthy();
   });
 
@@ -54,10 +50,7 @@ describe('GameEngineValidatorsService', () => {
     gameInstance.gameState = GameState.PLAYING;
 
     expect(
-      service.validateSessionCanBeDestroyed(
-        gameInstance,
-        players1()[1] as unknown as Socket,
-      ),
+      service.validateSessionCanBeDestroyed(gameInstance, players1().at(1)),
     ).toBeTruthy();
   });
 
@@ -65,10 +58,7 @@ describe('GameEngineValidatorsService', () => {
     gameInstance.players = players1();
 
     expect(
-      service.validateSessionCanBeDestroyed(
-        gameInstance,
-        players1()[1] as unknown as Socket,
-      ),
+      service.validateSessionCanBeDestroyed(gameInstance, players1().at(1)),
     ).toBeFalsy();
   });
 
@@ -77,10 +67,7 @@ describe('GameEngineValidatorsService', () => {
     gameInstance.gameState = GameState.WAITING_TO_RIVAL;
 
     expect(
-      service.validateSessionCanBeDestroyed(
-        gameInstance,
-        players1()[1] as unknown as Socket,
-      ),
+      service.validateSessionCanBeDestroyed(gameInstance, players1().at(1)),
     ).toBeFalsy();
   });
 });

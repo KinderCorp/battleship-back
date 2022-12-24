@@ -109,13 +109,14 @@ export class GameGateway implements OnGatewayConnection {
   // noinspection JSUnusedGlobalSymbols
   public handleDisconnect(socket: Socket) {
     this.logger.log(`Socket ${socket.id} disconnected`);
-
     const instance = this.gameEngine.getInstanceByPlayerSocketId(socket.id);
     if (!instance) {
       return;
     }
 
     const disconnectedPlayer = instance.getPlayerByAnyId(socket.id);
+
+    instance.removePlayer(disconnectedPlayer);
 
     const roomData: RoomData<GamePlayer> = {
       data: disconnectedPlayer,
@@ -127,28 +128,12 @@ export class GameGateway implements OnGatewayConnection {
       .emit(SocketEventsEmitting.PLAYER_DISCONNECTED, roomData);
 
     const sessionCanBeDestroyed =
-      this.gameEngineValidators.validateSessionCanBeDestroyed(instance, socket);
+      this.gameEngineValidators.validateSessionCanBeDestroyed(
+        instance,
+        disconnectedPlayer,
+      );
 
     if (!sessionCanBeDestroyed) {
-      return;
-    }
-
-    this.destroySession(instance);
-  }
-
-  // TASK Add onLeaveRoom
-  // TASK HE NEVER COMPLETELY KILL THE GAME SO YOU NEED TO HANDLE DISCONNECT HERE TOO
-  @SubscribeMessage(SocketEventsListening.CLOSE_ROOM)
-  public onCloseRoom(
-    @MessageBody() body: Room,
-    @ConnectedSocket() socket: Socket,
-  ): void {
-    const instance = this.gameEngine.get(body.instanceId);
-    if (!instance) {
-      this.socketServer
-        .to(socket.id)
-        .emit(SocketEventsEmitting.ERROR_GAME_NOT_FOUND);
-
       return;
     }
 
@@ -205,6 +190,20 @@ export class GameGateway implements OnGatewayConnection {
   }
 
   /**
+   * Disconnect a player.
+   * The function handleDisconnect handles the action following the disconnection event
+   * @param body
+   * @param socket
+   */
+  @SubscribeMessage(SocketEventsListening.LEAVE_ROOM)
+  public onLeaveRoom(
+    @MessageBody() body: Room,
+    @ConnectedSocket() socket: Socket,
+  ): void {
+    socket.disconnect();
+  }
+
+  /**
    * When a player join an existing game
    * @param body a GamePlayer and the game id to join
    * @param socket
@@ -252,7 +251,7 @@ export class GameGateway implements OnGatewayConnection {
       socketId: socket.id,
     };
 
-    instance.players.push(newPlayer);
+    instance.addPlayer(newPlayer);
 
     if (instance.players.length === instance.maxNumberOfPlayers) {
       instance.gameState = GameState.WAITING_TO_START;

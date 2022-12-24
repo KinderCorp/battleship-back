@@ -84,6 +84,10 @@ export default class GameInstanceService {
     this._gameState = value;
   }
 
+  public addPlayer(player: GamePlayer) {
+    this.players.push(player);
+  }
+
   public countDownAction(turn: Turn) {
     this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);
 
@@ -297,6 +301,21 @@ export default class GameInstanceService {
     }
 
     return isGameOver;
+  }
+
+  public removePlayer(player: GamePlayer) {
+    const indexOfPlayer = this.players.indexOf(player);
+
+    if (indexOfPlayer < 0) {
+      const errorKey = 'PLAYER_NOT_FOUND';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    this.players.splice(1, 1);
   }
 
   /**

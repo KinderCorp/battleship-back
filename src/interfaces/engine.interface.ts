@@ -116,12 +116,12 @@ export type PlayersWithSettings = {
 
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',
-  PLAYER_JOINING_GAME = 'player-joining-game',
+  LEAVE_ROOM = 'leave-room',
   PLAYERS_READY_TO_PLACE_BOATS = 'players-ready-to-place-boats',
+  PLAYER_JOINING_GAME = 'player-joining-game',
   SHOOT = 'shoot',
   START_GAME = 'start-game',
   VALIDATE_PLAYER_BOATS_PLACEMENT = 'validate-player-boats-placement',
-  CLOSE_ROOM = 'close-room',
 }
 
 export enum SocketEventsEmitting {

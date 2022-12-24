@@ -1,21 +1,29 @@
 import GameInstanceService from '@engine/game-instance.service';
-import { GameState } from '@interfaces/engine.interface';
+import { GamePlayer, GameState } from '@interfaces/engine.interface';
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 
 @Injectable()
 export default class GameEngineValidatorsService {
+  /**
+   * Checks if socket session and instance can be destroyed
+   * The session can be destroyed when :
+   * The host player leave
+   * The player isn't the host and the game state is before placing boats
+   * No players left in the instance
+   * @param instance
+   * @param disconnectedPlayer
+   */
   public validateSessionCanBeDestroyed(
     instance: GameInstanceService,
-    socket: Socket,
+    disconnectedPlayer: GamePlayer,
   ): boolean {
-    const player = instance.getPlayerByAnyId(socket.id);
-
     return (
-      player.isHost ||
+      disconnectedPlayer.isHost ||
       ![GameState.WAITING_TO_RIVAL, GameState.WAITING_TO_START].includes(
         instance.gameState,
-      )
+      ) ||
+      !instance.players.length
     );
   }
 }
