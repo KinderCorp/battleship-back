@@ -14,6 +14,7 @@ import {
   BaseGameSettings,
   FinalTurnRecap,
   GameBoat,
+  GameBoatConfiguration,
   GameMode,
   GamePlayer,
   GameState,
@@ -423,7 +424,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage(SocketEventsListening.VALIDATE_PLAYER_BOATS_PLACEMENT)
   public onValidatePlayerBoatsPlacement(
-    @MessageBody() body: RoomData<GameBoat[]>,
+    @MessageBody() body: RoomData<GameBoatConfiguration[]>,
     @ConnectedSocket() socket: Socket,
   ): void {
     const instance = this.gameEngine.get(body.instanceId);
@@ -437,6 +438,9 @@ export class GameGateway implements OnGatewayConnection {
 
     try {
       // TASK Transform received data
+      // TASK Get boats object
+      // TASK Calculate placement depending of boat and direction and bowCells
+      // TASK Build a gameBoat
       this.gameInstanceValidators.validateBoatsOfOnePlayer(
         instance.gameSettings.authorisedFleet,
         instance.board,

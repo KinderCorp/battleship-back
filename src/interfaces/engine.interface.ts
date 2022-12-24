@@ -16,6 +16,13 @@ export enum GameState {
   FINISHED = 'finished',
 }
 
+export enum BoatDirection {
+  NORTH = 'north',
+  EAST = 'east',
+  SOUTH = 'south',
+  WEST = 'west',
+}
+
 export type Cell = [x: number, y: number];
 
 export type PlayerBoards = {
@@ -27,6 +34,13 @@ export interface GameBoat {
   hit: Cell[];
   isSunk: boolean;
   emplacement: Cell[];
+}
+
+// TASK I don't like this name, find better. It's the boats position that frontend sends.
+export interface GameBoatConfiguration {
+  bowCells: Cell[];
+  direction: BoatDirection;
+  name: BoatName;
 }
 
 export interface BaseGameSettings {
