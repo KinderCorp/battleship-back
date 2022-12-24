@@ -1,3 +1,4 @@
+import Boat from '@boat/boat.entity';
 import { draw, isEqual, uid } from 'radash';
 
 import {
@@ -6,6 +7,7 @@ import {
   GameArsenal,
   GameBoard,
   GameBoat,
+  GameBoatConfiguration,
   GameBoats,
   GameMode,
   GamePlayer,
@@ -87,6 +89,12 @@ export default class GameInstanceService {
   public addPlayer(player: GamePlayer) {
     this.players.push(player);
   }
+
+  // TASK Add some logic and make the magic happen
+  public calculateBoatEmplacement(
+    boat: GameBoatConfiguration,
+    storedBoat: Boat,
+  ) {}
 
   public countDownAction(turn: Turn) {
     this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);

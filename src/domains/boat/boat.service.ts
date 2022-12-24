@@ -12,6 +12,10 @@ export default class BoatService {
     private boatRepository: BoatRepository,
   ) {}
 
+  public async findAll(): Promise<Boat[]> {
+    return this.boatRepository.find({});
+  }
+
   public async insert(boat: CreateBoatDto): Promise<Boat> {
     return this.boatRepository.insert(boat);
   }

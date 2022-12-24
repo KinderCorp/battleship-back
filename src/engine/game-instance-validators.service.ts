@@ -1,3 +1,4 @@
+import { BoatName } from '@interfaces/boat.interface';
 import { Injectable } from '@nestjs/common';
 import { isEqual } from 'radash';
 
@@ -6,6 +7,7 @@ import {
   Cell,
   GameBoard,
   GameBoat,
+  GameBoatConfiguration,
   GamePlayer,
   Turn,
 } from '@interfaces/engine.interface';
@@ -83,6 +85,19 @@ export default class GameInstanceValidatorsService {
     }
 
     return true;
+  }
+
+  public validateBoatNames(boats: GameBoatConfiguration[]) {
+    boats.forEach((boat) => {
+      if (!Object.values(BoatName).includes(boat.name)) {
+        const errorKey = 'INVALID_BOAT_NAME';
+
+        throw new GameEngineError({
+          code: GameEngineErrorCodes[errorKey],
+          message: GameEngineErrorMessages[errorKey],
+        });
+      }
+    });
   }
 
   private validateBoatPlacement(gameBoard: GameBoard, boatPlacement: GameBoat) {

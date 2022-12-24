@@ -1,3 +1,4 @@
+import { BoatName } from '@interfaces/boat.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
@@ -6,10 +7,8 @@ import {
 } from '@shared/game-instance.const';
 import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
-import {
+  gameBoatConfiguration1,
+  gameBoatConfiguration2,
   guestPlayer1,
   guestPlayer2,
   invalidBoatPlacement2,
@@ -27,6 +26,10 @@ import {
   validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { shuffle } from 'radash';
@@ -310,6 +313,35 @@ describe('GameInstanceValidatorsService', () => {
       new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
         message: GameEngineErrorMessages[errorKey],
+      }),
+    );
+  });
+
+  it('should validate boat names', () => {
+    const arrayOfBoatConfigurations = [
+      gameBoatConfiguration1(),
+      gameBoatConfiguration2(),
+    ];
+
+    expect(() =>
+      service.validateBoatNames(arrayOfBoatConfigurations),
+    ).not.toThrowError();
+  });
+
+  it('should not validate boat names', () => {
+    const arrayOfBoatConfigurations = [
+      gameBoatConfiguration1(),
+      gameBoatConfiguration2(),
+    ];
+
+    arrayOfBoatConfigurations[0].name = 'pikachu' as BoatName;
+
+    expect(() =>
+      service.validateBoatNames(arrayOfBoatConfigurations),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.INVALID_BOAT_NAME,
+        message: GameEngineErrorMessages.INVALID_BOAT_NAME,
       }),
     );
   });

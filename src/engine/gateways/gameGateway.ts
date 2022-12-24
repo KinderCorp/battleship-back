@@ -13,7 +13,6 @@ import { uid } from 'radash';
 import {
   BaseGameSettings,
   FinalTurnRecap,
-  GameBoat,
   GameBoatConfiguration,
   GameMode,
   GamePlayer,
@@ -436,11 +435,20 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
+    // TASK Refactor once logic wrote
     try {
-      // TASK Transform received data
-      // TASK Get boats object
-      // TASK Calculate placement depending of boat and direction and bowCells
+      // TASK ✓ Get boats object - To test
+      // TASK -> Calculate placement depending of boat and direction and bowCells
       // TASK Build a gameBoat
+
+      this.gameInstanceValidators.validateBoatNames(body.data);
+
+      const boatNames = body.data.map((boat) => boat.name);
+      const uniqueBoatNames = [...new Set(boatNames)];
+      const storedBoats = uniqueBoatNames.map((boatName) =>
+        this.gameEngine.boatStore.getByName(boatName),
+      );
+
       this.gameInstanceValidators.validateBoatsOfOnePlayer(
         instance.gameSettings.authorisedFleet,
         instance.board,

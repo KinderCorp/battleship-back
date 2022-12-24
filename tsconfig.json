@@ -28,19 +28,20 @@
       "@boat/*": ["src/domains/boat/*"],
       "@character/*": ["src/domains/character/*"],
       "@dto/*": ["src/dto/*"],
+      "@engine/*": ["src/engine/*"],
       "@filters/*": ["src/filters/*"],
       "@game/*": ["src/domains/game/*"],
+      "@gateways/*": ["src/engine/gateways/*"],
       "@interceptors/*": ["src/interceptors/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@level/*": ["src/domains/level/*"],
       "@modules/*": ["src/modules/*"],
       "@shared/*": ["src/shared/*"],
+      "@store/*": ["src/store/*"],
       "@tests/*": ["src/tests/*"],
       "@theme/*": ["src/domains/theme/*"],
       "@user/*": ["src/domains/user/*"],
-      "@weapon/*": ["src/domains/weapon/*"],
-      "@engine/*": ["src/engine/*"],
-      "@gateways/*": ["src/engine/gateways/*"]
+      "@weapon/*": ["src/domains/weapon/*"]
     }
   },
   "exclude": [

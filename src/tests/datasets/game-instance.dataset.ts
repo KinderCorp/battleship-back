@@ -1,6 +1,9 @@
+import { BoatName } from '@interfaces/boat.interface';
 import {
+  BoatDirection,
   GameArsenal,
   GameBoat,
+  GameBoatConfiguration,
   GameBoats,
   GameMode,
   GamePlayer,
@@ -11,7 +14,6 @@ import {
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
-import { BoatName } from '@interfaces/boat.interface';
 import { DEFAULT_AUTHORISED_FLEET } from '@shared/game-instance.const';
 
 // INFO Datasets must be functions to ensure that the values don't mutate
@@ -374,4 +376,36 @@ export const validPlayerFleet: () => GameBoat[] = () => {
     validFrigate(),
     validGalley(),
   ];
+};
+
+export const gameBoatConfiguration1 = (): GameBoatConfiguration => {
+  return {
+    bowCells: [[0, 0]],
+    direction: BoatDirection.EAST,
+    name: BoatName.RAFT,
+  };
+};
+
+export const gameBoatConfiguration2 = (): GameBoatConfiguration => {
+  return {
+    bowCells: [[5, 8]],
+    direction: BoatDirection.NORTH,
+    name: BoatName.GALLEY,
+  };
+};
+
+export const gameBoatConfiguration3 = (): GameBoatConfiguration => {
+  return {
+    bowCells: [[5, 0]],
+    direction: BoatDirection.SOUTH,
+    name: BoatName.FRIGATE,
+  };
+};
+
+export const gameBoatConfiguration4 = (): GameBoatConfiguration => {
+  return {
+    bowCells: [[8, 5]],
+    direction: BoatDirection.WEST,
+    name: BoatName.SHALLOP,
+  };
 };

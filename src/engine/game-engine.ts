@@ -1,6 +1,10 @@
+import BoatStore from '@store/boat.store';
 import GameInstanceService from '@engine/game-instance.service';
+
 export default class GameEngine {
   private instances: GameInstanceService[] = [];
+
+  public constructor(public boatStore: BoatStore) {}
 
   public addInstance(instance: GameInstanceService): void {
     this.instances.push(instance);

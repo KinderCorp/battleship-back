@@ -1,4 +1,5 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import Boat from '@boat/boat.entity';
 import { BoatName } from '@interfaces/boat.interface';
 import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
@@ -127,6 +128,10 @@ export type PlayersWithSettings = {
   players: GamePlayer[];
   settings: GameSettings;
 };
+
+export interface GameItems {
+  boats: Boat[];
+}
 
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',
