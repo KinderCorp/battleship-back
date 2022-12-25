@@ -7,8 +7,9 @@ import {
 } from '@shared/game-instance.const';
 import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
-  gameBoatConfiguration1,
-  gameBoatConfiguration2,
+  gameBoatConfigurationGalley,
+  gameBoatConfigurationHugeRaft,
+  gameBoatConfigurationRaft,
   guestPlayer1,
   guestPlayer2,
   invalidBoatPlacement2,
@@ -20,6 +21,9 @@ import {
   invalidGalley1,
   loggedPlayer1,
   loggedPlayer2,
+  storedGalley,
+  storedHugeRaft,
+  storedRaft,
   validGalley,
   validPlayerFleet,
   validRaft,
@@ -319,8 +323,8 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat names', () => {
     const arrayOfBoatConfigurations = [
-      gameBoatConfiguration1(),
-      gameBoatConfiguration2(),
+      gameBoatConfigurationRaft(),
+      gameBoatConfigurationGalley(),
     ];
 
     expect(() =>
@@ -330,8 +334,8 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should not validate boat names', () => {
     const arrayOfBoatConfigurations = [
-      gameBoatConfiguration1(),
-      gameBoatConfiguration2(),
+      gameBoatConfigurationRaft(),
+      gameBoatConfigurationGalley(),
     ];
 
     arrayOfBoatConfigurations[0].name = 'pikachu' as BoatName;
@@ -344,5 +348,47 @@ describe('GameInstanceValidatorsService', () => {
         message: GameEngineErrorMessages.INVALID_BOAT_NAME,
       }),
     );
+  });
+
+  it('should validate boat width', () => {
+    expect(() =>
+      service.validateBoatWidth(gameBoatConfigurationRaft(), storedRaft()),
+    ).not.toThrowError();
+
+    expect(() =>
+      service.validateBoatWidth(
+        gameBoatConfigurationHugeRaft(),
+        storedHugeRaft(),
+      ),
+    ).not.toThrowError();
+  });
+
+  it('should not validate boat width', () => {
+    expect(() =>
+      service.validateBoatWidth(gameBoatConfigurationRaft(), storedHugeRaft()),
+    ).toThrowError();
+  });
+
+  it('should validate cell is in bounds', () => {
+    expect(() =>
+      service.validateCellIsInBounds([1, 1], DEFAULT_BOARD_GAME),
+    ).not.toThrowError();
+    expect(() =>
+      service.validateCellIsInBounds([10, 10], DEFAULT_BOARD_GAME),
+    ).not.toThrowError();
+  });
+
+  it('should not validate cell is in bounds', () => {
+    const error = new GameEngineError({
+      code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+      message: GameEngineErrorMessages.OUT_OF_BOUNDS,
+    });
+
+    expect(() =>
+      service.validateCellIsInBounds([-1, 1], DEFAULT_BOARD_GAME),
+    ).toThrowError(error);
+    expect(() =>
+      service.validateCellIsInBounds([11, 9], DEFAULT_BOARD_GAME),
+    ).toThrowError(error);
   });
 });

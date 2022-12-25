@@ -1,9 +1,11 @@
+import Boat from '@boat/boat.entity';
 import { BoatName } from '@interfaces/boat.interface';
 import { Injectable } from '@nestjs/common';
 import { isEqual } from 'radash';
 
 import {
   AuthorisedFleet,
+  BoatDirection,
   Cell,
   GameBoard,
   GameBoat,
@@ -101,20 +103,9 @@ export default class GameInstanceValidatorsService {
   }
 
   private validateBoatPlacement(gameBoard: GameBoard, boatPlacement: GameBoat) {
-    const [xBoardPositions, yBoardPositions] = gameBoard;
-
-    // Check if positions are out of bounds
-    boatPlacement.emplacement.forEach(([xPosition, yPosition]) => {
-      const isXPositionValid = xBoardPositions.includes(xPosition);
-      const isYPositionValid = yBoardPositions.includes(yPosition);
-
-      if (!isXPositionValid || !isYPositionValid) {
-        throw new GameEngineError({
-          code: GameEngineErrorCodes.OUT_OF_BOUNDS,
-          message: GameEngineErrorMessages.OUT_OF_BOUNDS,
-        });
-      }
-    });
+    boatPlacement.emplacement.forEach((cell: Cell) =>
+      this.validateCellIsInBounds(cell, gameBoard),
+    );
 
     // Check if position are next to each other
     const xPositionsMap = boatPlacement.emplacement.map(
@@ -168,6 +159,17 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
+  public validateBoatWidth(boat: GameBoatConfiguration, storedBoat: Boat) {
+    if (boat.bowCells.length !== storedBoat.width) {
+      const errorKey = 'INVALID_BOAT';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+  }
+
   public validateCellHasNotBeenHit(
     arrayOfCells: Cell[],
     [xTargetedCell, yTargetedCell]: Cell,
@@ -185,6 +187,20 @@ export default class GameInstanceValidatorsService {
     }
 
     return true;
+  }
+
+  public validateCellIsInBounds(
+    [x, y]: Cell,
+    [xBoardPositions, yBoardPositions]: GameBoard,
+  ) {
+    if (!xBoardPositions.includes(x) || !yBoardPositions.includes(y)) {
+      const errorKey = 'OUT_OF_BOUNDS';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
   }
 
   public validateNumbersAreAdjacent(arrayOfNumbers: number[]) {

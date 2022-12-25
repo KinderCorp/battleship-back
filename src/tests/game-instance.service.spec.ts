@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoatName } from '@interfaces/boat.interface';
 
+import {
+  BoatDirection,
+  Cell,
+  GameMode,
+  GameState,
+} from '@interfaces/engine.interface';
 import {
   bomb,
   fakeWeapon,
@@ -18,11 +23,11 @@ import {
   visiblePlayerBoards1,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import { Cell, GameMode, GameState } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
+import { BoatName } from '@interfaces/boat.interface';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
@@ -657,5 +662,29 @@ describe('GameInstanceService', () => {
 
     expect(service.players).toHaveLength(1);
     expect(service.players).toEqual([guestPlayer1()]);
+  });
+
+  it('should calculate the stern cell for the north', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.NORTH, 3)).toEqual([
+      5, 3,
+    ]);
+  });
+
+  it('should calculate the stern cell for the south', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.SOUTH, 3)).toEqual([
+      5, 7,
+    ]);
+  });
+
+  it('should calculate the stern cell for the west', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.WEST, 3)).toEqual([
+      7, 5,
+    ]);
+  });
+
+  it('should calculate the stern cell for the east', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.EAST, 3)).toEqual([
+      3, 5,
+    ]);
   });
 });

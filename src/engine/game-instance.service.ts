@@ -1,8 +1,9 @@
 import Boat from '@boat/boat.entity';
-import { draw, isEqual, uid } from 'radash';
+import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 import {
   BaseGameSettings,
+  BoatDirection,
   Cell,
   GameArsenal,
   GameBoard,
@@ -22,17 +23,17 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
+import { WeaponName } from '@interfaces/weapon.interface';
+import GameEngineError from '@shared/game-engine-error';
+import {
   DEFAULT_AUTHORISED_FLEET,
   DEFAULT_BOARD_GAME,
   GAME_INSTANCE_UID_LENGTH,
 } from '@shared/game-instance.const';
-import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
-import GameEngineError from '@shared/game-engine-error';
-import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
-import { WeaponName } from '@interfaces/weapon.interface';
+import { draw, isEqual, uid } from 'radash';
 
 export default class GameInstanceService {
   private _gameState!: GameState;
@@ -91,10 +92,93 @@ export default class GameInstanceService {
   }
 
   // TASK Add some logic and make the magic happen
+  // TEST to add
+  /**
+   * Calculate boat emplacement from bowCells, direction and length of the boat
+   * @param boat
+   * @param storedBoat
+   */
   public calculateBoatEmplacement(
     boat: GameBoatConfiguration,
     storedBoat: Boat,
-  ) {}
+  ) {
+    // TASK Move this into the parent function call
+    this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
+
+    const boatEmplacements: Cell[] = [...boat.bowCells];
+
+    boat.bowCells.forEach(([xBowCell, yBowCell]: Cell) => {
+      const sternCell = this.calculateSternCell(
+        [xBowCell, yBowCell],
+        boat.direction,
+        storedBoat.length,
+      );
+
+      this.gameInstanceValidatorsService.validateCellIsInBounds(
+        sternCell,
+        this.board,
+      );
+
+      const [xSternCell, ySternCell] = sternCell;
+
+      switch (boat.direction) {
+        case BoatDirection.NORTH:
+          for (let newCell = ySternCell; newCell < yBowCell; newCell++) {
+            boatEmplacements.push([xBowCell, newCell]);
+          }
+          break;
+
+        case BoatDirection.EAST:
+          for (let newCell = xSternCell; newCell < xBowCell; newCell++) {
+            boatEmplacements.push([newCell, yBowCell]);
+          }
+          break;
+
+        case BoatDirection.SOUTH:
+          for (let newCell = ySternCell; newCell > xBowCell; newCell--) {
+            boatEmplacements.push([xBowCell, newCell]);
+          }
+          break;
+
+        case BoatDirection.WEST:
+          for (let newCell = xSternCell; newCell > xBowCell; newCell--) {
+            boatEmplacements.push([newCell, yBowCell]);
+          }
+          break;
+      }
+    });
+
+    return boatEmplacements;
+  }
+
+  /**
+   * Calculate the stern cell from the bow cell, the direction and the boat length
+   *
+   * We add a -1 modifier that corresponds to the bowCells positions
+   *
+   * @param Cell
+   * @param direction
+   * @param boatLength
+   */
+  public calculateSternCell(
+    [xBowCell, yBowCell]: Cell,
+    direction: BoatDirection,
+    boatLength: Boat['length'],
+  ): Cell {
+    switch (direction) {
+      case BoatDirection.NORTH:
+        return [xBowCell, yBowCell - (boatLength - 1)];
+
+      case BoatDirection.EAST:
+        return [xBowCell - (boatLength - 1), yBowCell];
+
+      case BoatDirection.SOUTH:
+        return [xBowCell, yBowCell + (boatLength - 1)];
+
+      case BoatDirection.WEST:
+        return [xBowCell + (boatLength - 1), yBowCell];
+    }
+  }
 
   public countDownAction(turn: Turn) {
     this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);
@@ -354,20 +438,10 @@ export default class GameInstanceService {
       });
     }
 
-    const [xOriginCell, yOriginCell] = originCell;
-    const [xBoardPositions, yBoardPositions] = this.board;
-
-    if (
-      !xBoardPositions.includes(xOriginCell) ||
-      !yBoardPositions.includes(yOriginCell)
-    ) {
-      const errorKey = 'OUT_OF_BOUNDS';
-
-      throw new GameEngineError({
-        code: GameEngineErrorCodes[errorKey],
-        message: GameEngineErrorMessages[errorKey],
-      });
-    }
+    this.gameInstanceValidatorsService.validateCellIsInBounds(
+      originCell,
+      this.board,
+    );
 
     const shotRecap: ShotRecap = {
       hitCells: [],
