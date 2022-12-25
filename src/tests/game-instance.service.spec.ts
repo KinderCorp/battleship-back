@@ -620,4 +620,42 @@ describe('GameInstanceService', () => {
       }),
     );
   });
+
+  it('should add a player', () => {
+    expect(service.players).toHaveLength(1);
+    service.addPlayer(guestPlayer2());
+    expect(service.players).toHaveLength(2);
+  });
+
+  it('should not remove a player because the player is not found', () => {
+    const guestPlayer = guestPlayer2();
+    service.addPlayer(guestPlayer);
+    expect(service.players).toHaveLength(2);
+
+    const player = {
+      id: 'nonma_3',
+      isHost: false,
+      pseudo: 'Nonma',
+      socketId: 'wFH34DKHHdQAlanXAAA2',
+    };
+
+    expect(() => service.removePlayer(player)).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.PLAYER_NOT_FOUND,
+        message: GameEngineErrorMessages.PLAYER_NOT_FOUND,
+      }),
+    );
+  });
+
+  it('should remove a player', () => {
+    const guestPlayer = guestPlayer2();
+    service.addPlayer(guestPlayer);
+    expect(service.players).toHaveLength(2);
+
+    const player = service.getPlayerByAnyId(guestPlayer.id);
+    service.removePlayer(player);
+
+    expect(service.players).toHaveLength(1);
+    expect(service.players).toEqual([guestPlayer1()]);
+  });
 });
