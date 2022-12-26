@@ -91,8 +91,6 @@ export default class GameInstanceService {
     this.players.push(player);
   }
 
-  // TASK Add some logic and make the magic happen
-  // TEST to add
   /**
    * Calculate boat emplacement from bowCells, direction and length of the boat
    * @param boat
@@ -102,13 +100,12 @@ export default class GameInstanceService {
     boat: GameBoatConfiguration,
     storedBoat: Boat,
   ) {
-    // TASK Move this into the parent function call
     this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
 
     const boatEmplacements: Cell[] = [...boat.bowCells];
 
     boat.bowCells.forEach(([xBowCell, yBowCell]: Cell) => {
-      const sternCell = this.calculateSternCell(
+      const sternCell: Cell = this.calculateSternCell(
         [xBowCell, yBowCell],
         boat.direction,
         storedBoat.length,
@@ -121,27 +118,33 @@ export default class GameInstanceService {
 
       const [xSternCell, ySternCell] = sternCell;
 
+      // TASK Add a verification that all bow cells are on the same axis.
+
       switch (boat.direction) {
         case BoatDirection.NORTH:
-          for (let newCell = ySternCell; newCell < yBowCell; newCell++) {
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = ySternCell + i;
             boatEmplacements.push([xBowCell, newCell]);
           }
           break;
 
         case BoatDirection.EAST:
-          for (let newCell = xSternCell; newCell < xBowCell; newCell++) {
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = xSternCell + i;
             boatEmplacements.push([newCell, yBowCell]);
           }
           break;
 
         case BoatDirection.SOUTH:
-          for (let newCell = ySternCell; newCell > xBowCell; newCell--) {
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = ySternCell - i;
             boatEmplacements.push([xBowCell, newCell]);
           }
           break;
 
         case BoatDirection.WEST:
-          for (let newCell = xSternCell; newCell > xBowCell; newCell--) {
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = xSternCell - i;
             boatEmplacements.push([newCell, yBowCell]);
           }
           break;

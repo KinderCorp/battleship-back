@@ -414,6 +414,17 @@ export const gameBoatConfigurationFrigate = (): GameBoatConfiguration => {
   };
 };
 
+export const gameBoatConfigurationHugeFrigate = (): GameBoatConfiguration => {
+  return {
+    bowCells: [
+      [5, 1],
+      [6, 1],
+    ],
+    direction: BoatDirection.SOUTH,
+    name: BoatName.FRIGATE,
+  };
+};
+
 export const gameBoatConfigurationShallop = (): GameBoatConfiguration => {
   return {
     bowCells: [[8, 5]],
@@ -439,5 +450,9 @@ export const storedGalley = (): Boat => {
 };
 
 export const storedHugeRaft = (): Boat => {
-  return { id: 1, length: 1, name: BoatName.GALLEY, width: 2 };
+  return { id: 1, length: 1, name: BoatName.RAFT, width: 2 };
+};
+
+export const storedHugeFrigate = (): Boat => {
+  return { id: 1, length: 3, name: BoatName.FRIGATE, width: 2 };
 };
