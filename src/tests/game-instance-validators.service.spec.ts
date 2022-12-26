@@ -1,11 +1,22 @@
-import { BoatName } from '@interfaces/boat.interface';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import {
+  BoatDirection,
+  GameBoat,
+  GamePlayer,
+} from '@interfaces/engine.interface';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
+import { BoatName } from '@interfaces/boat.interface';
+import GameEngineError from '@shared/game-engine-error';
+import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 import {
   DEFAULT_AUTHORISED_FLEET,
   DEFAULT_BOARD_GAME,
 } from '@shared/game-instance.const';
-import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
 import {
   gameBoatConfigurationGalley,
   gameBoatConfigurationHugeRaft,
@@ -21,7 +32,6 @@ import {
   invalidGalley1,
   loggedPlayer1,
   loggedPlayer2,
-  storedGalley,
   storedHugeRaft,
   storedRaft,
   validGalley,
@@ -30,12 +40,6 @@ import {
   validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
-import GameEngineError from '@shared/game-engine-error';
-import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { shuffle } from 'radash';
 
 // npm run test:unit -- src/tests/game-instance-validators.service.spec.ts --watch
@@ -390,5 +394,37 @@ describe('GameInstanceValidatorsService', () => {
     expect(() =>
       service.validateCellIsInBounds([11, 9], DEFAULT_BOARD_GAME),
     ).toThrowError(error);
+  });
+
+  it('should validate cells are aligned with direction', () => {
+    const spyValidateNumbersAreAdjacent = jest
+      .spyOn(service, 'validateNumbersAreAdjacent')
+      .mockImplementation();
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.NORTH, [
+      [5, 6],
+      [5, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.SOUTH, [
+      [5, 6],
+      [5, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.EAST, [
+      [5, 5],
+      [6, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.WEST, [
+      [5, 5],
+      [6, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledTimes(4);
   });
 });

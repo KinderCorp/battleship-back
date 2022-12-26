@@ -1,5 +1,3 @@
-import Boat from '@boat/boat.entity';
-import { BoatName } from '@interfaces/boat.interface';
 import { Injectable } from '@nestjs/common';
 import { isEqual } from 'radash';
 
@@ -21,6 +19,8 @@ import {
   MAX_BOARD_GAME_DIMENSIONS,
   MIN_BOARD_GAME_DIMENSIONS,
 } from '@shared/game-instance.const';
+import Boat from '@boat/boat.entity';
+import { BoatName } from '@interfaces/boat.interface';
 import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()
@@ -168,6 +168,27 @@ export default class GameInstanceValidatorsService {
         message: GameEngineErrorMessages[errorKey],
       });
     }
+  }
+
+  public validateBowCellsAreAlignedWithDirection(
+    boatDirection: BoatDirection,
+    bowCells: Cell[],
+  ) {
+    let axisToCheck: number[];
+
+    switch (boatDirection) {
+      case BoatDirection.NORTH:
+      case BoatDirection.SOUTH:
+        axisToCheck = bowCells.map((cell) => cell.at(1));
+        break;
+
+      case BoatDirection.WEST:
+      case BoatDirection.EAST:
+        axisToCheck = bowCells.map((cell) => cell.at(0));
+        break;
+    }
+
+    this.validateNumbersAreAdjacent(axisToCheck);
   }
 
   public validateCellHasNotBeenHit(

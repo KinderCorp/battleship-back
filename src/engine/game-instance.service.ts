@@ -1,5 +1,4 @@
-import Boat from '@boat/boat.entity';
-import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { draw, isEqual, uid } from 'radash';
 
 import {
   BaseGameSettings,
@@ -23,17 +22,18 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
-import { WeaponName } from '@interfaces/weapon.interface';
-import GameEngineError from '@shared/game-engine-error';
-import {
   DEFAULT_AUTHORISED_FLEET,
   DEFAULT_BOARD_GAME,
   GAME_INSTANCE_UID_LENGTH,
 } from '@shared/game-instance.const';
-import { draw, isEqual, uid } from 'radash';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
+import Boat from '@boat/boat.entity';
+import GameEngineError from '@shared/game-engine-error';
+import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { WeaponName } from '@interfaces/weapon.interface';
 
 export default class GameInstanceService {
   private _gameState!: GameState;
@@ -101,6 +101,10 @@ export default class GameInstanceService {
     storedBoat: Boat,
   ) {
     this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
+    this.gameInstanceValidatorsService.validateBowCellsAreAlignedWithDirection(
+      boat.direction,
+      boat.bowCells,
+    );
 
     const boatEmplacements: Cell[] = [...boat.bowCells];
 

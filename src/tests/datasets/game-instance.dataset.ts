@@ -1,5 +1,3 @@
-import Boat from '@boat/boat.entity';
-import { BoatName } from '@interfaces/boat.interface';
 import {
   BoatDirection,
   GameArsenal,
@@ -15,6 +13,8 @@ import {
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
+import Boat from '@boat/boat.entity';
+import { BoatName } from '@interfaces/boat.interface';
 import { DEFAULT_AUTHORISED_FLEET } from '@shared/game-instance.const';
 
 // INFO Datasets must be functions to ensure that the values don't mutate

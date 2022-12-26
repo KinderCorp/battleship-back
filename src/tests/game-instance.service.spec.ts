@@ -690,6 +690,7 @@ describe('GameInstanceService', () => {
 
   describe('calculate boat emplacement', function () {
     let spyValidateBoatWidth: jest.SpyInstance;
+    let spyValidateBowCellsAreAlignedWithDirection: jest.SpyInstance;
     let spyValidateCellIsInBound: jest.SpyInstance;
     const boatConfiguration = gameBoatConfigurationHugeFrigate();
 
@@ -708,6 +709,13 @@ describe('GameInstanceService', () => {
 
       spyValidateCellIsInBound = jest
         .spyOn(gameInstanceValidatorsService, 'validateCellIsInBounds')
+        .mockImplementation();
+
+      spyValidateBowCellsAreAlignedWithDirection = jest
+        .spyOn(
+          gameInstanceValidatorsService,
+          'validateBowCellsAreAlignedWithDirection',
+        )
         .mockImplementation();
     });
 
@@ -735,6 +743,9 @@ describe('GameInstanceService', () => {
       sortCells(boatEmplacement, expectedCells);
 
       expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
       expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
       expect(boatEmplacement).toEqual(expectedCells);
     });
@@ -763,6 +774,9 @@ describe('GameInstanceService', () => {
       sortCells(boatEmplacement, expectedCells);
 
       expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
       expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
       expect(boatEmplacement).toEqual(expectedCells);
     });
@@ -791,6 +805,9 @@ describe('GameInstanceService', () => {
       sortCells(boatEmplacement, expectedCells);
 
       expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
       expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
       expect(boatEmplacement).toEqual(expectedCells);
     });
@@ -819,6 +836,9 @@ describe('GameInstanceService', () => {
       sortCells(boatEmplacement, expectedCells);
 
       expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
       expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
       expect(boatEmplacement).toEqual(expectedCells);
     });
