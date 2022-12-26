@@ -435,24 +435,16 @@ export class GameGateway implements OnGatewayConnection {
       return;
     }
 
-    // TASK Refactor once logic wrote
     try {
-      // TASK ✓ Get boats object - To test
-      // TASK -> Calculate placement depending of boat and direction and bowCells
-      // TASK Build a gameBoat
-
       this.gameInstanceValidators.validateBoatNames(body.data);
 
-      const boatNames = body.data.map((boat) => boat.name);
-      const uniqueBoatNames = [...new Set(boatNames)];
-      const storedBoats = uniqueBoatNames.map((boatName) =>
-        this.gameEngine.boatStore.getByName(boatName),
-      );
+      const storedBoats = this.gameEngine.getStoredBoatsForInstance(body.data);
+      const playerFleet = instance.generateFleet(body.data, storedBoats);
 
-      this.gameInstanceValidators.validateBoatsOfOnePlayer(
+      this.gameInstanceValidators.validateFleetOfOnePlayer(
         instance.gameSettings.authorisedFleet,
         instance.board,
-        body.data,
+        playerFleet,
       );
 
       const newPlayerReady = instance.players.find(
@@ -464,7 +456,7 @@ export class GameGateway implements OnGatewayConnection {
           .emit(SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND);
       }
 
-      instance.fleets[newPlayerReady.id] = body.data;
+      instance.fleets[newPlayerReady.id] = playerFleet;
 
       const roomData: RoomData<GamePlayer> = {
         data: newPlayerReady,

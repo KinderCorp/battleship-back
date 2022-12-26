@@ -425,6 +425,10 @@ describe('GameInstanceValidatorsService', () => {
     ]);
     expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
 
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.NORTH, [
+      [5, 5],
+    ]);
+
     expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledTimes(4);
   });
 });

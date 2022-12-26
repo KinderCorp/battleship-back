@@ -136,24 +136,13 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  public validateBoatsOfOnePlayer(
-    authorisedFleet: AuthorisedFleet,
-    gameBoard: GameBoard,
-    playerFleet: GameBoat[],
-  ) {
-    playerFleet.forEach((boatPlacement) => {
-      this.validateBoatPlacement(gameBoard, boatPlacement);
-      this.validateAuthorisedFleet(authorisedFleet, playerFleet);
-    });
-  }
-
   public validateBoatsOfPlayers(
     authorisedFleet: AuthorisedFleet,
     gameBoard: GameBoard,
     playersFleet: GameBoat[][],
   ) {
     playersFleet.forEach((boatPlacements) => {
-      this.validateBoatsOfOnePlayer(authorisedFleet, gameBoard, boatPlacements);
+      this.validateFleetOfOnePlayer(authorisedFleet, gameBoard, boatPlacements);
     });
 
     return true;
@@ -174,6 +163,10 @@ export default class GameInstanceValidatorsService {
     boatDirection: BoatDirection,
     bowCells: Cell[],
   ) {
+    if (bowCells.length === 1) {
+      return;
+    }
+
     let axisToCheck: number[];
 
     switch (boatDirection) {
@@ -222,6 +215,17 @@ export default class GameInstanceValidatorsService {
         message: GameEngineErrorMessages[errorKey],
       });
     }
+  }
+
+  public validateFleetOfOnePlayer(
+    authorisedFleet: AuthorisedFleet,
+    gameBoard: GameBoard,
+    playerFleet: GameBoat[],
+  ) {
+    playerFleet.forEach((boatPlacement) => {
+      this.validateBoatPlacement(gameBoard, boatPlacement);
+      this.validateAuthorisedFleet(authorisedFleet, playerFleet);
+    });
   }
 
   public validateNumbersAreAdjacent(arrayOfNumbers: number[]) {

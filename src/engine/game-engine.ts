@@ -1,4 +1,5 @@
 import BoatStore from '@store/boat.store';
+import { GameBoatConfiguration } from '@interfaces/engine.interface';
 import GameInstanceService from '@engine/game-instance.service';
 
 export default class GameEngine {
@@ -31,5 +32,13 @@ export default class GameEngine {
 
   public getInstanceSockets(instance: GameInstanceService) {
     return instance.players.map((player) => player.socketId);
+  }
+
+  public getStoredBoatsForInstance(boats: GameBoatConfiguration[]) {
+    const boatNames = boats.map((boat) => boat.name);
+    const uniqueBoatNames = [...new Set(boatNames)];
+    return uniqueBoatNames.map((boatName) =>
+      this.boatStore.getByName(boatName),
+    );
   }
 }

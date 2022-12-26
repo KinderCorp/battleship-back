@@ -235,6 +235,13 @@ export default class GameInstanceService {
     return playerBoats.filter((boat) => !boat.isSunk);
   }
 
+  public generateFleet(
+    boats: GameBoatConfiguration[],
+    boatsFromStore: Boat[],
+  ): GameBoat[] {
+    return boats.map((boat) => this.generateGameBoat(boat, boatsFromStore));
+  }
+
   private generateGameArsenal(gameSettings: GameSettings) {
     const gameArsenal: GameArsenal = {};
 
@@ -253,6 +260,32 @@ export default class GameInstanceService {
     });
 
     return gameArsenal;
+  }
+
+  private generateGameBoat(
+    boat: GameBoatConfiguration,
+    boatsFromStore: Boat[],
+  ): GameBoat {
+    const storedBoat = boatsFromStore.find(
+      (boatFromStore) => boat.name === boatFromStore.name,
+    );
+    if (!storedBoat) {
+      const errorKey = 'INVALID_BOAT';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    const boatEmplacement = this.calculateBoatEmplacement(boat, storedBoat);
+
+    return {
+      boatName: boat.name,
+      emplacement: boatEmplacement,
+      hit: [],
+      isSunk: false,
+    };
   }
 
   private generateMasterPlayerBoards(boats: GameBoats) {

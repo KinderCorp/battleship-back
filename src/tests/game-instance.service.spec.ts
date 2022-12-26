@@ -11,14 +11,18 @@ import {
   fakeWeapon,
   fleets1,
   gameArsenal1,
+  gameBoatConfigurationFrigate,
   gameBoatConfigurationHugeFrigate,
+  gameBoatConfigurationRaft,
   gameSettings1,
   guestPlayer1,
   guestPlayer2,
   loggedPlayer1,
   masterPlayerBoards1,
   players1,
+  storedFrigate,
   storedHugeFrigate,
+  storedRaft,
   turn1,
   validFrigate,
   validRaft,
@@ -842,5 +846,63 @@ describe('GameInstanceService', () => {
       expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
       expect(boatEmplacement).toEqual(expectedCells);
     });
+  });
+
+  it('should generate game boat', () => {
+    const boatsFromStore = [storedHugeFrigate(), storedRaft()];
+
+    expect(
+      service['generateGameBoat'](gameBoatConfigurationRaft(), boatsFromStore),
+    ).toStrictEqual({
+      boatName: BoatName.RAFT,
+      emplacement: [[1, 1]],
+      hit: [],
+      isSunk: false,
+    });
+  });
+
+  it('should not generate game boat', () => {
+    const boatsFromStore = [storedHugeFrigate(), storedRaft()];
+
+    boatsFromStore[1].name = 'outrigger';
+
+    expect(() =>
+      service['generateGameBoat'](gameBoatConfigurationRaft(), boatsFromStore),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
+      }),
+    );
+  });
+
+  it('should generate boat fleet', () => {
+    const spyGenerateGameBoat = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(service as any, 'generateGameBoat');
+
+    const boatsFromStore = [storedRaft(), storedFrigate()];
+    const boats = [gameBoatConfigurationRaft(), gameBoatConfigurationFrigate()];
+
+    expect(service.generateFleet(boats, boatsFromStore)).toStrictEqual([
+      {
+        boatName: 'raft',
+        emplacement: [[1, 1]],
+        hit: [],
+        isSunk: false,
+      },
+      {
+        boatName: 'frigate',
+        emplacement: [
+          [5, 1],
+          [5, 3],
+          [5, 2],
+        ],
+        hit: [],
+        isSunk: false,
+      },
+    ]);
+
+    expect(spyGenerateGameBoat).toHaveBeenCalledTimes(2);
   });
 });
