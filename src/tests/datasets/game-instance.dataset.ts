@@ -2,8 +2,8 @@ import {
   BoatDirection,
   GameArsenal,
   GameBoat,
-  GameBoatConfiguration,
   GameBoats,
+  GameBoatSettings,
   GameMode,
   GamePlayer,
   GameSettings,
@@ -379,7 +379,7 @@ export const validPlayerFleet: () => GameBoat[] = () => {
   ];
 };
 
-export const gameBoatConfigurationRaft = (): GameBoatConfiguration => {
+export const gameBoatSettingsRaft = (): GameBoatSettings => {
   return {
     bowCells: [[1, 1]],
     direction: BoatDirection.EAST,
@@ -387,7 +387,7 @@ export const gameBoatConfigurationRaft = (): GameBoatConfiguration => {
   };
 };
 
-export const gameBoatConfigurationHugeRaft = (): GameBoatConfiguration => {
+export const gameBoatSettingsHugeRaft = (): GameBoatSettings => {
   return {
     bowCells: [
       [1, 1],
@@ -398,7 +398,7 @@ export const gameBoatConfigurationHugeRaft = (): GameBoatConfiguration => {
   };
 };
 
-export const gameBoatConfigurationGalley = (): GameBoatConfiguration => {
+export const gameBoatSettingsGalley = (): GameBoatSettings => {
   return {
     bowCells: [[5, 8]],
     direction: BoatDirection.NORTH,
@@ -406,7 +406,7 @@ export const gameBoatConfigurationGalley = (): GameBoatConfiguration => {
   };
 };
 
-export const gameBoatConfigurationFrigate = (): GameBoatConfiguration => {
+export const gameBoatSettingsFrigate = (): GameBoatSettings => {
   return {
     bowCells: [[5, 1]],
     direction: BoatDirection.SOUTH,
@@ -414,7 +414,7 @@ export const gameBoatConfigurationFrigate = (): GameBoatConfiguration => {
   };
 };
 
-export const gameBoatConfigurationHugeFrigate = (): GameBoatConfiguration => {
+export const gameBoatSettingsHugeFrigate = (): GameBoatSettings => {
   return {
     bowCells: [
       [5, 1],
@@ -425,28 +425,12 @@ export const gameBoatConfigurationHugeFrigate = (): GameBoatConfiguration => {
   };
 };
 
-export const gameBoatConfigurationShallop = (): GameBoatConfiguration => {
-  return {
-    bowCells: [[8, 5]],
-    direction: BoatDirection.WEST,
-    name: BoatName.SHALLOP,
-  };
-};
-
 export const storedRaft = (): Boat => {
   return { id: 1, length: 1, name: BoatName.RAFT, width: 1 };
 };
 
-export const storedShallop = (): Boat => {
-  return { id: 1, length: 2, name: BoatName.SHALLOP, width: 1 };
-};
-
 export const storedFrigate = (): Boat => {
   return { id: 1, length: 3, name: BoatName.FRIGATE, width: 1 };
-};
-
-export const storedGalley = (): Boat => {
-  return { id: 1, length: 4, name: BoatName.GALLEY, width: 1 };
 };
 
 export const storedHugeRaft = (): Boat => {

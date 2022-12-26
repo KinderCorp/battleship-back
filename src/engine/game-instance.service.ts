@@ -7,8 +7,8 @@ import {
   GameArsenal,
   GameBoard,
   GameBoat,
-  GameBoatConfiguration,
   GameBoats,
+  GameBoatSettings,
   GameMode,
   GamePlayer,
   GameSettings,
@@ -96,10 +96,7 @@ export default class GameInstanceService {
    * @param boat
    * @param storedBoat
    */
-  public calculateBoatEmplacement(
-    boat: GameBoatConfiguration,
-    storedBoat: Boat,
-  ) {
+  public calculateBoatEmplacement(boat: GameBoatSettings, storedBoat: Boat) {
     this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
     this.gameInstanceValidatorsService.validateBowCellsAreAlignedWithDirection(
       boat.direction,
@@ -121,8 +118,6 @@ export default class GameInstanceService {
       );
 
       const [xSternCell, ySternCell] = sternCell;
-
-      // TASK Add a verification that all bow cells are on the same axis.
 
       switch (boat.direction) {
         case BoatDirection.NORTH:
@@ -236,7 +231,7 @@ export default class GameInstanceService {
   }
 
   public generateFleet(
-    boats: GameBoatConfiguration[],
+    boats: GameBoatSettings[],
     boatsFromStore: Boat[],
   ): GameBoat[] {
     return boats.map((boat) => this.generateGameBoat(boat, boatsFromStore));
@@ -263,7 +258,7 @@ export default class GameInstanceService {
   }
 
   private generateGameBoat(
-    boat: GameBoatConfiguration,
+    boat: GameBoatSettings,
     boatsFromStore: Boat[],
   ): GameBoat {
     const storedBoat = boatsFromStore.find(

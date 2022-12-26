@@ -37,8 +37,7 @@ export interface GameBoat {
   emplacement: Cell[];
 }
 
-// TASK I don't like this name, find better. It's the boats position that frontend sends.
-export interface GameBoatConfiguration {
+export interface GameBoatSettings {
   bowCells: Cell[];
   direction: BoatDirection;
   name: BoatName;

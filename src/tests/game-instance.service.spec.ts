@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
+  BaseGameSettings,
   BoatDirection,
   Cell,
   GameMode,
@@ -11,9 +12,9 @@ import {
   fakeWeapon,
   fleets1,
   gameArsenal1,
-  gameBoatConfigurationFrigate,
-  gameBoatConfigurationHugeFrigate,
-  gameBoatConfigurationRaft,
+  gameBoatSettingsFrigate,
+  gameBoatSettingsHugeFrigate,
+  gameBoatSettingsRaft,
   gameSettings1,
   guestPlayer1,
   guestPlayer2,
@@ -39,10 +40,9 @@ import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { WeaponName } from '@interfaces/weapon.interface';
 
-const baseGameConfiguration = {
+const baseGameSettings: BaseGameSettings = {
   firstPlayer: guestPlayer1(),
   gameMode: GameMode.ONE_VERSUS_ONE,
-  state: GameState.WAITING_TO_RIVAL,
 };
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
@@ -61,7 +61,7 @@ describe('GameInstanceService', () => {
     );
 
     service = new GameInstanceService(
-      baseGameConfiguration,
+      baseGameSettings,
       gameInstanceValidatorsService,
     );
   });
@@ -696,7 +696,7 @@ describe('GameInstanceService', () => {
     let spyValidateBoatWidth: jest.SpyInstance;
     let spyValidateBowCellsAreAlignedWithDirection: jest.SpyInstance;
     let spyValidateCellIsInBound: jest.SpyInstance;
-    const boatConfiguration = gameBoatConfigurationHugeFrigate();
+    const boatSettings = gameBoatSettingsHugeFrigate();
 
     const sortCells = (boatEmplacement: Cell[], expectedCells: Cell[]) => {
       service['sortCells'](boatEmplacement, 'x');
@@ -724,14 +724,14 @@ describe('GameInstanceService', () => {
     });
 
     it('should calculate boat emplacement for north', () => {
-      boatConfiguration.direction = BoatDirection.NORTH;
-      boatConfiguration.bowCells = [
+      boatSettings.direction = BoatDirection.NORTH;
+      boatSettings.bowCells = [
         [5, 5],
         [6, 5],
       ];
 
       const boatEmplacement = service.calculateBoatEmplacement(
-        boatConfiguration,
+        boatSettings,
         storedHugeFrigate(),
       );
 
@@ -755,14 +755,14 @@ describe('GameInstanceService', () => {
     });
 
     it('should calculate boat emplacement for east', () => {
-      boatConfiguration.direction = BoatDirection.EAST;
-      boatConfiguration.bowCells = [
+      boatSettings.direction = BoatDirection.EAST;
+      boatSettings.bowCells = [
         [5, 5],
         [5, 4],
       ];
 
       const boatEmplacement = service.calculateBoatEmplacement(
-        boatConfiguration,
+        boatSettings,
         storedHugeFrigate(),
       );
 
@@ -786,14 +786,14 @@ describe('GameInstanceService', () => {
     });
 
     it('should calculate boat emplacement for south', () => {
-      boatConfiguration.direction = BoatDirection.SOUTH;
-      boatConfiguration.bowCells = [
+      boatSettings.direction = BoatDirection.SOUTH;
+      boatSettings.bowCells = [
         [5, 5],
         [6, 5],
       ];
 
       const boatEmplacement = service.calculateBoatEmplacement(
-        boatConfiguration,
+        boatSettings,
         storedHugeFrigate(),
       );
 
@@ -817,14 +817,14 @@ describe('GameInstanceService', () => {
     });
 
     it('should calculate boat emplacement for west', () => {
-      boatConfiguration.direction = BoatDirection.WEST;
-      boatConfiguration.bowCells = [
+      boatSettings.direction = BoatDirection.WEST;
+      boatSettings.bowCells = [
         [5, 5],
         [5, 4],
       ];
 
       const boatEmplacement = service.calculateBoatEmplacement(
-        boatConfiguration,
+        boatSettings,
         storedHugeFrigate(),
       );
 
@@ -852,7 +852,7 @@ describe('GameInstanceService', () => {
     const boatsFromStore = [storedHugeFrigate(), storedRaft()];
 
     expect(
-      service['generateGameBoat'](gameBoatConfigurationRaft(), boatsFromStore),
+      service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
     ).toStrictEqual({
       boatName: BoatName.RAFT,
       emplacement: [[1, 1]],
@@ -867,7 +867,7 @@ describe('GameInstanceService', () => {
     boatsFromStore[1].name = 'outrigger';
 
     expect(() =>
-      service['generateGameBoat'](gameBoatConfigurationRaft(), boatsFromStore),
+      service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
     ).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.INVALID_BOAT,
@@ -882,7 +882,7 @@ describe('GameInstanceService', () => {
       .spyOn(service as any, 'generateGameBoat');
 
     const boatsFromStore = [storedRaft(), storedFrigate()];
-    const boats = [gameBoatConfigurationRaft(), gameBoatConfigurationFrigate()];
+    const boats = [gameBoatSettingsRaft(), gameBoatSettingsFrigate()];
 
     expect(service.generateFleet(boats, boatsFromStore)).toStrictEqual([
       {

@@ -18,9 +18,9 @@ import {
   DEFAULT_BOARD_GAME,
 } from '@shared/game-instance.const';
 import {
-  gameBoatConfigurationGalley,
-  gameBoatConfigurationHugeRaft,
-  gameBoatConfigurationRaft,
+  gameBoatSettingsGalley,
+  gameBoatSettingsHugeRaft,
+  gameBoatSettingsRaft,
   guestPlayer1,
   guestPlayer2,
   invalidBoatPlacement2,
@@ -326,27 +326,25 @@ describe('GameInstanceValidatorsService', () => {
   });
 
   it('should validate boat names', () => {
-    const arrayOfBoatConfigurations = [
-      gameBoatConfigurationRaft(),
-      gameBoatConfigurationGalley(),
+    const arrayOfBoatSettings = [
+      gameBoatSettingsRaft(),
+      gameBoatSettingsGalley(),
     ];
 
     expect(() =>
-      service.validateBoatNames(arrayOfBoatConfigurations),
+      service.validateBoatNames(arrayOfBoatSettings),
     ).not.toThrowError();
   });
 
   it('should not validate boat names', () => {
-    const arrayOfBoatConfigurations = [
-      gameBoatConfigurationRaft(),
-      gameBoatConfigurationGalley(),
+    const arrayOfBoatSettings = [
+      gameBoatSettingsRaft(),
+      gameBoatSettingsGalley(),
     ];
 
-    arrayOfBoatConfigurations[0].name = 'pikachu' as BoatName;
+    arrayOfBoatSettings[0].name = 'pikachu' as BoatName;
 
-    expect(() =>
-      service.validateBoatNames(arrayOfBoatConfigurations),
-    ).toThrowError(
+    expect(() => service.validateBoatNames(arrayOfBoatSettings)).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.INVALID_BOAT_NAME,
         message: GameEngineErrorMessages.INVALID_BOAT_NAME,
@@ -356,20 +354,17 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat width', () => {
     expect(() =>
-      service.validateBoatWidth(gameBoatConfigurationRaft(), storedRaft()),
+      service.validateBoatWidth(gameBoatSettingsRaft(), storedRaft()),
     ).not.toThrowError();
 
     expect(() =>
-      service.validateBoatWidth(
-        gameBoatConfigurationHugeRaft(),
-        storedHugeRaft(),
-      ),
+      service.validateBoatWidth(gameBoatSettingsHugeRaft(), storedHugeRaft()),
     ).not.toThrowError();
   });
 
   it('should not validate boat width', () => {
     expect(() =>
-      service.validateBoatWidth(gameBoatConfigurationRaft(), storedHugeRaft()),
+      service.validateBoatWidth(gameBoatSettingsRaft(), storedHugeRaft()),
     ).toThrowError();
   });
 

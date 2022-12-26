@@ -13,7 +13,7 @@ import { uid } from 'radash';
 import {
   BaseGameSettings,
   FinalTurnRecap,
-  GameBoatConfiguration,
+  GameBoatSettings,
   GameMode,
   GamePlayer,
   GameState,
@@ -423,7 +423,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage(SocketEventsListening.VALIDATE_PLAYER_BOATS_PLACEMENT)
   public onValidatePlayerBoatsPlacement(
-    @MessageBody() body: RoomData<GameBoatConfiguration[]>,
+    @MessageBody() body: RoomData<GameBoatSettings[]>,
     @ConnectedSocket() socket: Socket,
   ): void {
     const instance = this.gameEngine.get(body.instanceId);

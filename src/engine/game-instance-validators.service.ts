@@ -7,7 +7,7 @@ import {
   Cell,
   GameBoard,
   GameBoat,
-  GameBoatConfiguration,
+  GameBoatSettings,
   GamePlayer,
   Turn,
 } from '@interfaces/engine.interface';
@@ -89,7 +89,7 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  public validateBoatNames(boats: GameBoatConfiguration[]) {
+  public validateBoatNames(boats: GameBoatSettings[]) {
     boats.forEach((boat) => {
       if (!Object.values(BoatName).includes(boat.name)) {
         const errorKey = 'INVALID_BOAT_NAME';
@@ -148,7 +148,7 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  public validateBoatWidth(boat: GameBoatConfiguration, storedBoat: Boat) {
+  public validateBoatWidth(boat: GameBoatSettings, storedBoat: Boat) {
     if (boat.bowCells.length !== storedBoat.width) {
       const errorKey = 'INVALID_BOAT';
 
