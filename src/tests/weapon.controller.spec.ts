@@ -4,7 +4,6 @@ import { faker } from '@faker-js/faker';
 
 import { AppModule } from '@modules/app.module';
 import { CreateWeaponDto } from '@dto/weapon.dto';
-import Level from '@level/level.entity';
 import { level1 } from '@datasets/level.dataset';
 import WeaponController from '@weapon/weapon.controller';
 import { WeaponName } from '@interfaces/weapon.interface';
