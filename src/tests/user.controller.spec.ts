@@ -20,7 +20,7 @@ describe('UserController', () => {
 
     controller = app.get<UserController>(UserController);
 
-    insertedUserId = await controller.insert(userToInsert);
+    insertedUserId = await controller.insert(userToInsert());
     expect(insertedUserId).toBeDefined();
   });
 
@@ -38,10 +38,10 @@ describe('UserController', () => {
 
   it('should insert a user', async () => {
     const spy = jest.spyOn(controller, 'insert').mockImplementation();
-    await controller.insert(userToInsert);
+    await controller.insert(userToInsert());
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith(userToInsert);
+    expect(spy).toHaveBeenCalledWith(userToInsert());
   });
 
   it('should not insert a user', async () => {

@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
+import { faker } from '@faker-js/faker';
 
 import { AppModule } from '@modules/app.module';
 import { CreateWeaponDto } from '@dto/weapon.dto';
+import Level from '@level/level.entity';
+import { level1 } from '@datasets/level.dataset';
 import WeaponController from '@weapon/weapon.controller';
 import { WeaponName } from '@interfaces/weapon.interface';
 
@@ -42,5 +45,22 @@ describe('WeaponController', () => {
     await expect(controller.insert({} as CreateWeaponDto)).rejects.toThrowError(
       BadRequestException,
     );
+  });
+
+  it('should get a weapon by name', async () => {
+    const weapon = await controller.findByName(WeaponName.BOMB);
+    expect(weapon).toEqual({
+      damageArea: [[0, 0]],
+      id: 1,
+      maxAmmunition: -1,
+      name: 'bomb',
+      requiredLevel: level1(),
+    });
+  });
+
+  it('should not get a weapon by name', async () => {
+    await expect(
+      controller.findByName(faker.random.word() as WeaponName),
+    ).rejects.toThrowError(BadRequestException);
   });
 });

@@ -10,6 +10,7 @@ import {
 
 import ApiError from '@shared/api-error';
 import { CreateWeaponDto } from '@dto/weapon.dto';
+import Weapon from '@weapon/weapon.entity';
 import WeaponService from '@weapon/weapon.service';
 
 const entityName = 'Weapon';
@@ -33,16 +34,17 @@ export default class WeaponController {
     }
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a weapon by the given Id' })
+  @Get(':name')
+  @ApiOperation({ summary: 'Get a weapon by the given name' })
   @ApiResponse({
     description: 'The weapon has been successfully retrieved',
     status: 200,
   })
-  public async findById(@Param('id') id: number) {
+  public async findByName(@Param('name') name: Weapon['name']) {
     try {
-      return await this.weaponService.findById(id);
+      return await this.weaponService.findByName(name);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error);
     }
   }
