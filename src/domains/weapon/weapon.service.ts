@@ -17,8 +17,12 @@ export default class WeaponService {
     return await this.weaponRepository.find({});
   }
 
-  public async findById(id: number): Promise<Weapon> {
-    return await this.weaponRepository.findOneById(id);
+  public async findByName(name: Weapon['name']): Promise<Weapon> {
+    // ASK To Kevin how to return requiredLevel explicitly without Level entity
+    return await this.weaponRepository.findOne({
+      relations: { requiredLevel: true },
+      where: { name: name },
+    });
   }
 
   public async insert(
