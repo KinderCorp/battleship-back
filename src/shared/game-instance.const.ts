@@ -13,7 +13,7 @@ export const GAME_INSTANCE_UID_LENGTH = 20;
 
 /**
  * INFO This const is temporary
- * Remove this const when Api calls are done
+ * TASK Remove this const when Api calls are done
  */
 export const DEFAULT_AUTHORISED_FLEET: AuthorisedFleet = [
   {

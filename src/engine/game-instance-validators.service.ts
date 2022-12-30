@@ -3,9 +3,11 @@ import { isEqual } from 'radash';
 
 import {
   AuthorisedFleet,
+  BoatDirection,
   Cell,
   GameBoard,
   GameBoat,
+  GameBoatSettings,
   GamePlayer,
   Turn,
 } from '@interfaces/engine.interface';
@@ -17,6 +19,8 @@ import {
   MAX_BOARD_GAME_DIMENSIONS,
   MIN_BOARD_GAME_DIMENSIONS,
 } from '@shared/game-instance.const';
+import Boat from '@boat/boat.entity';
+import { BoatName } from '@interfaces/boat.interface';
 import GameEngineError from '@shared/game-engine-error';
 
 @Injectable()
@@ -85,21 +89,23 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  private validateBoatPlacement(gameBoard: GameBoard, boatPlacement: GameBoat) {
-    const [xBoardPositions, yBoardPositions] = gameBoard;
+  public validateBoatNames(boats: GameBoatSettings[]) {
+    boats.forEach((boat) => {
+      if (!Object.values(BoatName).includes(boat.name)) {
+        const errorKey = 'INVALID_BOAT_NAME';
 
-    // Check if positions are out of bounds
-    boatPlacement.emplacement.forEach(([xPosition, yPosition]) => {
-      const isXPositionValid = xBoardPositions.includes(xPosition);
-      const isYPositionValid = yBoardPositions.includes(yPosition);
-
-      if (!isXPositionValid || !isYPositionValid) {
         throw new GameEngineError({
-          code: GameEngineErrorCodes.OUT_OF_BOUNDS,
-          message: GameEngineErrorMessages.OUT_OF_BOUNDS,
+          code: GameEngineErrorCodes[errorKey],
+          message: GameEngineErrorMessages[errorKey],
         });
       }
     });
+  }
+
+  private validateBoatPlacement(gameBoard: GameBoard, boatPlacement: GameBoat) {
+    boatPlacement.emplacement.forEach((cell: Cell) =>
+      this.validateCellIsInBounds(cell, gameBoard),
+    );
 
     // Check if position are next to each other
     const xPositionsMap = boatPlacement.emplacement.map(
@@ -130,27 +136,52 @@ export default class GameInstanceValidatorsService {
     return true;
   }
 
-  public validateBoatsOfOnePlayer(
-    authorisedFleet: AuthorisedFleet,
-    gameBoard: GameBoard,
-    playerFleet: GameBoat[],
-  ) {
-    playerFleet.forEach((boatPlacement) => {
-      this.validateBoatPlacement(gameBoard, boatPlacement);
-      this.validateAuthorisedFleet(authorisedFleet, playerFleet);
-    });
-  }
-
   public validateBoatsOfPlayers(
     authorisedFleet: AuthorisedFleet,
     gameBoard: GameBoard,
     playersFleet: GameBoat[][],
   ) {
     playersFleet.forEach((boatPlacements) => {
-      this.validateBoatsOfOnePlayer(authorisedFleet, gameBoard, boatPlacements);
+      this.validateFleetOfOnePlayer(authorisedFleet, gameBoard, boatPlacements);
     });
 
     return true;
+  }
+
+  public validateBoatWidth(boat: GameBoatSettings, storedBoat: Boat) {
+    if (boat.bowCells.length !== storedBoat.width) {
+      const errorKey = 'INVALID_BOAT';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+  }
+
+  public validateBowCellsAreAlignedWithDirection(
+    boatDirection: BoatDirection,
+    bowCells: Cell[],
+  ) {
+    if (bowCells.length === 1) {
+      return;
+    }
+
+    let axisToCheck: number[];
+
+    switch (boatDirection) {
+      case BoatDirection.NORTH:
+      case BoatDirection.SOUTH:
+        axisToCheck = bowCells.map((cell) => cell.at(1));
+        break;
+
+      case BoatDirection.WEST:
+      case BoatDirection.EAST:
+        axisToCheck = bowCells.map((cell) => cell.at(0));
+        break;
+    }
+
+    this.validateNumbersAreAdjacent(axisToCheck);
   }
 
   public validateCellHasNotBeenHit(
@@ -170,6 +201,31 @@ export default class GameInstanceValidatorsService {
     }
 
     return true;
+  }
+
+  public validateCellIsInBounds(
+    [x, y]: Cell,
+    [xBoardPositions, yBoardPositions]: GameBoard,
+  ) {
+    if (!xBoardPositions.includes(x) || !yBoardPositions.includes(y)) {
+      const errorKey = 'OUT_OF_BOUNDS';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+  }
+
+  public validateFleetOfOnePlayer(
+    authorisedFleet: AuthorisedFleet,
+    gameBoard: GameBoard,
+    playerFleet: GameBoat[],
+  ) {
+    playerFleet.forEach((boatPlacement) => {
+      this.validateBoatPlacement(gameBoard, boatPlacement);
+      this.validateAuthorisedFleet(authorisedFleet, playerFleet);
+    });
   }
 
   public validateNumbersAreAdjacent(arrayOfNumbers: number[]) {

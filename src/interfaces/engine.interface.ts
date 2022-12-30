@@ -1,4 +1,5 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
+import Boat from '@boat/boat.entity';
 import { BoatName } from '@interfaces/boat.interface';
 import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
@@ -16,6 +17,13 @@ export enum GameState {
   FINISHED = 'finished',
 }
 
+export enum BoatDirection {
+  NORTH = 'north',
+  EAST = 'east',
+  SOUTH = 'south',
+  WEST = 'west',
+}
+
 export type Cell = [x: number, y: number];
 
 export type PlayerBoards = {
@@ -27,6 +35,12 @@ export interface GameBoat {
   hit: Cell[];
   isSunk: boolean;
   emplacement: Cell[];
+}
+
+export interface GameBoatSettings {
+  bowCells: Cell[];
+  direction: BoatDirection;
+  name: BoatName;
 }
 
 export interface BaseGameSettings {
@@ -113,6 +127,10 @@ export type PlayersWithSettings = {
   players: GamePlayer[];
   settings: GameSettings;
 };
+
+export interface GameItems {
+  boats: Boat[];
+}
 
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',

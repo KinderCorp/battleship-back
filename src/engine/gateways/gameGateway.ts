@@ -13,7 +13,7 @@ import { uid } from 'radash';
 import {
   BaseGameSettings,
   FinalTurnRecap,
-  GameBoat,
+  GameBoatSettings,
   GameMode,
   GamePlayer,
   GameState,
@@ -423,7 +423,7 @@ export class GameGateway implements OnGatewayConnection {
    */
   @SubscribeMessage(SocketEventsListening.VALIDATE_PLAYER_BOATS_PLACEMENT)
   public onValidatePlayerBoatsPlacement(
-    @MessageBody() body: RoomData<GameBoat[]>,
+    @MessageBody() body: RoomData<GameBoatSettings[]>,
     @ConnectedSocket() socket: Socket,
   ): void {
     const instance = this.gameEngine.get(body.instanceId);
@@ -436,10 +436,15 @@ export class GameGateway implements OnGatewayConnection {
     }
 
     try {
-      this.gameInstanceValidators.validateBoatsOfOnePlayer(
+      this.gameInstanceValidators.validateBoatNames(body.data);
+
+      const storedBoats = this.gameEngine.getStoredBoatsForInstance(body.data);
+      const playerFleet = instance.generateFleet(body.data, storedBoats);
+
+      this.gameInstanceValidators.validateFleetOfOnePlayer(
         instance.gameSettings.authorisedFleet,
         instance.board,
-        body.data,
+        playerFleet,
       );
 
       const newPlayerReady = instance.players.find(
@@ -451,7 +456,7 @@ export class GameGateway implements OnGatewayConnection {
           .emit(SocketEventsEmitting.ERROR_PLAYER_NOT_FOUND);
       }
 
-      instance.fleets[newPlayerReady.id] = body.data;
+      instance.fleets[newPlayerReady.id] = playerFleet;
 
       const roomData: RoomData<GamePlayer> = {
         data: newPlayerReady,

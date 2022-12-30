@@ -1,37 +1,48 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoatName } from '@interfaces/boat.interface';
 
+import {
+  BaseGameSettings,
+  BoatDirection,
+  Cell,
+  GameMode,
+  GameState,
+} from '@interfaces/engine.interface';
 import {
   bomb,
   fakeWeapon,
   fleets1,
   gameArsenal1,
+  gameBoatSettingsFrigate,
+  gameBoatSettingsHugeFrigate,
+  gameBoatSettingsRaft,
   gameSettings1,
   guestPlayer1,
   guestPlayer2,
   loggedPlayer1,
   masterPlayerBoards1,
   players1,
+  storedFrigate,
+  storedHugeFrigate,
+  storedRaft,
   turn1,
   validFrigate,
   validRaft,
   visiblePlayerBoards1,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import { Cell, GameMode, GameState } from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
+import { BoatName } from '@interfaces/boat.interface';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { WeaponName } from '@interfaces/weapon.interface';
 
-const baseGameConfiguration = {
+const baseGameSettings: BaseGameSettings = {
   firstPlayer: guestPlayer1(),
   gameMode: GameMode.ONE_VERSUS_ONE,
-  state: GameState.WAITING_TO_RIVAL,
 };
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
@@ -50,7 +61,7 @@ describe('GameInstanceService', () => {
     );
 
     service = new GameInstanceService(
-      baseGameConfiguration,
+      baseGameSettings,
       gameInstanceValidatorsService,
     );
   });
@@ -611,9 +622,7 @@ describe('GameInstanceService', () => {
   });
 
   it('should not get the maximum amount of player', () => {
-    expect(() =>
-      service['getMaximumPlayers']('blabl' as GameMode),
-    ).toThrowError(
+    expect(() => service['getMaximumPlayers']('solo' as GameMode)).toThrowError(
       new GameEngineError({
         code: GameEngineErrorCodes.INVALID_GAME_MODE,
         message: GameEngineErrorMessages.INVALID_GAME_MODE,
@@ -657,5 +666,243 @@ describe('GameInstanceService', () => {
 
     expect(service.players).toHaveLength(1);
     expect(service.players).toEqual([guestPlayer1()]);
+  });
+
+  it('should calculate the stern cell for the north', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.NORTH, 3)).toEqual([
+      5, 3,
+    ]);
+  });
+
+  it('should calculate the stern cell for the south', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.SOUTH, 3)).toEqual([
+      5, 7,
+    ]);
+  });
+
+  it('should calculate the stern cell for the west', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.WEST, 3)).toEqual([
+      7, 5,
+    ]);
+  });
+
+  it('should calculate the stern cell for the east', () => {
+    expect(service.calculateSternCell([5, 5], BoatDirection.EAST, 3)).toEqual([
+      3, 5,
+    ]);
+  });
+
+  describe('calculate boat emplacement', function () {
+    let spyValidateBoatWidth: jest.SpyInstance;
+    let spyValidateBowCellsAreAlignedWithDirection: jest.SpyInstance;
+    let spyValidateCellIsInBound: jest.SpyInstance;
+    const boatSettings = gameBoatSettingsHugeFrigate();
+
+    const sortCells = (boatEmplacement: Cell[], expectedCells: Cell[]) => {
+      service['sortCells'](boatEmplacement, 'x');
+      service['sortCells'](boatEmplacement, 'y');
+
+      service['sortCells'](expectedCells, 'x');
+      service['sortCells'](expectedCells, 'y');
+    };
+
+    beforeEach(() => {
+      spyValidateBoatWidth = jest
+        .spyOn(gameInstanceValidatorsService, 'validateBoatWidth')
+        .mockImplementation();
+
+      spyValidateCellIsInBound = jest
+        .spyOn(gameInstanceValidatorsService, 'validateCellIsInBounds')
+        .mockImplementation();
+
+      spyValidateBowCellsAreAlignedWithDirection = jest
+        .spyOn(
+          gameInstanceValidatorsService,
+          'validateBowCellsAreAlignedWithDirection',
+        )
+        .mockImplementation();
+    });
+
+    it('should calculate boat emplacement for north', () => {
+      boatSettings.direction = BoatDirection.NORTH;
+      boatSettings.bowCells = [
+        [5, 5],
+        [6, 5],
+      ];
+
+      const boatEmplacement = service.calculateBoatEmplacement(
+        boatSettings,
+        storedHugeFrigate(),
+      );
+
+      const expectedCells: Cell[] = [
+        [5, 5],
+        [6, 5],
+        [5, 4],
+        [6, 4],
+        [5, 3],
+        [6, 3],
+      ];
+
+      sortCells(boatEmplacement, expectedCells);
+
+      expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
+      expect(boatEmplacement).toEqual(expectedCells);
+    });
+
+    it('should calculate boat emplacement for east', () => {
+      boatSettings.direction = BoatDirection.EAST;
+      boatSettings.bowCells = [
+        [5, 5],
+        [5, 4],
+      ];
+
+      const boatEmplacement = service.calculateBoatEmplacement(
+        boatSettings,
+        storedHugeFrigate(),
+      );
+
+      const expectedCells: Cell[] = [
+        [5, 5],
+        [5, 4],
+        [4, 5],
+        [4, 4],
+        [3, 5],
+        [3, 4],
+      ];
+
+      sortCells(boatEmplacement, expectedCells);
+
+      expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
+      expect(boatEmplacement).toEqual(expectedCells);
+    });
+
+    it('should calculate boat emplacement for south', () => {
+      boatSettings.direction = BoatDirection.SOUTH;
+      boatSettings.bowCells = [
+        [5, 5],
+        [6, 5],
+      ];
+
+      const boatEmplacement = service.calculateBoatEmplacement(
+        boatSettings,
+        storedHugeFrigate(),
+      );
+
+      const expectedCells: Cell[] = [
+        [5, 5],
+        [6, 5],
+        [5, 6],
+        [6, 6],
+        [5, 7],
+        [6, 7],
+      ];
+
+      sortCells(boatEmplacement, expectedCells);
+
+      expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
+      expect(boatEmplacement).toEqual(expectedCells);
+    });
+
+    it('should calculate boat emplacement for west', () => {
+      boatSettings.direction = BoatDirection.WEST;
+      boatSettings.bowCells = [
+        [5, 5],
+        [5, 4],
+      ];
+
+      const boatEmplacement = service.calculateBoatEmplacement(
+        boatSettings,
+        storedHugeFrigate(),
+      );
+
+      const expectedCells: Cell[] = [
+        [5, 5],
+        [5, 4],
+        [6, 5],
+        [6, 4],
+        [7, 5],
+        [7, 4],
+      ];
+
+      sortCells(boatEmplacement, expectedCells);
+
+      expect(spyValidateBoatWidth).toHaveBeenCalledTimes(1);
+      expect(spyValidateBowCellsAreAlignedWithDirection).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(spyValidateCellIsInBound).toHaveBeenCalledTimes(2);
+      expect(boatEmplacement).toEqual(expectedCells);
+    });
+  });
+
+  it('should generate game boat', () => {
+    const boatsFromStore = [storedHugeFrigate(), storedRaft()];
+
+    expect(
+      service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
+    ).toStrictEqual({
+      boatName: BoatName.RAFT,
+      emplacement: [[1, 1]],
+      hit: [],
+      isSunk: false,
+    });
+  });
+
+  it('should not generate game boat', () => {
+    const boatsFromStore = [storedHugeFrigate(), storedRaft()];
+
+    boatsFromStore[1].name = 'outrigger';
+
+    expect(() =>
+      service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
+    ).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.INVALID_BOAT,
+        message: GameEngineErrorMessages.INVALID_BOAT,
+      }),
+    );
+  });
+
+  it('should generate boat fleet', () => {
+    const spyGenerateGameBoat = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(service as any, 'generateGameBoat');
+
+    const boatsFromStore = [storedRaft(), storedFrigate()];
+    const boats = [gameBoatSettingsRaft(), gameBoatSettingsFrigate()];
+
+    expect(service.generateFleet(boats, boatsFromStore)).toStrictEqual([
+      {
+        boatName: 'raft',
+        emplacement: [[1, 1]],
+        hit: [],
+        isSunk: false,
+      },
+      {
+        boatName: 'frigate',
+        emplacement: [
+          [5, 1],
+          [5, 3],
+          [5, 2],
+        ],
+        hit: [],
+        isSunk: false,
+      },
+    ]);
+
+    expect(spyGenerateGameBoat).toHaveBeenCalledTimes(2);
   });
 });

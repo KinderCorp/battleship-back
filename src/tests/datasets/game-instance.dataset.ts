@@ -1,7 +1,9 @@
 import {
+  BoatDirection,
   GameArsenal,
   GameBoat,
   GameBoats,
+  GameBoatSettings,
   GameMode,
   GamePlayer,
   GameSettings,
@@ -11,6 +13,7 @@ import {
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import { WeaponName, WeaponType } from '@interfaces/weapon.interface';
+import Boat from '@boat/boat.entity';
 import { BoatName } from '@interfaces/boat.interface';
 import { DEFAULT_AUTHORISED_FLEET } from '@shared/game-instance.const';
 
@@ -374,4 +377,66 @@ export const validPlayerFleet: () => GameBoat[] = () => {
     validFrigate(),
     validGalley(),
   ];
+};
+
+export const gameBoatSettingsRaft = (): GameBoatSettings => {
+  return {
+    bowCells: [[1, 1]],
+    direction: BoatDirection.EAST,
+    name: BoatName.RAFT,
+  };
+};
+
+export const gameBoatSettingsHugeRaft = (): GameBoatSettings => {
+  return {
+    bowCells: [
+      [1, 1],
+      [1, 2],
+    ],
+    direction: BoatDirection.EAST,
+    name: BoatName.RAFT,
+  };
+};
+
+export const gameBoatSettingsGalley = (): GameBoatSettings => {
+  return {
+    bowCells: [[5, 8]],
+    direction: BoatDirection.NORTH,
+    name: BoatName.GALLEY,
+  };
+};
+
+export const gameBoatSettingsFrigate = (): GameBoatSettings => {
+  return {
+    bowCells: [[5, 1]],
+    direction: BoatDirection.SOUTH,
+    name: BoatName.FRIGATE,
+  };
+};
+
+export const gameBoatSettingsHugeFrigate = (): GameBoatSettings => {
+  return {
+    bowCells: [
+      [5, 1],
+      [6, 1],
+    ],
+    direction: BoatDirection.SOUTH,
+    name: BoatName.FRIGATE,
+  };
+};
+
+export const storedRaft = (): Boat => {
+  return { id: 1, length: 1, name: BoatName.RAFT, width: 1 };
+};
+
+export const storedFrigate = (): Boat => {
+  return { id: 1, length: 3, name: BoatName.FRIGATE, width: 1 };
+};
+
+export const storedHugeRaft = (): Boat => {
+  return { id: 1, length: 1, name: BoatName.RAFT, width: 2 };
+};
+
+export const storedHugeFrigate = (): Boat => {
+  return { id: 1, length: 3, name: BoatName.FRIGATE, width: 2 };
 };

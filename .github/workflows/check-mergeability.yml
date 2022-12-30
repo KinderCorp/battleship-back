@@ -34,5 +34,5 @@ jobs:
 
       - run: npm run lint
 
-      # FIXME When we have the time
+      # FIXME When we have the time - Use Circle CI
       # - run: npm run test:unit

@@ -2,11 +2,13 @@ import { draw, isEqual, uid } from 'radash';
 
 import {
   BaseGameSettings,
+  BoatDirection,
   Cell,
   GameArsenal,
   GameBoard,
   GameBoat,
   GameBoats,
+  GameBoatSettings,
   GameMode,
   GamePlayer,
   GameSettings,
@@ -28,6 +30,7 @@ import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
+import Boat from '@boat/boat.entity';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { WeaponName } from '@interfaces/weapon.interface';
@@ -88,6 +91,97 @@ export default class GameInstanceService {
     this.players.push(player);
   }
 
+  /**
+   * Calculate boat emplacement from bowCells, direction and length of the boat
+   * @param boat
+   * @param storedBoat
+   */
+  public calculateBoatEmplacement(boat: GameBoatSettings, storedBoat: Boat) {
+    this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
+    this.gameInstanceValidatorsService.validateBowCellsAreAlignedWithDirection(
+      boat.direction,
+      boat.bowCells,
+    );
+
+    const boatEmplacements: Cell[] = [...boat.bowCells];
+
+    boat.bowCells.forEach(([xBowCell, yBowCell]: Cell) => {
+      const sternCell: Cell = this.calculateSternCell(
+        [xBowCell, yBowCell],
+        boat.direction,
+        storedBoat.length,
+      );
+
+      this.gameInstanceValidatorsService.validateCellIsInBounds(
+        sternCell,
+        this.board,
+      );
+
+      const [xSternCell, ySternCell] = sternCell;
+
+      switch (boat.direction) {
+        case BoatDirection.NORTH:
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = ySternCell + i;
+            boatEmplacements.push([xBowCell, newCell]);
+          }
+          break;
+
+        case BoatDirection.EAST:
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = xSternCell + i;
+            boatEmplacements.push([newCell, yBowCell]);
+          }
+          break;
+
+        case BoatDirection.SOUTH:
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = ySternCell - i;
+            boatEmplacements.push([xBowCell, newCell]);
+          }
+          break;
+
+        case BoatDirection.WEST:
+          for (let i = 0; i < storedBoat.length - 1; i++) {
+            const newCell = xSternCell - i;
+            boatEmplacements.push([newCell, yBowCell]);
+          }
+          break;
+      }
+    });
+
+    return boatEmplacements;
+  }
+
+  /**
+   * Calculate the stern cell from the bow cell, the direction and the boat length
+   *
+   * We add a -1 modifier that corresponds to the bowCells positions
+   *
+   * @param Cell
+   * @param direction
+   * @param boatLength
+   */
+  public calculateSternCell(
+    [xBowCell, yBowCell]: Cell,
+    direction: BoatDirection,
+    boatLength: Boat['length'],
+  ): Cell {
+    switch (direction) {
+      case BoatDirection.NORTH:
+        return [xBowCell, yBowCell - (boatLength - 1)];
+
+      case BoatDirection.EAST:
+        return [xBowCell - (boatLength - 1), yBowCell];
+
+      case BoatDirection.SOUTH:
+        return [xBowCell, yBowCell + (boatLength - 1)];
+
+      case BoatDirection.WEST:
+        return [xBowCell + (boatLength - 1), yBowCell];
+    }
+  }
+
   public countDownAction(turn: Turn) {
     this.gameInstanceValidatorsService.validateActionCanBeExecuted(turn);
 
@@ -136,6 +230,13 @@ export default class GameInstanceService {
     return playerBoats.filter((boat) => !boat.isSunk);
   }
 
+  public generateFleet(
+    boats: GameBoatSettings[],
+    boatsFromStore: Boat[],
+  ): GameBoat[] {
+    return boats.map((boat) => this.generateGameBoat(boat, boatsFromStore));
+  }
+
   private generateGameArsenal(gameSettings: GameSettings) {
     const gameArsenal: GameArsenal = {};
 
@@ -154,6 +255,32 @@ export default class GameInstanceService {
     });
 
     return gameArsenal;
+  }
+
+  private generateGameBoat(
+    boat: GameBoatSettings,
+    boatsFromStore: Boat[],
+  ): GameBoat {
+    const storedBoat = boatsFromStore.find(
+      (boatFromStore) => boat.name === boatFromStore.name,
+    );
+    if (!storedBoat) {
+      const errorKey = 'INVALID_BOAT';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
+
+    const boatEmplacement = this.calculateBoatEmplacement(boat, storedBoat);
+
+    return {
+      boatName: boat.name,
+      emplacement: boatEmplacement,
+      hit: [],
+      isSunk: false,
+    };
   }
 
   private generateMasterPlayerBoards(boats: GameBoats) {
@@ -346,20 +473,10 @@ export default class GameInstanceService {
       });
     }
 
-    const [xOriginCell, yOriginCell] = originCell;
-    const [xBoardPositions, yBoardPositions] = this.board;
-
-    if (
-      !xBoardPositions.includes(xOriginCell) ||
-      !yBoardPositions.includes(yOriginCell)
-    ) {
-      const errorKey = 'OUT_OF_BOUNDS';
-
-      throw new GameEngineError({
-        code: GameEngineErrorCodes[errorKey],
-        message: GameEngineErrorMessages[errorKey],
-      });
-    }
+    this.gameInstanceValidatorsService.validateCellIsInBounds(
+      originCell,
+      this.board,
+    );
 
     const shotRecap: ShotRecap = {
       hitCells: [],

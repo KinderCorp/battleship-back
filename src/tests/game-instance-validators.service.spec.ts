@@ -1,15 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
-  DEFAULT_AUTHORISED_FLEET,
-  DEFAULT_BOARD_GAME,
-} from '@shared/game-instance.const';
-import { GameBoat, GamePlayer } from '@interfaces/engine.interface';
+  BoatDirection,
+  GameBoat,
+  GamePlayer,
+} from '@interfaces/engine.interface';
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
+import { BoatName } from '@interfaces/boat.interface';
+import GameEngineError from '@shared/game-engine-error';
+import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+
 import {
+  DEFAULT_AUTHORISED_FLEET,
+  DEFAULT_BOARD_GAME,
+} from '@shared/game-instance.const';
+import {
+  gameBoatSettingsGalley,
+  gameBoatSettingsHugeRaft,
+  gameBoatSettingsRaft,
   guestPlayer1,
   guestPlayer2,
   invalidBoatPlacement2,
@@ -21,14 +32,14 @@ import {
   invalidGalley1,
   loggedPlayer1,
   loggedPlayer2,
+  storedHugeRaft,
+  storedRaft,
   validGalley,
   validPlayerFleet,
   validRaft,
   validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import GameEngineError from '@shared/game-engine-error';
-import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { shuffle } from 'radash';
 
 // npm run test:unit -- src/tests/game-instance-validators.service.spec.ts --watch
@@ -312,5 +323,107 @@ describe('GameInstanceValidatorsService', () => {
         message: GameEngineErrorMessages[errorKey],
       }),
     );
+  });
+
+  it('should validate boat names', () => {
+    const arrayOfBoatSettings = [
+      gameBoatSettingsRaft(),
+      gameBoatSettingsGalley(),
+    ];
+
+    expect(() =>
+      service.validateBoatNames(arrayOfBoatSettings),
+    ).not.toThrowError();
+  });
+
+  it('should not validate boat names', () => {
+    const arrayOfBoatSettings = [
+      gameBoatSettingsRaft(),
+      gameBoatSettingsGalley(),
+    ];
+
+    arrayOfBoatSettings[0].name = 'pikachu' as BoatName;
+
+    expect(() => service.validateBoatNames(arrayOfBoatSettings)).toThrowError(
+      new GameEngineError({
+        code: GameEngineErrorCodes.INVALID_BOAT_NAME,
+        message: GameEngineErrorMessages.INVALID_BOAT_NAME,
+      }),
+    );
+  });
+
+  it('should validate boat width', () => {
+    expect(() =>
+      service.validateBoatWidth(gameBoatSettingsRaft(), storedRaft()),
+    ).not.toThrowError();
+
+    expect(() =>
+      service.validateBoatWidth(gameBoatSettingsHugeRaft(), storedHugeRaft()),
+    ).not.toThrowError();
+  });
+
+  it('should not validate boat width', () => {
+    expect(() =>
+      service.validateBoatWidth(gameBoatSettingsRaft(), storedHugeRaft()),
+    ).toThrowError();
+  });
+
+  it('should validate cell is in bounds', () => {
+    expect(() =>
+      service.validateCellIsInBounds([1, 1], DEFAULT_BOARD_GAME),
+    ).not.toThrowError();
+    expect(() =>
+      service.validateCellIsInBounds([10, 10], DEFAULT_BOARD_GAME),
+    ).not.toThrowError();
+  });
+
+  it('should not validate cell is in bounds', () => {
+    const error = new GameEngineError({
+      code: GameEngineErrorCodes.OUT_OF_BOUNDS,
+      message: GameEngineErrorMessages.OUT_OF_BOUNDS,
+    });
+
+    expect(() =>
+      service.validateCellIsInBounds([-1, 1], DEFAULT_BOARD_GAME),
+    ).toThrowError(error);
+    expect(() =>
+      service.validateCellIsInBounds([11, 9], DEFAULT_BOARD_GAME),
+    ).toThrowError(error);
+  });
+
+  it('should validate cells are aligned with direction', () => {
+    const spyValidateNumbersAreAdjacent = jest
+      .spyOn(service, 'validateNumbersAreAdjacent')
+      .mockImplementation();
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.NORTH, [
+      [5, 6],
+      [5, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.SOUTH, [
+      [5, 6],
+      [5, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.EAST, [
+      [5, 5],
+      [6, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.WEST, [
+      [5, 5],
+      [6, 5],
+    ]);
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledWith([6, 5]);
+
+    service.validateBowCellsAreAlignedWithDirection(BoatDirection.NORTH, [
+      [5, 5],
+    ]);
+
+    expect(spyValidateNumbersAreAdjacent).toHaveBeenCalledTimes(4);
   });
 });
