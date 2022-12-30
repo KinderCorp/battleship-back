@@ -9,8 +9,8 @@ import Game from '@game/game.entity';
 export default class GameRepository extends BaseRepository<Game> {
   public constructor(
     @InjectRepository(Game)
-    private gameRepository: Repository<Game>,
+    repository: Repository<Game>,
   ) {
-    super(gameRepository);
+    super(repository);
   }
 }

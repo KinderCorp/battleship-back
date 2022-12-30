@@ -9,8 +9,8 @@ import Character from '@character/character.entity';
 export default class CharacterRepository extends BaseRepository<Character> {
   public constructor(
     @InjectRepository(Character)
-    private characterRepository: Repository<Character>,
+    repository: Repository<Character>,
   ) {
-    super(characterRepository);
+    super(repository);
   }
 }

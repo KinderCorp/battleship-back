@@ -24,7 +24,7 @@ export default class Weapon implements WeaponType {
 
   @ManyToOne(() => Level, (level: Level) => level.id)
   @JoinColumn()
-  public requiredLevel!: number;
+  public requiredLevel!: Level['id'];
 
   @ApiProperty({
     default: -1,
