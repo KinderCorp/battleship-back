@@ -1,6 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { BoatName, BoatType } from '@interfaces/boat.interface';
+
 /**
  * INFO Boat dimensions
  * At the moment a boat can have a width greater than 1.
@@ -11,12 +13,12 @@ import { ApiProperty } from '@nestjs/swagger';
  * Boat terminology : https://aceboater.com/en/boating-terminology
  */
 @Entity()
-export default class Boat {
+export default class Boat implements BoatType {
   @PrimaryGeneratedColumn()
   public id!: number;
 
   @Column('text')
-  public name!: string;
+  public name!: BoatName;
 
   @ApiProperty({ default: 1 })
   @Column('integer', { default: 1 })

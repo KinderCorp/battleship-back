@@ -7,9 +7,7 @@ import User from '@user/user.entity';
 
 @Injectable()
 export default class UserRepository extends BaseRepository<User> {
-  public constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-  ) {
-    super(userRepository);
+  public constructor(@InjectRepository(User) repository: Repository<User>) {
+    super(repository);
   }
 }

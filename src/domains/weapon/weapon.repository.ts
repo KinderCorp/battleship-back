@@ -7,9 +7,7 @@ import Weapon from '@weapon/weapon.entity';
 
 @Injectable()
 export default class WeaponRepository extends BaseRepository<Weapon> {
-  public constructor(
-    @InjectRepository(Weapon) private weaponRepository: Repository<Weapon>,
-  ) {
-    super(weaponRepository);
+  public constructor(@InjectRepository(Weapon) repository: Repository<Weapon>) {
+    super(repository);
   }
 }

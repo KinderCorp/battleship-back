@@ -1,4 +1,6 @@
 import { Cell } from '@interfaces/engine.interface';
+import { IdentifierInterface } from '@interfaces/entity.interface';
+import Level from '@level/level.entity';
 
 export type DamageMatrix = Cell[];
 
@@ -9,9 +11,10 @@ export enum WeaponName {
   TRIPLE = 'triple',
 }
 
-export interface WeaponType {
+export interface WeaponType extends IdentifierInterface {
   id: number;
   name: WeaponName;
   maxAmmunition: number;
   damageArea: DamageMatrix;
+  requiredLevel: Level['id'] | Level;
 }
