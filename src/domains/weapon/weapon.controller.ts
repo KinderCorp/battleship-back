@@ -44,7 +44,6 @@ export default class WeaponController {
     try {
       return await this.weaponService.findByName(name);
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error);
     }
   }

@@ -16,5 +16,5 @@ export interface WeaponType extends IdentifierInterface {
   name: WeaponName;
   maxAmmunition: number;
   damageArea: DamageMatrix;
-  requiredLevel: Level['id'] | Level;
+  requiredLevel?: Level['id'] | Level;
 }
