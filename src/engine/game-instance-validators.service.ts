@@ -212,7 +212,7 @@ export default class GameInstanceValidatorsService {
 
       throw new GameEngineError({
         code: GameEngineErrorCodes[errorKey],
-        message: GameEngineErrorMessages[errorKey],
+        message: `${GameEngineErrorMessages[errorKey]} for cell ${[x, y]}`,
       });
     }
   }

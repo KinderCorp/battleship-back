@@ -1,3 +1,5 @@
+import { Inject } from '@nestjs/common';
+
 import BoatStore from '@store/boat.store';
 import { GameBoatSettings } from '@interfaces/engine.interface';
 import GameInstanceService from '@engine/game-instance.service';
@@ -5,7 +7,7 @@ import GameInstanceService from '@engine/game-instance.service';
 export default class GameEngine {
   private instances: GameInstanceService[] = [];
 
-  public constructor(public boatStore: BoatStore) {}
+  public constructor(@Inject('BOAT_STORE') private boatStore: BoatStore) {}
 
   public addInstance(instance: GameInstanceService): void {
     this.instances.push(instance);
