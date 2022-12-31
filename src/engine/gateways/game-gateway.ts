@@ -460,7 +460,6 @@ export default class GameGateway implements OnGatewayConnection {
       this.gameInstanceValidators.validateBoatNames(body.data);
 
       const storedBoats = this.gameEngine.getStoredBoatsForInstance(body.data);
-      console.log(storedBoats);
       const playerFleet = instance.generateFleet(body.data, storedBoats);
 
       this.gameInstanceValidators.validateFleetOfOnePlayer(
@@ -494,7 +493,6 @@ export default class GameGateway implements OnGatewayConnection {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
       this.logger.error(
         SocketEventsListening.VALIDATE_PLAYER_BOATS_PLACEMENT,
         error,

@@ -370,10 +370,10 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate cell is in bounds', () => {
     expect(() =>
-      service.validateCellIsInBounds([1, 1], DEFAULT_BOARD_GAME),
+      service.validateCellIsInBounds([0, 0], DEFAULT_BOARD_GAME),
     ).not.toThrowError();
     expect(() =>
-      service.validateCellIsInBounds([10, 10], DEFAULT_BOARD_GAME),
+      service.validateCellIsInBounds([9, 9], DEFAULT_BOARD_GAME),
     ).not.toThrowError();
   });
 
