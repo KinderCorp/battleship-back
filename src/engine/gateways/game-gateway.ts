@@ -489,7 +489,9 @@ export default class GameGateway implements OnGatewayConnection {
           ? SocketEventsEmitting.ONE_PLAYER_HAS_PLACED_HIS_BOATS
           : SocketEventsEmitting.ALL_PLAYERS_HAVE_PLACED_THEIR_BOATS;
 
-      this.socketServer.to(String(roomData)).emit(eventName);
+      this.socketServer
+        .to(String(roomData.instanceId))
+        .emit(eventName, roomData);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
