@@ -40,9 +40,12 @@ export default class WeaponController {
     description: 'The weapon has been successfully retrieved',
     status: 200,
   })
-  public async findByName(@Param('name') name: Weapon['name']) {
+  public async findByName(
+    @Param('name') name: Weapon['name'],
+    loadRelations = false,
+  ) {
     try {
-      return await this.weaponService.findByName(name);
+      return await this.weaponService.findByName(name, loadRelations);
     } catch (error) {
       throw new BadRequestException(error);
     }

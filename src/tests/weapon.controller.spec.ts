@@ -47,7 +47,7 @@ describe('WeaponController', () => {
   });
 
   it('should get a weapon by name', async () => {
-    const weapon = await controller.findByName(WeaponName.BOMB);
+    const weapon = await controller.findByName(WeaponName.BOMB, true);
     expect(weapon).toEqual({
       damageArea: [[0, 0]],
       id: 1,
