@@ -46,6 +46,7 @@ export interface GameBoatSettings {
 export interface BaseGameSettings {
   gameMode: GameMode;
   firstPlayer: GamePlayer;
+  weapons: GameSettings['weapons'];
 }
 
 export interface GameBoats extends Versus<GameBoat> {
