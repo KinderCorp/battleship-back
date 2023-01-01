@@ -1,13 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
-  BaseGameSettings,
-  BoatDirection,
-  Cell,
-  GameMode,
-  GameState,
-} from '@interfaces/engine.interface';
-import {
+  baseGameSettings,
   bomb,
   fakeWeapon,
   fleets1,
@@ -31,6 +25,12 @@ import {
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
 import {
+  BoatDirection,
+  Cell,
+  GameMode,
+  GameState,
+} from '@interfaces/engine.interface';
+import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
@@ -39,11 +39,6 @@ import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { WeaponName } from '@interfaces/weapon.interface';
-
-const baseGameSettings: BaseGameSettings = {
-  firstPlayer: guestPlayer1(),
-  gameMode: GameMode.ONE_VERSUS_ONE,
-};
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
 
@@ -864,7 +859,7 @@ describe('GameInstanceService', () => {
   it('should not generate game boat', () => {
     const boatsFromStore = [storedHugeFrigate(), storedRaft()];
 
-    boatsFromStore[1].name = 'outrigger';
+    boatsFromStore[1].name = 'outrigger' as BoatName;
 
     expect(() =>
       service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),

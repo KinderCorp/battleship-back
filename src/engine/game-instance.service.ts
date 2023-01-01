@@ -33,7 +33,6 @@ import {
 import Boat from '@boat/boat.entity';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
-import { WeaponName } from '@interfaces/weapon.interface';
 
 export default class GameInstanceService {
   private _gameState!: GameState;
@@ -50,7 +49,11 @@ export default class GameInstanceService {
   public readonly maxNumberOfPlayers: MaxNumberOfPlayers;
 
   public constructor(
-    { gameMode = GameMode.ONE_VERSUS_ONE, firstPlayer }: BaseGameSettings,
+    {
+      gameMode = GameMode.ONE_VERSUS_ONE,
+      firstPlayer,
+      weapons,
+    }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
     this.gameMode = gameMode;
@@ -61,21 +64,13 @@ export default class GameInstanceService {
     this.players.push(firstPlayer);
     this.id = uid(GAME_INSTANCE_UID_LENGTH);
 
-    // TASK Make this dynamically
     this.gameSettings = {
       authorisedFleet: DEFAULT_AUTHORISED_FLEET,
       boardDimensions: 10,
       gameMode: gameMode,
       hasBoatsSafetyZone: false,
       timePerTurn: 60,
-      weapons: [
-        {
-          damageArea: [[0, 0]],
-          id: 1,
-          maxAmmunition: -1,
-          name: WeaponName.BOMB,
-        },
-      ],
+      weapons: weapons,
     };
   }
 

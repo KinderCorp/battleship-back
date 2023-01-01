@@ -1,4 +1,5 @@
 import {
+  BaseGameSettings,
   BoatDirection,
   GameArsenal,
   GameBoat,
@@ -266,7 +267,7 @@ export const oneVersusOneWeapons1: () => WeaponType[] = () => {
   return [gameWeaponBomb(), gameWeaponTriple()];
 };
 
-const gameWeaponBomb: () => WeaponType = () => {
+export const gameWeaponBomb: () => WeaponType = () => {
   return {
     damageArea: [[0, 0]],
     id: 1,
@@ -439,4 +440,10 @@ export const storedHugeRaft = (): Boat => {
 
 export const storedHugeFrigate = (): Boat => {
   return { id: 1, length: 3, name: BoatName.FRIGATE, width: 2 };
+};
+
+export const baseGameSettings: BaseGameSettings = {
+  firstPlayer: guestPlayer1(),
+  gameMode: GameMode.ONE_VERSUS_ONE,
+  weapons: [gameWeaponBomb()],
 };

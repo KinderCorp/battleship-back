@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 
 import BoatStore from '@store/boat.store';
 import DomainModule from '@modules/domain.module';
+import GameApi from '@gateways/game-api';
 import GameEngine from '@engine/game-engine';
 import GameEngineValidatorsService from '@engine/game-engine-validators.service';
 import GameGateway from '@gateways/game-gateway';
@@ -24,6 +25,7 @@ const boatStoreProvider = {
     GameEngineValidatorsService,
     GameGateway,
     GameInstanceValidatorsService,
+    GameApi,
   ],
 })
 export default class GatewayModule {}
