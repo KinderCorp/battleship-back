@@ -2,17 +2,17 @@ entity: Boat
 items:
   boat1:
     name: '{{animal.fish}}'
-    width: '1'
-    length: '2'
+    beam: '1'
+    lengthOverall: '2'
   boat2:
     name: '{{animal.fish}}'
-    width: '1'
-    length: '3'
+    beam: '1'
+    lengthOverall: '3'
   boat3:
     name: '{{animal.fish}}'
-    width: '1'
-    length: '4'
+    beam: '1'
+    lengthOverall: '4'
   boat4:
     name: '{{animal.fish}}'
-    width: '1'
-    length: '5'
+    beam: '1'
+    lengthOverall: '5'

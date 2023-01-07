@@ -182,7 +182,6 @@ describe('GameInstanceService', () => {
 
     expect(stillInGameBoats).toStrictEqual([
       {
-        boatName: BoatName.RAFT,
         emplacement: [
           [3, 1],
           [2, 1],
@@ -190,6 +189,7 @@ describe('GameInstanceService', () => {
         ],
         hit: [],
         isSunk: false,
+        name: BoatName.RAFT,
       },
     ]);
   });
@@ -201,7 +201,6 @@ describe('GameInstanceService', () => {
     service['updatePlayerBoatObject'](targetedPlayer, [3, 1]);
 
     expect(service.fleets[targetedPlayer.id][0]).toStrictEqual({
-      boatName: BoatName.RAFT,
       emplacement: [
         [1, 1],
         [2, 1],
@@ -209,6 +208,7 @@ describe('GameInstanceService', () => {
       ],
       hit: [[3, 1]],
       isSunk: false,
+      name: BoatName.RAFT,
     });
 
     service['updatePlayerBoatObject'](targetedPlayer, [2, 1]);
@@ -703,7 +703,7 @@ describe('GameInstanceService', () => {
 
     beforeEach(() => {
       spyValidateBoatWidth = jest
-        .spyOn(gameInstanceValidatorsService, 'validateBoatWidth')
+        .spyOn(gameInstanceValidatorsService, 'validateBoatBeam')
         .mockImplementation();
 
       spyValidateCellIsInBound = jest
@@ -849,10 +849,10 @@ describe('GameInstanceService', () => {
     expect(
       service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
     ).toStrictEqual({
-      boatName: BoatName.RAFT,
       emplacement: [[1, 1]],
       hit: [],
       isSunk: false,
+      name: BoatName.RAFT,
     });
   });
 
@@ -881,13 +881,12 @@ describe('GameInstanceService', () => {
 
     expect(service.generateFleet(boats, boatsFromStore)).toStrictEqual([
       {
-        boatName: 'raft',
         emplacement: [[1, 1]],
         hit: [],
         isSunk: false,
+        name: 'raft',
       },
       {
-        boatName: 'frigate',
         emplacement: [
           [5, 1],
           [5, 3],
@@ -895,6 +894,7 @@ describe('GameInstanceService', () => {
         ],
         hit: [],
         isSunk: false,
+        name: 'frigate',
       },
     ]);
 

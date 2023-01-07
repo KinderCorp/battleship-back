@@ -9,13 +9,11 @@ type Enumerate<
 
 /**
  * Create a range of numbers
- * The first argument is included in the range
- * The second argument is excluded from the range
+ * All arguments are included in the range
  */
-export type IntRange<F extends number, T extends number> = Exclude<
-  Enumerate<T>,
-  Enumerate<F>
->;
+export type IntRange<F extends number, T extends number> =
+  | Exclude<Enumerate<T>, Enumerate<F>>
+  | T;
 
 /**
  * Get the types contained by the array

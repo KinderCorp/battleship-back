@@ -21,7 +21,6 @@ import { DEFAULT_AUTHORISED_FLEET } from '@shared/game-instance.const';
 // INFO Datasets must be functions to ensure that the values don't mutate
 export const validRaft: () => GameBoat = () => {
   return {
-    boatName: BoatName.RAFT,
     emplacement: [
       [3, 1],
       [2, 1],
@@ -29,12 +28,12 @@ export const validRaft: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.RAFT,
   };
 };
 
 export const validGalley: () => GameBoat = () => {
   return {
-    boatName: BoatName.GALLEY,
     emplacement: [
       [1, 5],
       [1, 4],
@@ -42,12 +41,12 @@ export const validGalley: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.GALLEY,
   };
 };
 
 export const validFrigate: () => GameBoat = () => {
   return {
-    boatName: BoatName.FRIGATE,
     emplacement: [
       [5, 5],
       [5, 4],
@@ -59,24 +58,24 @@ export const validFrigate: () => GameBoat = () => {
       [5, 3],
     ],
     isSunk: true,
+    name: BoatName.FRIGATE,
   };
 };
 
 export const validShallop: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 5],
       [1, 4],
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
 export const invalidGalley1: () => GameBoat = () => {
   return {
-    boatName: BoatName.GALLEY,
     emplacement: [
       [11, 3],
       [2, 4],
@@ -84,12 +83,12 @@ export const invalidGalley1: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.GALLEY,
   };
 };
 
 export const invalidBoatPlacement2: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [2, 3],
       [2, 4],
@@ -97,12 +96,12 @@ export const invalidBoatPlacement2: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
 export const invalidBoatPlacement3: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [2, 3],
       [2, 5],
@@ -110,12 +109,12 @@ export const invalidBoatPlacement3: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
 export const invalidBoatPlacement4: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [2, 3],
       [2, 3],
@@ -123,12 +122,12 @@ export const invalidBoatPlacement4: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
 export const invalidBoatPlacement5: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 3],
       [4, 3],
@@ -136,12 +135,12 @@ export const invalidBoatPlacement5: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
 export const invalidBoatPlacement6: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 3],
       [3, 3],
@@ -149,18 +148,19 @@ export const invalidBoatPlacement6: () => GameBoat = () => {
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
 export const invalidBoatPlacement7: () => GameBoat = () => {
   return {
-    boatName: BoatName.SHALLOP,
     emplacement: [
       [1, 3],
       [3, 3],
     ],
     hit: [],
     isSunk: false,
+    name: BoatName.SHALLOP,
   };
 };
 
@@ -427,19 +427,19 @@ export const gameBoatSettingsHugeFrigate = (): GameBoatSettings => {
 };
 
 export const storedRaft = (): Boat => {
-  return { id: 1, length: 1, name: BoatName.RAFT, width: 1 };
+  return { beam: 1, id: 1, lengthOverall: 1, name: BoatName.RAFT };
 };
 
 export const storedFrigate = (): Boat => {
-  return { id: 1, length: 3, name: BoatName.FRIGATE, width: 1 };
+  return { beam: 1, id: 1, lengthOverall: 3, name: BoatName.FRIGATE };
 };
 
 export const storedHugeRaft = (): Boat => {
-  return { id: 1, length: 1, name: BoatName.RAFT, width: 2 };
+  return { beam: 2, id: 1, lengthOverall: 1, name: BoatName.RAFT };
 };
 
 export const storedHugeFrigate = (): Boat => {
-  return { id: 1, length: 3, name: BoatName.FRIGATE, width: 2 };
+  return { beam: 2, id: 1, lengthOverall: 3, name: BoatName.FRIGATE };
 };
 
 export const baseGameSettings: BaseGameSettings = {

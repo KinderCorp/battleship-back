@@ -92,7 +92,7 @@ export default class GameInstanceService {
    * @param storedBoat
    */
   public calculateBoatEmplacement(boat: GameBoatSettings, storedBoat: Boat) {
-    this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
+    this.gameInstanceValidatorsService.validateBoatBeam(boat, storedBoat);
     this.gameInstanceValidatorsService.validateBowCellsAreAlignedWithDirection(
       boat.direction,
       boat.bowCells,
@@ -104,7 +104,7 @@ export default class GameInstanceService {
       const sternCell: Cell = this.calculateSternCell(
         [xBowCell, yBowCell],
         boat.direction,
-        storedBoat.length,
+        storedBoat.lengthOverall,
       );
 
       this.gameInstanceValidatorsService.validateCellIsInBounds(
@@ -116,28 +116,28 @@ export default class GameInstanceService {
 
       switch (boat.direction) {
         case BoatDirection.NORTH:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = ySternCell + i;
             boatEmplacements.push([xBowCell, newCell]);
           }
           break;
 
         case BoatDirection.EAST:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = xSternCell + i;
             boatEmplacements.push([newCell, yBowCell]);
           }
           break;
 
         case BoatDirection.SOUTH:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = ySternCell - i;
             boatEmplacements.push([xBowCell, newCell]);
           }
           break;
 
         case BoatDirection.WEST:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = xSternCell - i;
             boatEmplacements.push([newCell, yBowCell]);
           }
@@ -160,7 +160,7 @@ export default class GameInstanceService {
   public calculateSternCell(
     [xBowCell, yBowCell]: Cell,
     direction: BoatDirection,
-    boatLength: Boat['length'],
+    boatLength: Boat['lengthOverall'],
   ): Cell {
     switch (direction) {
       case BoatDirection.NORTH:
@@ -271,10 +271,10 @@ export default class GameInstanceService {
     const boatEmplacement = this.calculateBoatEmplacement(boat, storedBoat);
 
     return {
-      boatName: boat.name,
       emplacement: boatEmplacement,
       hit: [],
       isSunk: false,
+      name: boat.name,
     };
   }
 

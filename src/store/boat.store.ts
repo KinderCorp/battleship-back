@@ -14,6 +14,7 @@ export default class BoatStore {
   private _boats: Boat[];
 
   public constructor(private boatService: BoatService) {
+    // noinspection JSIgnoredPromiseFromCall
     this.initialise();
   }
 

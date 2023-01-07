@@ -28,9 +28,9 @@ describe('BoatController', () => {
 
   it('should insert a boat', async () => {
     const boatToInsert: CreateBoatDto = {
-      length: 1,
+      beam: 1,
+      lengthOverall: 1,
       name: 'Kayak',
-      width: 1,
     };
 
     const spy = jest.spyOn(controller, 'insert').mockImplementation();

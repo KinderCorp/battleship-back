@@ -4,7 +4,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BoatName, BoatType } from '@interfaces/boat.interface';
 
 /**
- * INFO Boat dimensions
  * At the moment a boat can have a width greater than 1.
  * But a boat will always have the same length.
  * This could change in the future, a task has been created in ClickUp.
@@ -22,8 +21,8 @@ export default class Boat implements BoatType {
 
   @ApiProperty({ default: 1 })
   @Column('integer', { default: 1 })
-  public width!: number;
+  public beam!: number;
 
   @Column('integer')
-  public length!: number;
+  public lengthOverall!: number;
 }

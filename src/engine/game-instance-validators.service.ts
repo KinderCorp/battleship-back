@@ -52,9 +52,9 @@ export default class GameInstanceValidatorsService {
 
     const actualReducedAuthorisedFleet = playerFleet.reduce(
       (acc, currentValue) => {
-        const { boatName } = currentValue;
-        acc[boatName] = playerFleet.filter(
-          (boat) => boat.boatName === currentValue.boatName,
+        const { name } = currentValue;
+        acc[name] = playerFleet.filter(
+          (boat) => boat.name === currentValue.name,
         ).length;
         return acc;
       },
@@ -87,6 +87,17 @@ export default class GameInstanceValidatorsService {
     }
 
     return true;
+  }
+
+  public validateBoatBeam(boat: GameBoatSettings, storedBoat: Boat) {
+    if (boat.bowCells.length !== storedBoat.beam) {
+      const errorKey = 'INVALID_BOAT';
+
+      throw new GameEngineError({
+        code: GameEngineErrorCodes[errorKey],
+        message: GameEngineErrorMessages[errorKey],
+      });
+    }
   }
 
   public validateBoatNames(boats: GameBoatSettings[]) {
@@ -146,17 +157,6 @@ export default class GameInstanceValidatorsService {
     });
 
     return true;
-  }
-
-  public validateBoatWidth(boat: GameBoatSettings, storedBoat: Boat) {
-    if (boat.bowCells.length !== storedBoat.width) {
-      const errorKey = 'INVALID_BOAT';
-
-      throw new GameEngineError({
-        code: GameEngineErrorCodes[errorKey],
-        message: GameEngineErrorMessages[errorKey],
-      });
-    }
   }
 
   public validateBowCellsAreAlignedWithDirection(

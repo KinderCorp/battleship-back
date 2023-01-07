@@ -2,17 +2,17 @@ entity: Boat
 items:
   boat1:
     name: 'raft'
-    length: '1'
-    width: '1'
+    beam: '1'
+    lengthOverall: '1'
   boat2:
     name: 'shallop'
-    length: '2'
-    width: '1'
+    beam: '2'
+    lengthOverall: '1'
   boat3:
     name: 'frigate'
-    length: '3'
-    width: '1'
+    beam: '3'
+    lengthOverall: '1'
   boat4:
     name: 'galley'
-    length: '4'
-    width: '1'
+    beam: '4'
+    lengthOverall: '1'

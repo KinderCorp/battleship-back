@@ -1,6 +1,5 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import Boat from '@boat/boat.entity';
-import { BoatName } from '@interfaces/boat.interface';
 import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
 import { WeaponType } from '@interfaces/weapon.interface';
@@ -31,7 +30,7 @@ export type PlayerBoards = {
 };
 
 export interface GameBoat {
-  boatName: string;
+  name: Boat['name'];
   hit: Cell[];
   isSunk: boolean;
   emplacement: Cell[];
@@ -40,7 +39,7 @@ export interface GameBoat {
 export interface GameBoatSettings {
   bowCells: Cell[];
   direction: BoatDirection;
-  name: BoatName;
+  name: Boat['name'];
 }
 
 export interface BaseGameSettings {
@@ -79,7 +78,7 @@ export type GameArsenal = {
 };
 
 export interface Turn {
-  actionRemaining: IntRange<0, 2>;
+  actionRemaining: IntRange<0, 1>;
   isTurnOf: GamePlayer;
   nextPlayer: GamePlayer;
 }
@@ -121,7 +120,12 @@ export interface ShotRecap {
 
 export type AuthorisedFleet = {
   authorisedNumber: number;
-  boat: { lengthCell: number; name: BoatName; src: string; widthCell: number };
+  boat: {
+    lengthOverall: number;
+    name: Boat['name'];
+    src: string;
+    beam: number;
+  };
 }[];
 
 export type PlayersWithSettings = {

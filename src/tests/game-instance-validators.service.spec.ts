@@ -354,17 +354,17 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat width', () => {
     expect(() =>
-      service.validateBoatWidth(gameBoatSettingsRaft(), storedRaft()),
+      service.validateBoatBeam(gameBoatSettingsRaft(), storedRaft()),
     ).not.toThrowError();
 
     expect(() =>
-      service.validateBoatWidth(gameBoatSettingsHugeRaft(), storedHugeRaft()),
+      service.validateBoatBeam(gameBoatSettingsHugeRaft(), storedHugeRaft()),
     ).not.toThrowError();
   });
 
   it('should not validate boat width', () => {
     expect(() =>
-      service.validateBoatWidth(gameBoatSettingsRaft(), storedHugeRaft()),
+      service.validateBoatBeam(gameBoatSettingsRaft(), storedHugeRaft()),
     ).toThrowError();
   });
 
