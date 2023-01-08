@@ -7,9 +7,11 @@ import {
   GameBoatSettings,
   GameMode,
   GamePlayer,
+  GamePreset,
   GameSettings,
   GameWeapon,
   PlayerBoards,
+  PresetName,
   Turn,
 } from '@interfaces/engine.interface';
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
@@ -442,8 +444,20 @@ export const storedHugeFrigate = (): Boat => {
   return { beam: 2, id: 1, lengthOverall: 3, name: BoatName.FRIGATE };
 };
 
-export const baseGameSettings: BaseGameSettings = {
-  firstPlayer: guestPlayer1(),
-  gameMode: GameMode.ONE_VERSUS_ONE,
-  weapons: [gameWeaponBomb()],
+export const baseGameSettings = (): BaseGameSettings => {
+  return {
+    firstPlayer: guestPlayer1(),
+    gameMode: GameMode.ONE_VERSUS_ONE,
+    weapons: [gameWeaponBomb()],
+  };
+};
+
+export const exampleGamePreset = (): GamePreset => {
+  return {
+    fleetPreset: [
+      [4, BoatName.RAFT],
+      [3, BoatName.FRIGATE],
+    ],
+    name: PresetName.CLASSIC,
+  };
 };

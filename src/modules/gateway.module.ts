@@ -9,7 +9,7 @@ import GameEngineValidatorsService from '@engine/game-engine-validators.service'
 import GameGateway from '@gateways/game-gateway';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
-const boatStoreProvider = {
+export const boatStoreProvider = {
   inject: [BoatService],
   provide: 'BOAT_STORE',
   useFactory: async (boatService: BoatService) => {

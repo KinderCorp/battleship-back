@@ -1,22 +1,42 @@
 import { Inject } from '@nestjs/common';
 
+import {
+  AuthorisedFleet,
+  GameBoatSettings,
+  GamePreset,
+} from '@interfaces/engine.interface';
 import BoatStore from '@store/boat.store';
-import { GameBoatSettings } from '@interfaces/engine.interface';
 import GameInstanceService from '@engine/game-instance.service';
-import UserService from '@user/user.service';
-import WeaponService from '@weapon/weapon.service';
 
 export default class GameEngine {
   private instances: GameInstanceService[] = [];
 
-  public constructor(
-    @Inject('BOAT_STORE') private boatStore: BoatStore,
-    private userService: UserService,
-    private weaponService: WeaponService,
-  ) {}
+  public constructor(@Inject('BOAT_STORE') private boatStore: BoatStore) {}
 
   public addInstance(instance: GameInstanceService): void {
     this.instances.push(instance);
+  }
+
+  public buildAuthorisedFleetFromGamePreset(
+    gamePreset: GamePreset,
+  ): AuthorisedFleet {
+    const authorisedFleet: AuthorisedFleet = [];
+
+    gamePreset.fleetPreset.forEach(([numberOfBoats, boatName]) => {
+      const storedBoat = this.boatStore.getByName(boatName);
+
+      authorisedFleet.push({
+        authorisedNumber: numberOfBoats,
+        boat: {
+          beam: storedBoat.beam,
+          lengthOverall: storedBoat.lengthOverall,
+          name: boatName,
+          src: `/images/boats/boat-${storedBoat.lengthOverall}x${storedBoat.beam}.png`,
+        },
+      });
+    });
+
+    return authorisedFleet;
   }
 
   public destroy(instance: GameInstanceService): void {

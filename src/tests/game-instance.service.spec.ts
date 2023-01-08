@@ -56,7 +56,7 @@ describe('GameInstanceService', () => {
     );
 
     service = new GameInstanceService(
-      baseGameSettings,
+      baseGameSettings(),
       gameInstanceValidatorsService,
     );
   });

@@ -133,10 +133,6 @@ export type PlayersWithSettings = {
   settings: GameSettings;
 };
 
-export interface GameItems {
-  boats: Boat[];
-}
-
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',
   LEAVE_ROOM = 'leave-room',
@@ -181,3 +177,13 @@ export enum SocketEventsEmitting {
 }
 
 export type MaxNumberOfPlayers = 2;
+
+export interface GamePreset {
+  name: PresetName;
+  fleetPreset: FleetPreset;
+}
+export type FleetPreset = [numberOfBoats: number, boatName: Boat['name']][];
+
+export enum PresetName {
+  CLASSIC = 'classic',
+}

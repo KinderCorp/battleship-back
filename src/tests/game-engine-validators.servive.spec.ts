@@ -28,7 +28,7 @@ describe('GameEngineValidatorsService', () => {
     );
 
     gameInstance = new GameInstanceService(
-      baseGameSettings,
+      baseGameSettings(),
       gameInstanceValidators,
     );
   });
