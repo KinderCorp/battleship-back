@@ -1,13 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import {
-  BaseGameSettings,
-  BoatDirection,
-  Cell,
-  GameMode,
-  GameState,
-} from '@interfaces/engine.interface';
-import {
+  baseGameSettings,
   bomb,
   fakeWeapon,
   fleets1,
@@ -31,6 +25,12 @@ import {
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
 import {
+  BoatDirection,
+  Cell,
+  GameMode,
+  GameState,
+} from '@interfaces/engine.interface';
+import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
 } from '@interfaces/error.interface';
@@ -39,11 +39,6 @@ import GameEngineError from '@shared/game-engine-error';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 import { WeaponName } from '@interfaces/weapon.interface';
-
-const baseGameSettings: BaseGameSettings = {
-  firstPlayer: guestPlayer1(),
-  gameMode: GameMode.ONE_VERSUS_ONE,
-};
 
 // npm run test:unit -- src/tests/game-instance.service.spec.ts --watch
 
@@ -61,14 +56,14 @@ describe('GameInstanceService', () => {
     );
 
     service = new GameInstanceService(
-      baseGameSettings,
+      baseGameSettings(),
       gameInstanceValidatorsService,
     );
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(service.gameSettings.gameMode).toEqual(GameMode.ONE_VERSUS_ONE);
+    expect(service.gameSettings.mode).toEqual(GameMode.ONE_VERSUS_ONE);
     expect(service.gameState).toEqual(GameState.WAITING_TO_RIVAL);
   });
 
@@ -187,7 +182,6 @@ describe('GameInstanceService', () => {
 
     expect(stillInGameBoats).toStrictEqual([
       {
-        boatName: BoatName.RAFT,
         emplacement: [
           [3, 1],
           [2, 1],
@@ -195,6 +189,7 @@ describe('GameInstanceService', () => {
         ],
         hit: [],
         isSunk: false,
+        name: BoatName.RAFT,
       },
     ]);
   });
@@ -206,7 +201,6 @@ describe('GameInstanceService', () => {
     service['updatePlayerBoatObject'](targetedPlayer, [3, 1]);
 
     expect(service.fleets[targetedPlayer.id][0]).toStrictEqual({
-      boatName: BoatName.RAFT,
       emplacement: [
         [1, 1],
         [2, 1],
@@ -214,6 +208,7 @@ describe('GameInstanceService', () => {
       ],
       hit: [[3, 1]],
       isSunk: false,
+      name: BoatName.RAFT,
     });
 
     service['updatePlayerBoatObject'](targetedPlayer, [2, 1]);
@@ -301,7 +296,7 @@ describe('GameInstanceService', () => {
     it('should not shoot because the origin cell is out of bound', () => {
       expect(() =>
         service.shoot({
-          originCell: [0, 1],
+          originCell: [10, 1],
           targetedPlayerId: guestPlayer1().id,
           weaponName: bomb().name,
         }),
@@ -314,7 +309,7 @@ describe('GameInstanceService', () => {
 
       expect(() =>
         service.shoot({
-          originCell: [1, 0],
+          originCell: [1, 10],
           targetedPlayerId: guestPlayer1().id,
           weaponName: bomb().name,
         }),
@@ -708,7 +703,7 @@ describe('GameInstanceService', () => {
 
     beforeEach(() => {
       spyValidateBoatWidth = jest
-        .spyOn(gameInstanceValidatorsService, 'validateBoatWidth')
+        .spyOn(gameInstanceValidatorsService, 'validateBoatBeam')
         .mockImplementation();
 
       spyValidateCellIsInBound = jest
@@ -854,17 +849,17 @@ describe('GameInstanceService', () => {
     expect(
       service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
     ).toStrictEqual({
-      boatName: BoatName.RAFT,
       emplacement: [[1, 1]],
       hit: [],
       isSunk: false,
+      name: BoatName.RAFT,
     });
   });
 
   it('should not generate game boat', () => {
     const boatsFromStore = [storedHugeFrigate(), storedRaft()];
 
-    boatsFromStore[1].name = 'outrigger';
+    boatsFromStore[1].name = 'outrigger' as BoatName;
 
     expect(() =>
       service['generateGameBoat'](gameBoatSettingsRaft(), boatsFromStore),
@@ -886,13 +881,12 @@ describe('GameInstanceService', () => {
 
     expect(service.generateFleet(boats, boatsFromStore)).toStrictEqual([
       {
-        boatName: 'raft',
         emplacement: [[1, 1]],
         hit: [],
         isSunk: false,
+        name: 'raft',
       },
       {
-        boatName: 'frigate',
         emplacement: [
           [5, 1],
           [5, 3],
@@ -900,6 +894,7 @@ describe('GameInstanceService', () => {
         ],
         hit: [],
         isSunk: false,
+        name: 'frigate',
       },
     ]);
 

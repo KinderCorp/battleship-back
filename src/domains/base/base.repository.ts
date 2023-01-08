@@ -11,6 +11,7 @@ import { instanceToPlain } from 'class-transformer';
 import { CreateDtoInterface, UpdateDtoInterface } from '@dto/dto.interface';
 import ApiError from '@shared/api-error';
 import { IdentifierInterface } from '@interfaces/entity.interface';
+import { InsertedEntity } from '@interfaces/shared.interface';
 
 @Injectable()
 export default class BaseRepository<Entity extends IdentifierInterface> {
@@ -38,11 +39,15 @@ export default class BaseRepository<Entity extends IdentifierInterface> {
     return this.repository.findOneBy({ id: id } as FindOptionsWhere<Entity>);
   }
 
-  public async insert(dto: CreateDtoInterface): Promise<Entity> {
+  public async insert(
+    dto: CreateDtoInterface,
+  ): Promise<InsertedEntity<Entity>> {
     const newData = instanceToPlain(dto) as DeepPartial<Entity>;
     const newEntity = this.repository.create(newData);
 
-    return await this.repository.save<Entity>(newEntity);
+    return (await this.repository.save<Entity>(
+      newEntity,
+    )) as unknown as InsertedEntity<Entity>;
   }
 
   public async update(

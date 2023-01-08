@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { shuffle } from 'radash';
 
 import {
   BoatDirection,
@@ -6,18 +7,7 @@ import {
   GamePlayer,
 } from '@interfaces/engine.interface';
 import {
-  GameEngineErrorCodes,
-  GameEngineErrorMessages,
-} from '@interfaces/error.interface';
-import { BoatName } from '@interfaces/boat.interface';
-import GameEngineError from '@shared/game-engine-error';
-import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
-
-import {
-  DEFAULT_AUTHORISED_FLEET,
-  DEFAULT_BOARD_GAME,
-} from '@shared/game-instance.const';
-import {
+  exampleAuthorisedFleet,
   gameBoatSettingsGalley,
   gameBoatSettingsHugeRaft,
   gameBoatSettingsRaft,
@@ -40,7 +30,14 @@ import {
   validShallop,
   visiblePlayerBoards2,
 } from '@tests/datasets/game-instance.dataset';
-import { shuffle } from 'radash';
+import {
+  GameEngineErrorCodes,
+  GameEngineErrorMessages,
+} from '@interfaces/error.interface';
+import { BoatName } from '@interfaces/boat.interface';
+import { DEFAULT_BOARD_GAME } from '@shared/game-instance.const';
+import GameEngineError from '@shared/game-engine-error';
+import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
 
 // npm run test:unit -- src/tests/game-instance-validators.service.spec.ts --watch
 
@@ -168,7 +165,7 @@ describe('GameInstanceValidatorsService', () => {
 
     expect(
       service.validateBoatsOfPlayers(
-        DEFAULT_AUTHORISED_FLEET,
+        exampleAuthorisedFleet(),
         DEFAULT_BOARD_GAME,
         boatsPlacement,
       ),
@@ -184,7 +181,7 @@ describe('GameInstanceValidatorsService', () => {
 
     expect(() =>
       service.validateBoatsOfPlayers(
-        DEFAULT_AUTHORISED_FLEET,
+        exampleAuthorisedFleet(),
         DEFAULT_BOARD_GAME,
         boatsPlacement,
       ),
@@ -298,13 +295,13 @@ describe('GameInstanceValidatorsService', () => {
   it('should validate authorised fleet', () => {
     expect(
       service.validateAuthorisedFleet(
-        DEFAULT_AUTHORISED_FLEET,
+        exampleAuthorisedFleet(),
         validPlayerFleet(),
       ),
     ).toEqual(true);
     expect(
       service.validateAuthorisedFleet(
-        DEFAULT_AUTHORISED_FLEET,
+        exampleAuthorisedFleet(),
         shuffle(validPlayerFleet()),
       ),
     ).toEqual(true);
@@ -314,7 +311,7 @@ describe('GameInstanceValidatorsService', () => {
     const errorKey = 'UNAUTHORISED_FLEET';
     expect(() =>
       service.validateAuthorisedFleet(
-        DEFAULT_AUTHORISED_FLEET,
+        exampleAuthorisedFleet(),
         validPlayerFleet().slice(2),
       ),
     ).toThrowError(
@@ -354,26 +351,26 @@ describe('GameInstanceValidatorsService', () => {
 
   it('should validate boat width', () => {
     expect(() =>
-      service.validateBoatWidth(gameBoatSettingsRaft(), storedRaft()),
+      service.validateBoatBeam(gameBoatSettingsRaft(), storedRaft()),
     ).not.toThrowError();
 
     expect(() =>
-      service.validateBoatWidth(gameBoatSettingsHugeRaft(), storedHugeRaft()),
+      service.validateBoatBeam(gameBoatSettingsHugeRaft(), storedHugeRaft()),
     ).not.toThrowError();
   });
 
   it('should not validate boat width', () => {
     expect(() =>
-      service.validateBoatWidth(gameBoatSettingsRaft(), storedHugeRaft()),
+      service.validateBoatBeam(gameBoatSettingsRaft(), storedHugeRaft()),
     ).toThrowError();
   });
 
   it('should validate cell is in bounds', () => {
     expect(() =>
-      service.validateCellIsInBounds([1, 1], DEFAULT_BOARD_GAME),
+      service.validateCellIsInBounds([0, 0], DEFAULT_BOARD_GAME),
     ).not.toThrowError();
     expect(() =>
-      service.validateCellIsInBounds([10, 10], DEFAULT_BOARD_GAME),
+      service.validateCellIsInBounds([9, 9], DEFAULT_BOARD_GAME),
     ).not.toThrowError();
   });
 

@@ -12,10 +12,10 @@ export class CreateBoatDto implements CreateDtoInterface {
   @ApiProperty({ default: 1, required: false })
   @IsOptional()
   @IsNumber()
-  public width: number;
+  public beam: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  public length!: number;
+  public lengthOverall!: number;
 }

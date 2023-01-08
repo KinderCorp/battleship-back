@@ -5,6 +5,7 @@ import ApiError from '@shared/api-error';
 import { CreateGameDto } from '@dto/game.dto';
 import Game from '@game/game.entity';
 import GameService from '@game/game.service';
+import { InsertedEntity } from '@interfaces/shared.interface';
 
 const entityName = 'Game';
 
@@ -19,7 +20,9 @@ export default class GameController {
     description: 'Game correctly inserted in database',
     status: 201,
   })
-  public async insert(@Body() game: CreateGameDto): Promise<Game> {
+  public async insert(
+    @Body() game: CreateGameDto,
+  ): Promise<InsertedEntity<Game>> {
     try {
       return await this.gameService.insert(game);
     } catch (error) {

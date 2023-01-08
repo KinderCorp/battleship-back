@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+
 import {
   GameEngineErrorCodes,
   GameEngineErrorMessages,
@@ -7,10 +9,12 @@ import { BoatName } from '@interfaces/boat.interface';
 import BoatService from '@boat/boat.service';
 import GameEngineError from '@shared/game-engine-error';
 
+@Injectable()
 export default class BoatStore {
   private _boats: Boat[];
 
   public constructor(private boatService: BoatService) {
+    // noinspection JSIgnoredPromiseFromCall
     this.initialise();
   }
 
@@ -32,7 +36,8 @@ export default class BoatStore {
 
     return boat;
   }
-  private async initialise() {
+
+  public async initialise() {
     this._boats = await this.boatService.findAll();
   }
 }

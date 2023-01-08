@@ -1,6 +1,5 @@
 import { GuestPlayer, LoggedPlayer } from '@interfaces/player.interface';
 import Boat from '@boat/boat.entity';
-import { BoatName } from '@interfaces/boat.interface';
 import { IntRange } from '@interfaces/shared.interface';
 import Weapon from '@weapon/weapon.entity';
 import { WeaponType } from '@interfaces/weapon.interface';
@@ -31,7 +30,7 @@ export type PlayerBoards = {
 };
 
 export interface GameBoat {
-  boatName: string;
+  name: Boat['name'];
   hit: Cell[];
   isSunk: boolean;
   emplacement: Cell[];
@@ -40,12 +39,14 @@ export interface GameBoat {
 export interface GameBoatSettings {
   bowCells: Cell[];
   direction: BoatDirection;
-  name: BoatName;
+  name: Boat['name'];
 }
 
 export interface BaseGameSettings {
-  gameMode: GameMode;
+  authorisedFleet: AuthorisedFleet;
+  mode: GameMode;
   firstPlayer: GamePlayer;
+  weapons: GameSettings['weapons'];
 }
 
 export interface GameBoats extends Versus<GameBoat> {
@@ -57,7 +58,6 @@ export type Versus<T> = {
 };
 
 export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
-  authorisedFleet: AuthorisedFleet;
   boardDimensions: number;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;
@@ -78,7 +78,7 @@ export type GameArsenal = {
 };
 
 export interface Turn {
-  actionRemaining: IntRange<0, 2>;
+  actionRemaining: IntRange<0, 1>;
   isTurnOf: GamePlayer;
   nextPlayer: GamePlayer;
 }
@@ -120,17 +120,18 @@ export interface ShotRecap {
 
 export type AuthorisedFleet = {
   authorisedNumber: number;
-  boat: { lengthCell: number; name: BoatName; src: string; widthCell: number };
+  boat: {
+    lengthOverall: number;
+    name: Boat['name'];
+    src: string;
+    beam: number;
+  };
 }[];
 
 export type PlayersWithSettings = {
   players: GamePlayer[];
   settings: GameSettings;
 };
-
-export interface GameItems {
-  boats: Boat[];
-}
 
 export enum SocketEventsListening {
   CREATE_GAME = 'create-game',
@@ -176,3 +177,14 @@ export enum SocketEventsEmitting {
 }
 
 export type MaxNumberOfPlayers = 2;
+
+export interface GamePreset {
+  name: PresetName;
+  fleetPreset: FleetPreset;
+}
+
+export type FleetPreset = [numberOfBoats: number, boatName: Boat['name']][];
+
+export enum PresetName {
+  CLASSIC = 'classic',
+}

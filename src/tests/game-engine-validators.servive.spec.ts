@@ -1,10 +1,13 @@
-import { GameMode, GameState } from '@interfaces/engine.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { guestPlayer1, players1 } from '@tests/datasets/game-instance.dataset';
+import {
+  baseGameSettings,
+  players1,
+} from '@tests/datasets/game-instance.dataset';
 import GameEngineValidatorsService from '@engine/game-engine-validators.service';
 import GameInstanceService from '@engine/game-instance.service';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
+import { GameState } from '@interfaces/engine.interface';
 
 describe('GameEngineValidatorsService', () => {
   let service: GameEngineValidatorsService;
@@ -25,10 +28,7 @@ describe('GameEngineValidatorsService', () => {
     );
 
     gameInstance = new GameInstanceService(
-      {
-        firstPlayer: guestPlayer1(),
-        gameMode: GameMode.ONE_VERSUS_ONE,
-      },
+      baseGameSettings(),
       gameInstanceValidators,
     );
   });

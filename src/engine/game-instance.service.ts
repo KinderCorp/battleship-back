@@ -22,7 +22,6 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
-  DEFAULT_AUTHORISED_FLEET,
   DEFAULT_BOARD_GAME,
   GAME_INSTANCE_UID_LENGTH,
 } from '@shared/game-instance.const';
@@ -33,7 +32,6 @@ import {
 import Boat from '@boat/boat.entity';
 import GameEngineError from '@shared/game-engine-error';
 import GameInstanceValidatorsService from '@engine/game-instance-validators.service';
-import { WeaponName } from '@interfaces/weapon.interface';
 
 export default class GameInstanceService {
   private _gameState!: GameState;
@@ -50,32 +48,29 @@ export default class GameInstanceService {
   public readonly maxNumberOfPlayers: MaxNumberOfPlayers;
 
   public constructor(
-    { gameMode = GameMode.ONE_VERSUS_ONE, firstPlayer }: BaseGameSettings,
+    {
+      authorisedFleet,
+      mode = GameMode.ONE_VERSUS_ONE,
+      firstPlayer,
+      weapons,
+    }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
-    this.gameMode = gameMode;
+    this.gameMode = mode;
     this._gameState = GameState.WAITING_TO_RIVAL;
-    this.maxNumberOfPlayers = this.getMaximumPlayers(gameMode);
+    this.maxNumberOfPlayers = this.getMaximumPlayers(mode);
 
     // TASK Check player validity before pushing to players
     this.players.push(firstPlayer);
     this.id = uid(GAME_INSTANCE_UID_LENGTH);
 
-    // TASK Make this dynamically
     this.gameSettings = {
-      authorisedFleet: DEFAULT_AUTHORISED_FLEET,
+      authorisedFleet: authorisedFleet,
       boardDimensions: 10,
-      gameMode: gameMode,
       hasBoatsSafetyZone: false,
+      mode: mode,
       timePerTurn: 60,
-      weapons: [
-        {
-          damageArea: [[0, 0]],
-          id: 1,
-          maxAmmunition: -1,
-          name: WeaponName.BOMB,
-        },
-      ],
+      weapons: weapons,
     };
   }
 
@@ -97,7 +92,7 @@ export default class GameInstanceService {
    * @param storedBoat
    */
   public calculateBoatEmplacement(boat: GameBoatSettings, storedBoat: Boat) {
-    this.gameInstanceValidatorsService.validateBoatWidth(boat, storedBoat);
+    this.gameInstanceValidatorsService.validateBoatBeam(boat, storedBoat);
     this.gameInstanceValidatorsService.validateBowCellsAreAlignedWithDirection(
       boat.direction,
       boat.bowCells,
@@ -109,7 +104,7 @@ export default class GameInstanceService {
       const sternCell: Cell = this.calculateSternCell(
         [xBowCell, yBowCell],
         boat.direction,
-        storedBoat.length,
+        storedBoat.lengthOverall,
       );
 
       this.gameInstanceValidatorsService.validateCellIsInBounds(
@@ -121,28 +116,28 @@ export default class GameInstanceService {
 
       switch (boat.direction) {
         case BoatDirection.NORTH:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = ySternCell + i;
             boatEmplacements.push([xBowCell, newCell]);
           }
           break;
 
         case BoatDirection.EAST:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = xSternCell + i;
             boatEmplacements.push([newCell, yBowCell]);
           }
           break;
 
         case BoatDirection.SOUTH:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = ySternCell - i;
             boatEmplacements.push([xBowCell, newCell]);
           }
           break;
 
         case BoatDirection.WEST:
-          for (let i = 0; i < storedBoat.length - 1; i++) {
+          for (let i = 0; i < storedBoat.lengthOverall - 1; i++) {
             const newCell = xSternCell - i;
             boatEmplacements.push([newCell, yBowCell]);
           }
@@ -165,7 +160,7 @@ export default class GameInstanceService {
   public calculateSternCell(
     [xBowCell, yBowCell]: Cell,
     direction: BoatDirection,
-    boatLength: Boat['length'],
+    boatLength: Boat['lengthOverall'],
   ): Cell {
     switch (direction) {
       case BoatDirection.NORTH:
@@ -276,10 +271,10 @@ export default class GameInstanceService {
     const boatEmplacement = this.calculateBoatEmplacement(boat, storedBoat);
 
     return {
-      boatName: boat.name,
       emplacement: boatEmplacement,
       hit: [],
       isSunk: false,
+      name: boat.name,
     };
   }
 

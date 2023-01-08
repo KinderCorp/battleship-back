@@ -25,6 +25,7 @@ export enum GameEngineErrorCodes {
   PLAYER_NOT_FOUND = 'player-not-found',
   UNAUTHORISED_FLEET = 'unauthorised-fleet',
   WEAPON_NOT_FOUND = 'weapon-not-found',
+  NOT_IMPLEMENTED = 'not-implemented',
 }
 
 export enum GameEngineErrorMessages {
