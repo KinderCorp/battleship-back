@@ -220,8 +220,8 @@ export const gameSettings1: () => GameSettings = () => {
   return {
     authorisedFleet: DEFAULT_AUTHORISED_FLEET,
     boardDimensions: 10,
-    gameMode: GameMode.ONE_VERSUS_ONE,
     hasBoatsSafetyZone: false,
+    mode: GameMode.ONE_VERSUS_ONE,
     timePerTurn: 60,
     weapons: oneVersusOneWeapons,
   };
@@ -447,7 +447,7 @@ export const storedHugeFrigate = (): Boat => {
 export const baseGameSettings = (): BaseGameSettings => {
   return {
     firstPlayer: guestPlayer1(),
-    gameMode: GameMode.ONE_VERSUS_ONE,
+    mode: GameMode.ONE_VERSUS_ONE,
     weapons: [gameWeaponBomb()],
   };
 };

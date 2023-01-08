@@ -171,7 +171,7 @@ export default class GameGateway implements OnGatewayConnection {
           pseudo: body.pseudo,
           socketId: socket.id,
         },
-        gameMode: GameMode.ONE_VERSUS_ONE,
+        mode: GameMode.ONE_VERSUS_ONE,
         weapons: [...unlockedWeaponsOfHost],
       };
 

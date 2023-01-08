@@ -48,17 +48,14 @@ export default class GameInstanceService {
   public readonly id!: string;
   public readonly maxNumberOfPlayers: MaxNumberOfPlayers;
 
+  // TASK Add game preset in baseSettings
   public constructor(
-    {
-      gameMode = GameMode.ONE_VERSUS_ONE,
-      firstPlayer,
-      weapons,
-    }: BaseGameSettings,
+    { mode = GameMode.ONE_VERSUS_ONE, firstPlayer, weapons }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
-    this.gameMode = gameMode;
+    this.gameMode = mode;
     this._gameState = GameState.WAITING_TO_RIVAL;
-    this.maxNumberOfPlayers = this.getMaximumPlayers(gameMode);
+    this.maxNumberOfPlayers = this.getMaximumPlayers(mode);
 
     // TASK Check player validity before pushing to players
     this.players.push(firstPlayer);
@@ -67,8 +64,8 @@ export default class GameInstanceService {
     this.gameSettings = {
       authorisedFleet: DEFAULT_AUTHORISED_FLEET,
       boardDimensions: 10,
-      gameMode: gameMode,
       hasBoatsSafetyZone: false,
+      mode: mode,
       timePerTurn: 60,
       weapons: weapons,
     };

@@ -63,7 +63,7 @@ describe('GameInstanceService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(service.gameSettings.gameMode).toEqual(GameMode.ONE_VERSUS_ONE);
+    expect(service.gameSettings.mode).toEqual(GameMode.ONE_VERSUS_ONE);
     expect(service.gameState).toEqual(GameState.WAITING_TO_RIVAL);
   });
 

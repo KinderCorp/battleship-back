@@ -43,7 +43,7 @@ export interface GameBoatSettings {
 }
 
 export interface BaseGameSettings {
-  gameMode: GameMode;
+  mode: GameMode;
   firstPlayer: GamePlayer;
   weapons: GameSettings['weapons'];
 }
@@ -182,6 +182,7 @@ export interface GamePreset {
   name: PresetName;
   fleetPreset: FleetPreset;
 }
+
 export type FleetPreset = [numberOfBoats: number, boatName: Boat['name']][];
 
 export enum PresetName {
