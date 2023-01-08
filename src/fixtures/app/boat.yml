@@ -6,13 +6,13 @@ items:
     lengthOverall: '1'
   boat2:
     name: 'shallop'
-    beam: '2'
-    lengthOverall: '1'
+    beam: '1'
+    lengthOverall: '2'
   boat3:
     name: 'frigate'
-    beam: '3'
-    lengthOverall: '1'
+    beam: '1'
+    lengthOverall: '3'
   boat4:
     name: 'galley'
-    beam: '4'
-    lengthOverall: '1'
+    beam: '1'
+    lengthOverall: '4'

@@ -26,6 +26,7 @@ import {
   Turn,
   TurnRecap,
 } from '@interfaces/engine.interface';
+import { classicGame } from '@engine/game-presets';
 import GameApi from '@gateways/game-api';
 import GameEngine from '@engine/game-engine';
 import { GameEngineErrorCodes } from '@interfaces/error.interface';
@@ -164,7 +165,11 @@ export default class GameGateway implements OnGatewayConnection {
         body.id,
       );
 
+      const authorisedFleetFromGamePreset =
+        this.gameEngine.buildAuthorisedFleetFromGamePreset(classicGame);
+
       const baseGameSettings: BaseGameSettings = {
+        authorisedFleet: authorisedFleetFromGamePreset,
         firstPlayer: {
           id: body.id ?? uid(20),
           isHost: true,

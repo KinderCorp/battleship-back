@@ -43,6 +43,7 @@ export interface GameBoatSettings {
 }
 
 export interface BaseGameSettings {
+  authorisedFleet: AuthorisedFleet;
   mode: GameMode;
   firstPlayer: GamePlayer;
   weapons: GameSettings['weapons'];
@@ -57,7 +58,6 @@ export type Versus<T> = {
 };
 
 export interface GameSettings extends Omit<BaseGameSettings, 'firstPlayer'> {
-  authorisedFleet: AuthorisedFleet;
   boardDimensions: number;
   hasBoatsSafetyZone: boolean;
   timePerTurn: number;

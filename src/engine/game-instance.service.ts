@@ -22,7 +22,6 @@ import {
   Turn,
 } from '@interfaces/engine.interface';
 import {
-  DEFAULT_AUTHORISED_FLEET,
   DEFAULT_BOARD_GAME,
   GAME_INSTANCE_UID_LENGTH,
 } from '@shared/game-instance.const';
@@ -48,9 +47,13 @@ export default class GameInstanceService {
   public readonly id!: string;
   public readonly maxNumberOfPlayers: MaxNumberOfPlayers;
 
-  // TASK Add game preset in baseSettings
   public constructor(
-    { mode = GameMode.ONE_VERSUS_ONE, firstPlayer, weapons }: BaseGameSettings,
+    {
+      authorisedFleet,
+      mode = GameMode.ONE_VERSUS_ONE,
+      firstPlayer,
+      weapons,
+    }: BaseGameSettings,
     private readonly gameInstanceValidatorsService: GameInstanceValidatorsService,
   ) {
     this.gameMode = mode;
@@ -62,7 +65,7 @@ export default class GameInstanceService {
     this.id = uid(GAME_INSTANCE_UID_LENGTH);
 
     this.gameSettings = {
-      authorisedFleet: DEFAULT_AUTHORISED_FLEET,
+      authorisedFleet: authorisedFleet,
       boardDimensions: 10,
       hasBoatsSafetyZone: false,
       mode: mode,
