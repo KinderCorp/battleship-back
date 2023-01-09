@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiSuccessInterceptor } from '@interceptors/api-success/api-success.interceptor';
 import DomainModule from '@modules/domain.module';
 import { entities } from '@shared/entities.export';
-import { GatewayModule } from '@modules/gateway.module';
+import GatewayModule from '@modules/gateway.module';
 import { LoggerInterceptor } from '@interceptors/logger/logger.interceptor';
 
 @Module({

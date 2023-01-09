@@ -301,7 +301,7 @@ describe('GameInstanceService', () => {
     it('should not shoot because the origin cell is out of bound', () => {
       expect(() =>
         service.shoot({
-          originCell: [0, 1],
+          originCell: [10, 1],
           targetedPlayerId: guestPlayer1().id,
           weaponName: bomb().name,
         }),
@@ -314,7 +314,7 @@ describe('GameInstanceService', () => {
 
       expect(() =>
         service.shoot({
-          originCell: [1, 0],
+          originCell: [1, 10],
           targetedPlayerId: guestPlayer1().id,
           weaponName: bomb().name,
         }),
