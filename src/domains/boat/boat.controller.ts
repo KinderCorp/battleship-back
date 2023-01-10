@@ -1,10 +1,11 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { CreateBoatDto } from '@dto/boat.dto';
 
 import ApiError from '@shared/api-error';
 import Boat from '@boat/boat.entity';
 import BoatService from '@boat/boat.service';
+import { CreateBoatDto } from '@dto/boat.dto';
+import { InsertedEntity } from '@interfaces/shared.interface';
 
 const entityName = 'Boat';
 
@@ -19,7 +20,9 @@ export default class BoatController {
     description: 'Boat correctly inserted in database',
     status: 201,
   })
-  public async insert(@Body() boat: CreateBoatDto): Promise<Boat> {
+  public async insert(
+    @Body() boat: CreateBoatDto,
+  ): Promise<InsertedEntity<Boat>> {
     try {
       return await this.boatService.insert(boat);
     } catch (error) {

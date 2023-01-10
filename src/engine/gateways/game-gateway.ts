@@ -26,6 +26,7 @@ import {
   Turn,
   TurnRecap,
 } from '@interfaces/engine.interface';
+import GameApi from '@gateways/game-api';
 import GameEngine from '@engine/game-engine';
 import { GameEngineErrorCodes } from '@interfaces/error.interface';
 import GameEngineValidatorsService from '@engine/game-engine-validators.service';
@@ -40,6 +41,7 @@ export default class GameGateway implements OnGatewayConnection {
   public socketServer: SocketServer;
 
   public constructor(
+    private gameApi: GameApi,
     private gameEngine: GameEngine,
     private gameInstanceValidators: GameInstanceValidatorsService,
     private gameEngineValidators: GameEngineValidatorsService,
@@ -144,10 +146,10 @@ export default class GameGateway implements OnGatewayConnection {
    * When a player click on "create game" button
    */
   @SubscribeMessage(SocketEventsListening.CREATE_GAME)
-  public onCreateGame(
+  public async onCreateGame(
     @MessageBody() body: GamePlayer,
     @ConnectedSocket() socket: Socket,
-  ): void {
+  ): Promise<void> {
     // TASK Add verification of the player object (use class-validator)
     // If player is valid, create a game instance service and store it in game engine "instances" (property of the class)
     // Otherwise, we send an error message
@@ -158,6 +160,10 @@ export default class GameGateway implements OnGatewayConnection {
         return;
       }
 
+      const unlockedWeaponsOfHost = await this.gameApi.getWeaponsFromUserId(
+        body.id,
+      );
+
       const baseGameSettings: BaseGameSettings = {
         firstPlayer: {
           id: body.id ?? uid(20),
@@ -166,6 +172,7 @@ export default class GameGateway implements OnGatewayConnection {
           socketId: socket.id,
         },
         gameMode: GameMode.ONE_VERSUS_ONE,
+        weapons: [...unlockedWeaponsOfHost],
       };
 
       const instance = new GameInstanceService(

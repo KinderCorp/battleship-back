@@ -1,3 +1,5 @@
+import { IdentifierInterface } from '@interfaces/entity.interface';
+
 type Enumerate<
   N extends number,
   Acc extends number[] = [],
@@ -20,3 +22,9 @@ export type IntRange<F extends number, T extends number> = Exclude<
  */
 export type ArrayItem<ArrayType> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
+export interface InsertedEntity<Entity extends IdentifierInterface> {
+  identifiers: Record<string, Entity['id']>[];
+  generatedMaps: Record<string, Partial<Entity>>[];
+  raw: Record<string, Partial<Entity>>[];
+}

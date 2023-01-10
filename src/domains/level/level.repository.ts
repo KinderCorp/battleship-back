@@ -7,9 +7,7 @@ import Level from '@level/level.entity';
 
 @Injectable()
 export default class LevelRepository extends BaseRepository<Level> {
-  public constructor(
-    @InjectRepository(Level) private levelRepository: Repository<Level>,
-  ) {
-    super(levelRepository);
+  public constructor(@InjectRepository(Level) repository: Repository<Level>) {
+    super(repository);
   }
 }

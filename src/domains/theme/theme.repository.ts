@@ -9,8 +9,8 @@ import Theme from '@theme/theme.entity';
 export default class ThemeRepository extends BaseRepository<Theme> {
   public constructor(
     @InjectRepository(Theme)
-    private themeRepository: Repository<Theme>,
+    repository: Repository<Theme>,
   ) {
-    super(themeRepository);
+    super(repository);
   }
 }

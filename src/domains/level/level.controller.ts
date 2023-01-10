@@ -3,6 +3,7 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 
 import ApiError from '@shared/api-error';
 import { CreateLevelDto } from '@dto/level.dto';
+import { InsertedEntity } from '@interfaces/shared.interface';
 import Level from '@level/level.entity';
 import LevelService from '@level/level.service';
 
@@ -19,7 +20,9 @@ export default class LevelController {
     description: 'Level correctly inserted in database',
     status: 201,
   })
-  public async insert(@Body() level: CreateLevelDto): Promise<Level> {
+  public async insert(
+    @Body() level: CreateLevelDto,
+  ): Promise<InsertedEntity<Level>> {
     try {
       return await this.levelService.insert(level);
     } catch (error) {

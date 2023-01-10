@@ -16,11 +16,11 @@ import {
 } from '@shared/entity.const';
 import Character from '@character/character.entity';
 import Game from '@game/game.entity';
-import { IdentifierInterface } from '@interfaces/entity.interface';
 import Level from '@level/level.entity';
+import { UserType } from '@interfaces/user.interface';
 
 @Entity()
-export default class User implements IdentifierInterface {
+export default class User implements UserType {
   @PrimaryGeneratedColumn('uuid')
   @OneToMany(() => Game, (game: Game) => game.winner)
   @OneToMany(() => Game, (game: Game) => game.loser)
@@ -46,14 +46,14 @@ export default class User implements IdentifierInterface {
   public hasBeenConfirmed!: boolean;
 
   @ManyToOne(() => Level, (level: Level) => level.id)
-  public level!: number;
+  public level!: Level['id'];
 
   @ApiProperty({ default: 0 })
   @Column('integer', { default: 0 })
   public xp!: number;
 
   @ManyToOne(() => Character, (character: Character) => character.id)
-  public character!: number;
+  public character!: Character['id'];
 
   // TASK Review date to be internationalized
   @CreateDateColumn()

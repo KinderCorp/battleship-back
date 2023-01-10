@@ -7,9 +7,7 @@ import Boat from '@boat/boat.entity';
 
 @Injectable()
 export default class BoatRepository extends BaseRepository<Boat> {
-  public constructor(
-    @InjectRepository(Boat) private boatRepository: Repository<Boat>,
-  ) {
-    super(boatRepository);
+  public constructor(@InjectRepository(Boat) repository: Repository<Boat>) {
+    super(repository);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateThemeDto } from '@dto/theme.dto';
+import { InsertedEntity } from '@interfaces/shared.interface';
 import Theme from '@theme/theme.entity';
 import ThemeRepository from '@theme/theme.repository';
 
@@ -12,7 +13,7 @@ export default class ThemeService {
     private themeRepository: ThemeRepository,
   ) {}
 
-  public async insert(theme: CreateThemeDto): Promise<Theme> {
+  public async insert(theme: CreateThemeDto): Promise<InsertedEntity<Theme>> {
     return this.themeRepository.insert(theme);
   }
 }
